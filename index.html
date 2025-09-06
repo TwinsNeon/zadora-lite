@@ -199,20 +199,47 @@
     </div>
   </div>
 
+  <!-- ويدجت الشات -->
+  <div id="chatRoot" class="fixed bottom-4 right-4 z-50">
+    <button id="chatToggle" class="rounded-full shadow-lg bg-rose-600 text-white w-14 h-14 flex items-center justify-center text-2xl">💬</button>
+    <div id="chatPanel" class="hidden mt-3 w-[320px] sm:w-[360px] rounded-2xl shadow-2xl border bg-white overflow-hidden">
+      <div class="flex items-center justify-between px-4 py-3 bg-neutral-900 text-white">
+        <div class="font-semibold">دعم <span id="brandInChat">ZADORA</span></div>
+        <button id="chatClose" title="إغلاق">✕</button>
+      </div>
+      <div id="chatBody" class="h-[320px] overflow-y-auto px-3 py-3 space-y-2 bg-neutral-50"></div>
+      <div class="px-3 pb-3">
+        <div class="flex flex-wrap gap-2 text-xs mb-2">
+          <button class="px-2 py-1 rounded-full border bg-white quick">الشحن</button>
+          <button class="px-2 py-1 rounded-full border bg-white quick">الاسترجاع</button>
+          <button class="px-2 py-1 rounded-full border bg-white quick">الحد الأدنى</button>
+          <button class="px-2 py-1 rounded-full border bg-white quick">طرق الدفع</button>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="chatInput" class="flex-1 rounded-xl border px-3 py-2" placeholder="اكتب سؤالك..." />
+          <button id="chatSend" class="rounded-xl bg-rose-600 text-white px-4 py-2">إرسال</button>
+        </div>
+        <a id="waBtn" class="block text-center text-sm mt-2 rounded-xl border py-2 hover:bg-gray-50" target="_blank" rel="noopener">تواصل واتساب الآن</a>
+      </div>
+    </div>
+  </div>
+
 <script>
+/* =====================[ إعدادات عامة + دعم ]===================== */
+const WHATSAPP_PHONE = '201112345678';   // عدّل رقم الواتساب هنا بصيغة دولية
+const SUPPORT_EMAIL  = 'sales@example.com'; // عدّل الإيميل لو عايز
+document.getElementById('waBtn').href = 'https://wa.me/' + WHATSAPP_PHONE;
+
 /* =====================[ Admin PIN + Routing ]===================== */
-// PIN الإدارة (غيّره لو حابب)
 const ADMIN_PIN = '1234';
 let isAdmin = sessionStorage.getItem('zl_admin') === '1';
 
-// إظهار/إخفاء أقسام الهوم (لما نفتح صفحة قسم)
 function showHomeSections(show) {
   document.getElementById('heroSection').classList.toggle('hidden', !show);
   document.getElementById('benefitsSection').classList.toggle('hidden', !show);
   document.getElementById('categoriesSection').classList.toggle('hidden', !show);
 }
 
-// طلب PIN
 function ensureAdmin() {
   const pin = prompt('أدخل رقم PIN الإدارة:');
   if (pin === ADMIN_PIN) {
@@ -256,6 +283,28 @@ let brand = lsGet(LS_KEYS.brand, DEFAULT_BRAND);
 let hero = lsGet(LS_KEYS.hero, DEFAULT_HERO);
 let categories = lsGet(LS_KEYS.cats, DEFAULT_CATS);
 let products = lsGet(LS_KEYS.prods, DEFAULT_PRODS);
+
+/* =====================[ بحث + ترتيب ]===================== */
+let currentSort = 'default';
+let currentQuery = '';
+
+function normalize(s){ return String(s||'').toLowerCase(); }
+
+function sortList(list, key) {
+  const arr = [...list];
+  if (key === 'priceLow')  arr.sort((a,b)=> (a.price||0) - (b.price||0));
+  if (key === 'priceHigh') arr.sort((a,b)=> (b.price||0) - (a.price||0));
+  if (key === 'ratingHigh') arr.sort((a,b)=> (b.rating||0) - (a.rating||0));
+  return arr;
+}
+function applyFilters(list){
+  let out = list;
+  const q = normalize(currentQuery.trim());
+  if(q){
+    out = out.filter(p => normalize(p.title).includes(q) || normalize(p.category).includes(q));
+  }
+  return sortList(out, currentSort);
+}
 
 /* =====================[ Render ]===================== */
 function renderHero(){
@@ -315,19 +364,23 @@ function renderCategories(){
 }
 function renderProducts(){
   const el = document.getElementById('productsSection');
+  const list = applyFilters(products);
+
   el.innerHTML = `
     <div class="flex items-center justify-between mb-3">
-      <h3 class="text-lg md:text-xl font-bold">الأكثر مبيعًا</h3>
+      <h3 class="text-lg md:text-xl font-bold">${currentQuery ? `نتائج عن: "${currentQuery}"` : 'الأكثر مبيعًا'}</h3>
       <div class="flex items-center gap-2 text-sm">
         <span>ترتيب:</span>
-        <select class="border rounded-xl px-2 py-1">
-          <option>الأكثر مبيعًا</option><option>الأحدث</option>
-          <option>السعر: من الأقل للأعلى</option><option>السعر: من الأعلى للأقل</option>
+        <select id="homeSort" class="border rounded-xl px-2 py-1">
+          <option value="default">بدون ترتيب</option>
+          <option value="priceLow">السعر: من الأقل للأعلى</option>
+          <option value="priceHigh">السعر: من الأعلى للأقل</option>
+          <option value="ratingHigh">الأعلى تقييمًا</option>
         </select>
       </div>
     </div>
     <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-      ${products.map(p => `
+      ${list.length ? list.map(p => `
         <div class="group rounded-2xl border bg-white overflow-hidden hover:shadow-md transition-shadow">
           <div class="relative">
             <img src="${p.image}" class="w-full h-56 object-cover"/>
@@ -347,14 +400,19 @@ function renderProducts(){
               <button class="rounded-xl border px-3 py-2 hover:bg-gray-50" title="إضافة للمفضلة">♡</button>
             </div>
           </div>
-        </div>`).join('')}
+        </div>`).join('') : `<div class="rounded-2xl border bg-white p-6">لا توجد نتائج مطابقة.</div>`}
     </div>`;
+
+  const sel = document.getElementById('homeSort');
+  sel.value = currentSort;
+  sel.onchange = (e) => { currentSort = e.target.value; renderProducts(); };
 }
 function refreshAll(){
   document.getElementById('brandName').textContent = brand;
   document.getElementById('brandNameFooter').textContent = brand;
   document.getElementById('brandNameCopy').textContent = brand;
   document.getElementById('year').textContent = new Date().getFullYear();
+  document.getElementById('brandInChat').textContent = brand;
   renderHero(); renderBenefits(); renderCategories(); renderProducts();
 }
 
@@ -362,7 +420,6 @@ function refreshAll(){
 const modal = document.getElementById('adminModal');
 const openAdminBtn = document.getElementById('openAdmin');
 
-// دالة فتح اللوحة (تُستخدم للأدمن فقط)
 function openAdminPanel(){
   modal.classList.remove('hidden');
   document.getElementById('brandInput').value = brand;
@@ -371,16 +428,8 @@ function openAdminPanel(){
   document.getElementById('heroImgPreview').src = hero.image;
   switchTab('products'); fillCatSelect(); listCats(); listProds();
 }
-
-// أخفي زر اللوحة للزوّار
 if (!isAdmin) openAdminBtn.classList.add('hidden');
-
-// الضغط على الزر (لو زائر، حيطلب PIN)
-openAdminBtn.onclick = () => {
-  if (!isAdmin) { location.hash = '#/admin'; ensureAdmin(); return; }
-  openAdminPanel();
-};
-
+openAdminBtn.onclick = () => { if (!isAdmin) { location.hash = '#/admin'; ensureAdmin(); return; } openAdminPanel(); };
 document.getElementById('closeAdmin').onclick = ()=> modal.classList.add('hidden');
 document.getElementById('adminCloseBg').onclick = ()=> modal.classList.add('hidden');
 
@@ -466,7 +515,7 @@ function listProds(){
   wrap.innerHTML = products.map(p=>`
     <div class="rounded-2xl border bg-white overflow-hidden">
       <div class="aspect-[4/3] w-full overflow-hidden">
-        <img src="${p.image}" class="w-full h-full object-cover"/>
+        <img src="${p.image}" class="w-full ه-full object-cover"/>
       </div>
       <div class="p-3">
         <div class="font-semibold">${p.title}</div>
@@ -559,17 +608,27 @@ document.getElementById('resetAll').onclick = ()=>{
 /* =====================[ Router بالهاش ]===================== */
 function renderCategoryView(cat) {
   showHomeSections(false);
-  const items = products.filter(p => (p.category || '') === cat);
+  const all = products.filter(p => (p.category || '') === cat);
+  const list = applyFilters(all);
   const el = document.getElementById('productsSection');
+
   el.innerHTML = `
     <div class="flex items-center justify-between mb-3">
       <div class="text-lg md:text-xl font-bold">قسم: ${cat}</div>
-      <a href="#/" class="text-rose-600 hover:underline">عودة للكل</a>
+      <div class="flex items-center gap-3">
+        <select id="catSort" class="border rounded-xl px-2 py-1">
+          <option value="default">بدون ترتيب</option>
+          <option value="priceLow">السعر: من الأقل للأعلى</option>
+          <option value="priceHigh">السعر: من الأعلى للأقل</option>
+          <option value="ratingHigh">الأعلى تقييمًا</option>
+        </select>
+        <a href="#/" class="text-rose-600 hover:underline">عودة للكل</a>
+      </div>
     </div>
     <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
       ${
-        items.length
-        ? items.map(p => `
+        list.length
+        ? list.map(p => `
           <div class="group rounded-2xl border bg-white overflow-hidden hover:shadow-md transition-shadow">
             <div class="relative">
               <img src="${p.image}" class="w-full h-56 object-cover"/>
@@ -591,6 +650,10 @@ function renderCategoryView(cat) {
         : `<div class="rounded-2xl border bg-white p-6">لا توجد منتجات لهذا القسم حتى الآن.</div>`
       }
     </div>`;
+
+  const sel = document.getElementById('catSort');
+  sel.value = currentSort;
+  sel.onchange = (e)=> { currentSort = e.target.value; renderCategoryView(cat); };
 }
 function renderHome() {
   showHomeSections(true);
@@ -606,17 +669,86 @@ function renderRoute() {
   }
 }
 
+/* =====================[ البحث المباشر ]===================== */
+function attachSearch(){
+  const boxes = [document.getElementById('search'), document.getElementById('search2')].filter(Boolean);
+  boxes.forEach(inp=>{
+    inp.value = currentQuery;
+    inp.oninput = (e)=>{ currentQuery = e.target.value; renderRoute(); };
+    inp.onkeydown = (e)=>{ if(e.key==='Escape'){ e.target.value=''; currentQuery=''; renderRoute(); } };
+  });
+}
+
+/* =====================[ ويدجت الشات: بوت بسيط ]===================== */
+const chatPanel = document.getElementById('chatPanel');
+const chatToggle = document.getElementById('chatToggle');
+const chatClose  = document.getElementById('chatClose');
+const chatBody   = document.getElementById('chatBody');
+const chatInput  = document.getElementById('chatInput');
+const chatSend   = document.getElementById('chatSend');
+
+chatToggle.onclick = ()=> chatPanel.classList.toggle('hidden');
+chatClose.onclick  = ()=> chatPanel.classList.add('hidden');
+document.querySelectorAll('.quick').forEach(b=> b.onclick = ()=> { sendMsg(b.textContent); });
+
+let chatHistory = lsGet('zl_chat_history', []);
+function renderChat(){
+  chatBody.innerHTML = chatHistory.map(m => `
+    <div class="flex ${m.role==='user'?'justify-start':'justify-end'}">
+      <div class="max-w-[80%] rounded-2xl px-3 py-2 text-sm ${m.role==='user'?'bg-white border':'bg-rose-600 text-white'}">
+        ${m.text}
+      </div>
+    </div>`).join('');
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+function push(role,text){
+  chatHistory.push({role,text,ts:Date.now()});
+  lsSet('zl_chat_history', chatHistory);
+  renderChat();
+}
+function replyBot(q){
+  const t = q.trim();
+  const s = (w)=> t.includes(w);
+  let a = '';
+
+  if (s('شحن')||s('توصيل')||s('المحافظة')||s('المحافظات')) {
+    a = 'الشحن خلال 24-72 ساعة لكل المحافظات. السعر حسب الوزن والمحافظة. هنجمع الأوردر ونتواصل للتأكيد.';
+  } else if (s('استرجاع')||s('ارجاع')||s('استبدال')) {
+    a = 'الاستبدال خلال 7 أيام للقطع المعيوبة/المكسورة – بنبدل فورًا أو نرجع قيمتها.';
+  } else if (s('حد أدنى')||s('حد ادنى')||s('اقل كمية')||s('أقل كمية')) {
+    a = 'الحد الأدنى للطلب: 12 قطعة لكل صنف (أو كرتونة كاملة لبعض المنتجات).';
+  } else if (s('دفع')||s('تحويل')||s('فيزا')||s('كاش')) {
+    a = 'طرق الدفع: كاش عند الاستلام (القاهرة/الجيزة)، تحويل بنكي، أو فودافون كاش.';
+  } else if (s('سعر')||s('سعره')||s('ثمن')) {
+    a = 'الأسعار بالجملة ظاهرة تحت كل منتج. لأسعار جملة كبيرة ابعتلنا على واتساب.';
+  } else if (s('تواصل')||s('واتساب')||s('رقم')) {
+    a = `تقدر تكلم فريق المبيعات مباشرة: واتساب ${WHATSAPP_PHONE} أو إيميل ${SUPPORT_EMAIL}.`;
+  } else {
+    a = 'مفهوم! 😊 لو سؤالك عن الشحن/الاسترجاع/الحد الأدنى/الدفع اكتب الكلمة، أو تواصل على زر واتساب بالأسفل.';
+  }
+  push('bot', a);
+}
+function sendMsg(text){
+  const v = (text ?? chatInput.value).trim();
+  if(!v) return;
+  push('user', v);
+  chatInput.value='';
+  setTimeout(()=> replyBot(v), 400);
+}
+chatSend.onclick = ()=> sendMsg();
+chatInput.addEventListener('keydown', (e)=> { if(e.key==='Enter') sendMsg(); });
+
 /* =====================[ بدء ]===================== */
 refreshAll(); fillCatSelect(); listCats(); listProds();
 renderRoute();
+attachSearch();
+renderChat();
 
-// لو فتحْت #/admin و إنت مش أدمن، اطلب PIN
 if (location.hash === '#/admin' && !isAdmin) ensureAdmin();
-
-// راقب تغيّر الهاش (للروتنج + الإدارة)
 window.addEventListener('hashchange', () => {
   if (location.hash === '#/admin' && !isAdmin) ensureAdmin();
   renderRoute();
+  attachSearch();
 });
 </script>
 </body>

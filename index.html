@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ZADORA Lite</title>
+  <!-- Tailwind عبر CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body{ background:#fafafa; color:#111827; }
+    .container{ max-width:1120px; margin:0 auto; }
+    .glass{ backdrop-filter: blur(6px); background: rgba(255,255,255,.85); }
+    .modal-bg{ background: rgba(0,0,0,.45); }
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- الهيدر -->
+  <header class="sticky top-0 z-40 glass border-b">
+    <div class="container px-4 py-3 flex items-center gap-3">
+      <div class="font-extrabold text-xl text-rose-600" id="brandName">ZADORA</div>
+      <div class="flex-1"></div>
+      <div class="hidden md:block w-[420px]">
+        <input id="search" placeholder="إبحث عن منتج..." class="w-full rounded-xl border px-3 py-2" />
+      </div>
+      <button id="openAdmin" class="rounded-xl border px-3 py-2 hover:bg-gray-50">⚙️ لوحة التحكم</button>
+    </div>
+    <div class="md:hidden px-4 pb-3">
+      <input id="search2" placeholder="إبحث عن منتج..." class="w-full rounded-xl border px-3 py-2" />
+    </div>
+  </header>
+
+  <!-- هيرو -->
+  <section class="container px-4 mt-4" id="heroSection"></section>
+  <!-- مميزات -->
+  <section class="container px-4 mt-6" id="benefitsSection"></section>
+  <!-- أقسام -->
+  <section class="container px-4 mt-8" id="categoriesSection"></section>
+  <!-- منتجات -->
+  <section class="container px-4 mt-8" id="productsSection"></section>
+
+  <!-- نشرة بريدية -->
+  <section class="container px-4 mt-10">
+    <div class="rounded-2xl bg-neutral-900 text-white overflow-hidden">
+      <div class="grid md:grid-cols-2">
+        <div class="p-8 md:p-12">
+          <h3 class="text-2xl md:text-3xl font-extrabold">قائمة التجار البريدية</h3>
+          <p class="mt-2 text-white/80">خصومات خاصة بالجملة + عروض صناديق جاهزة أسبوعيًا.</p>
+          <div class="mt-5 flex items-center gap-2">
+            <input class="flex-1 rounded-xl px-3 py-2 text-neutral-900" placeholder="اكتب بريدك الإلكتروني" dir="rtl"/>
+            <button class="rounded-xl bg-rose-600 px-4 py-2 font-semibold hover:bg-rose-700">اشترك</button>
+          </div>
+        </div>
+        <div class="relative min-h-[220px]">
+          <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1600&auto=format&fit=crop" alt="newsletter" class="absolute inset-0 w-full h-full object-cover opacity-70"/>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- فوتر -->
+  <footer class="mt-10 border-t">
+    <div class="container px-4 py-8 grid md:grid-cols-4 gap-8 text-right">
+      <div>
+        <div class="font-bold text-lg"><span class="text-rose-600">✦</span> <span id="brandNameFooter">ZADORA</span></div>
+        <p class="mt-3 text-sm text-gray-600">منصة جملة للأدوات المنزلية: حد أدنى 12 قطعة، شحن سريع، وضمان استبدال.</p>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-2">خدمة العملاء</h4>
+        <ul class="space-y-1 text-sm text-gray-600">
+          <li><a class="hover:underline">سياسة الاسترجاع</a></li>
+          <li><a class="hover:underline">الشحن والتسليم</a></li>
+          <li><a class="hover:underline">طرق الدفع</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-2">الشركة</h4>
+        <ul class="space-y-1 text-sm text-gray-600">
+          <li><a class="hover:underline">من نحن</a></li>
+          <li><a class="hover:underline">انضم كتاجر/مورد</a></li>
+          <li><a class="hover:underline">تواصل معنا</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-2">تابعنا</h4>
+        <ul class="space-y-1 text-sm text-gray-600">
+          <li><a class="hover:underline">Facebook</a></li>
+          <li><a class="hover:underline">Instagram</a></li>
+          <li><a class="hover:underline">TikTok</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="py-4 text-center text-xs text-gray-500">© <span id="year"></span> <span id="brandNameCopy">ZADORA</span>. All rights reserved.</div>
+  </footer>
+
+  <!-- لوحة التحكم -->
+  <div id="adminModal" class="fixed inset-0 hidden z-50 modal-bg">
+    <div class="absolute inset-0" id="adminCloseBg"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-full md:w-[760px] bg-white rounded-none md:rounded-l-3xl shadow-2xl overflow-y-auto">
+      <div class="sticky top-0 glass border-b p-4 flex items-center justify-between">
+        <div class="font-bold">لوحة التحكم</div>
+        <div class="flex items-center gap-2">
+          <label class="rounded-xl border px-3 py-2 text-sm cursor-pointer hover:bg-gray-50">
+            <input type="file" id="importJson" accept="application/json" class="hidden" /> استيراد
+          </label>
+          <button id="exportJson" class="rounded-xl border px-3 py-2 text-sm hover:bg-gray-50">تصدير</button>
+          <button id="resetAll" class="rounded-xl border px-3 py-2 text-sm hover:bg-gray-50">إرجاع الافتراضي</button>
+          <button id="closeAdmin" class="rounded-xl bg-rose-600 text-white px-4 py-2 text-sm">إغلاق</button>
+        </div>
+      </div>
+
+      <div class="p-4">
+        <div class="flex gap-2 mb-4">
+          <button data-tab="products" class="tab-btn rounded-xl px-4 py-2 text-sm border">المنتجات</button>
+          <button data-tab="categories" class="tab-btn rounded-xl px-4 py-2 text-sm border">الأقسام</button>
+          <button data-tab="settings" class="tab-btn rounded-xl px-4 py-2 text-sm border">الإعدادات</button>
+        </div>
+
+        <!-- إعدادات -->
+        <div id="tab-settings" class="tab-pane hidden" dir="rtl">
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-sm font-medium">اسم البراند</label>
+              <input id="brandInput" class="w-full rounded-xl border px-3 py-2" placeholder="ZADORA"/>
+              <label class="text-sm font-medium">عنوان الهيرو</label>
+              <input id="heroTitleInput" class="w-full rounded-xl border px-3 py-2"/>
+              <label class="text-sm font-medium">وصف الهيرو</label>
+              <textarea id="heroSubInput" class="w-full rounded-xl border px-3 py-2 min-h-[112px]"></textarea>
+            </div>
+            <div class="space-y-2">
+              <div class="text-sm font-medium">صورة الهيرو</div>
+              <div class="aspect-[4/3] w-full overflow-hidden rounded-xl border bg-white" id="heroImgWrap">
+                <img id="heroImgPreview" class="w-full h-full object-cover" />
+              </div>
+              <label class="inline-flex items-center gap-2 rounded-xl border px-3 py-2 cursor-pointer hover:bg-gray-50">
+                <input id="heroImgInput" type="file" accept="image/*" class="hidden" /> رفع صورة
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- أقسام -->
+        <div id="tab-categories" class="tab-pane hidden" dir="rtl">
+          <div class="grid md:grid-cols-3 gap-4">
+            <div class="space-y-3">
+              <input id="catName" class="w-full rounded-xl border px-3 py-2" placeholder="اسم القسم"/>
+              <div class="space-y-2">
+                <div class="text-sm font-medium">صورة القسم</div>
+                <div class="aspect-[4/3] w-full overflow-hidden rounded-xl border bg-white">
+                  <img id="catImgPreview" class="w-full h-full object-cover" />
+                </div>
+                <label class="inline-flex items-center gap-2 rounded-xl border px-3 py-2 cursor-pointer hover:bg-gray-50">
+                  <input id="catImgInput" type="file" accept="image/*" class="hidden" /> رفع صورة
+                </label>
+              </div>
+              <div class="flex gap-2">
+                <button id="saveCat" class="flex-1 rounded-xl bg-rose-600 text-white py-2 font-semibold">حفظ</button>
+                <button id="resetCat" class="rounded-xl border px-3">إلغاء</button>
+              </div>
+            </div>
+            <div class="md:col-span-2 grid sm:grid-cols-2 gap-3" id="catsList"></div>
+          </div>
+        </div>
+
+        <!-- منتجات -->
+        <div id="tab-products" class="tab-pane hidden" dir="rtl">
+          <div class="grid md:grid-cols-3 gap-4">
+            <div class="space-y-3">
+              <input id="pTitle" class="w-full rounded-xl border px-3 py-2" placeholder="اسم المنتج"/>
+              <div class="grid grid-cols-2 gap-2">
+                <input id="pPrice" class="rounded-xl border px-3 py-2" placeholder="السعر" type="number"/>
+                <input id="pOld" class="rounded-xl border px-3 py-2" placeholder="السعر قبل" type="number"/>
+              </div>
+              <div class="grid grid-cols-3 gap-2">
+                <input id="pRating" class="rounded-xl border px-3 py-2" placeholder="تقييم" type="number" step="0.1"/>
+                <input id="pReviews" class="rounded-xl border px-3 py-2" placeholder="مراجعات" type="number"/>
+                <input id="pMinQty" class="rounded-xl border px-3 py-2" placeholder="حد أدنى" type="number"/>
+              </div>
+              <input id="pBadge" class="w-full rounded-xl border px-3 py-2" placeholder="شارة (جديد/عرض خاص)"/>
+              <select id="pCategory" class="w-full rounded-xl border px-3 py-2"></select>
+              <div class="space-y-2">
+                <div class="text-sm font-medium">صورة المنتج</div>
+                <div class="aspect-[4/3] w-full overflow-hidden rounded-xl border bg-white">
+                  <img id="pImgPreview" class="w-full h-full object-cover" />
+                </div>
+                <label class="inline-flex items-center gap-2 rounded-xl border px-3 py-2 cursor-pointer hover:bg-gray-50">
+                  <input id="pImgInput" type="file" accept="image/*" class="hidden" /> رفع صورة
+                </label>
+              </div>
+              <div class="flex gap-2">
+                <button id="saveProduct" class="flex-1 rounded-xl bg-rose-600 text-white py-2 font-semibold">إضافة/تحديث</button>
+                <button id="resetProduct" class="rounded-xl border px-3">إلغاء</button>
+              </div>
+            </div>
+            <div class="md:col-span-2 grid sm:grid-cols-2 gap-3" id="productsList"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+<script>
+// ====== بيانات افتراضية + LocalStorage ======
+const LS_KEYS = { brand:'zl_brand', hero:'zl_hero', cats:'zl_cats', prods:'zl_prods' };
+const DEFAULT_BRAND = 'ZADORA';
+const DEFAULT_HERO = {
+  title: 'جُملة راقية بلمسة ZADORA',
+  subtitle: 'اطلب بالكرتونة أو حد أدنى 12 قطعة — أسعار واضحة، خامات مضمونة، وصور جاهزة لزيادة مبيعاتك فورًا.',
+  image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1600&auto=format&fit=crop'
+};
+const DEFAULT_CATS = [
+  { name:'مطبخ', image:'https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?q=80&w=1200&auto=format&fit=crop' },
+  { name:'تخزين وتنظيم', image:'https://images.unsplash.com/photo-1582582429416-2f3a27730854?q=80&w=1200&auto=format&fit=crop' },
+  { name:'مشروبات ومجات', image:'https://images.unsplash.com/photo-1511920170033-f8396924c348?q=80&w=1200&auto=format&fit=crop' },
+  { name:'ديكور', image:'https://images.unsplash.com/photo-1501045661006-fcebe0257c3f?q=80&w=1200&auto=format&fit=crop' },
+  { name:'منسوجات', image:'https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?q=80&w=1200&auto=format&fit=crop' },
+  { name:'بلاستيك واستالس', image:'https://images.unsplash.com/photo-1542444592-1e6c9f952a25?q=80&w=1200&auto=format&fit=crop' },
+];
+const DEFAULT_PRODS = [
+  { id:1, title:'طقم تلاجة بيركس – 3 قطع', price:420, oldPrice:480, rating:4.7, reviews:126, image:'https://images.unsplash.com/photo-1601050690290-27f9864c06c0?q=80&w=1200&auto=format&fit=crop', badge:'الأكثر طلبًا', minQty:12, category:'مطبخ' },
+  { id:2, title:'لانش بوكس حراري', price:165, oldPrice:199, rating:4.6, reviews:98, image:'https://images.unsplash.com/photo-1517673132405-a56a62b18caf?q=80&w=1200&auto=format&fit=crop', badge:'عرض خاص', minQty:24, category:'تخزين وتنظيم' },
+  { id:3, title:'مج سيراميك مطفي', price:85, oldPrice:110, rating:4.4, reviews:210, image:'https://images.unsplash.com/photo-1523365280197-f1783db9fe62?q=80&w=1200&auto=format&fit=crop', badge:'جديد', minQty:24, category:'مشروبات ومجات' },
+  { id:4, title:'علب تخزين محكمة – 6 قطع', price:350, oldPrice:399, rating:4.8, reviews:73, image:'https://images.unsplash.com/photo-1592840496694-26d035b08cc6?q=80&w=1200&auto=format&fit=crop', badge:'الأفضل قيمة', minQty:6, category:'تخزين وتنظيم' },
+];
+function lsGet(k, fb){ try{ const v = localStorage.getItem(k); return v? JSON.parse(v): fb; }catch{ return fb; } }
+function lsSet(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} }
+
+let brand = lsGet(LS_KEYS.brand, DEFAULT_BRAND);
+let hero = lsGet(LS_KEYS.hero, DEFAULT_HERO);
+let categories = lsGet(LS_KEYS.cats, DEFAULT_CATS);
+let products = lsGet(LS_KEYS.prods, DEFAULT_PRODS);
+
+// ====== Render ======
+function renderHero(){
+  const el = document.getElementById('heroSection');
+  el.innerHTML = `
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="md:col-span-2 relative overflow-hidden rounded-2xl bg-neutral-900 text-white min-h-[220px]">
+        <img src="${hero.image}" class="absolute inset-0 w-full h-full object-cover opacity-70">
+        <div class="relative p-8 md:p-12">
+          <h2 class="text-2xl md:text-4xl font-extrabold leading-tight">${hero.title}</h2>
+          <p class="mt-2 md:mt-4 text-sm md:text-base text-white/90">${hero.subtitle}</p>
+          <button class="mt-5 inline-flex items-center gap-1 rounded-xl bg-white text-neutral-900 px-4 py-2 text-sm font-semibold hover:bg-white/90">تسوق الآن</button>
+        </div>
+      </div>
+      <div class="relative overflow-hidden rounded-2xl bg-rose-600 text-white min-h-[220px]">
+        <img src="https://images.unsplash.com/photo-1549778399-f94fd24d4697?q=80&w=1600&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-40">
+        <div class="relative p-8">
+          <h3 class="text-xl md:text-2xl font-extrabold">ZADORA Box</h3>
+          <p class="mt-2 text-sm text-white/90">باكدچ متنوعة جاهزة للعرض في المحل</p>
+          <button class="mt-4 inline-flex items-center gap-1 rounded-xl bg-white text-neutral-900 px-4 py-2 text-sm font-semibold hover:bg-white/90">شوف البوكس</button>
+        </div>
+      </div>
+    </div>`;
+}
+function renderBenefits(){
+  const data = [
+    { title:'شحن سريع', desc:'توصيل لكل المحافظات خلال 24-72 ساعة' },
+    { title:'ضمان واستبدال', desc:'استبدال القطع المكسورة خلال 7 أيام' },
+    { title:'جملة بالكرتونة', desc:'حد أدنى 12 قطعة فقط' },
+  ];
+  const el = document.getElementById('benefitsSection');
+  el.innerHTML = `<div class="grid sm:grid-cols-3 gap-3">
+      ${data.map(b=>`<div class="flex items-center gap-4 rounded-2xl border p-4 bg-white">
+        <div class="rounded-2xl p-3 bg-rose-50">✦</div>
+        <div class="text-right">
+          <div class="font-semibold">${b.title}</div>
+          <div class="text-sm text-gray-600">${b.desc}</div>
+        </div>
+      </div>`).join('')}
+    </div>`;
+}
+function renderCategories(){
+  const el = document.getElementById('categoriesSection');
+  el.innerHTML = `
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-lg md:text-xl font-bold">تسوق بالأقسام</h3>
+      <a class="text-rose-600 hover:underline cursor-pointer">عرض الكل</a>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+      ${categories.map(cat => `
+        <a class="group relative block overflow-hidden rounded-2xl border bg-white">
+          <img src="${cat.image}" alt="${cat.name}" class="h-28 w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+          <div class="absolute bottom-2 right-2 text-white text-sm font-semibold">${cat.name}</div>
+        </a>`).join('')}
+    </div>`;
+}
+function renderProducts(){
+  const el = document.getElementById('productsSection');
+  el.innerHTML = `
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-lg md:text-xl font-bold">الأكثر مبيعًا</h3>
+      <div class="flex items-center gap-2 text-sm">
+        <span>ترتيب:</span>
+        <select class="border rounded-xl px-2 py-1">
+          <option>الأكثر مبيعًا</option><option>الأحدث</option>
+          <option>السعر: من الأقل للأعلى</option><option>السعر: من الأعلى للأقل</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
+      ${products.map(p => `
+        <div class="group rounded-2xl border bg-white overflow-hidden hover:shadow-md transition-shadow">
+          <div class="relative">
+            <img src="${p.image}" class="w-full h-56 object-cover"/>
+            ${p.badge ? `<span class="absolute top-3 right-3 bg-rose-600 text-white text-xs px-2 py-1 rounded-full">${p.badge}</span>` : ''}
+            <button class="absolute bottom-3 left-3 bg-white/90 backdrop-blur text-sm rounded-xl px-3 py-1 hover:bg-white">
+              حد أدنى: ${p.minQty}
+            </button>
+          </div>
+          <div class="p-3" dir="rtl">
+            <h4 class="font-semibold min-h-[44px]">${p.title}</h4>
+            <div class="flex items-baseline gap-2 mt-2">
+              <span class="text-lg font-extrabold">${p.price} ج.م</span>
+              <span class="text-sm line-through text-gray-400">${p.oldPrice} ج.م</span>
+            </div>
+            <div class="mt-3 flex items-center gap-2">
+              <button class="flex-1 rounded-xl bg-rose-600 text-white py-2 font-semibold hover:bg-rose-700">أضف للسلة</button>
+              <button class="rounded-xl border px-3 py-2 hover:bg-gray-50" title="إضافة للمفضلة">♡</button>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+function refreshAll(){
+  document.getElementById('brandName').textContent = brand;
+  document.getElementById('brandNameFooter').textContent = brand;
+  document.getElementById('brandNameCopy').textContent = brand;
+  document.getElementById('year').textContent = new Date().getFullYear();
+  renderHero(); renderBenefits(); renderCategories(); renderProducts();
+}
+
+// ====== لوحة التحكم ======
+const modal = document.getElementById('adminModal');
+document.getElementById('openAdmin').onclick = () => {
+  modal.classList.remove('hidden');
+  document.getElementById('brandInput').value = brand;
+  document.getElementById('heroTitleInput').value = hero.title;
+  document.getElementById('heroSubInput').value = hero.subtitle;
+  document.getElementById('heroImgPreview').src = hero.image;
+  switchTab('products'); fillCatSelect(); listCats(); listProds();
+};
+document.getElementById('closeAdmin').onclick = ()=> modal.classList.add('hidden');
+document.getElementById('adminCloseBg').onclick = ()=> modal.classList.add('hidden');
+
+document.querySelectorAll('.tab-btn').forEach(btn=> btn.addEventListener('click', ()=> switchTab(btn.dataset.tab)));
+function switchTab(name){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.add('hidden'));
+  document.getElementById('tab-'+name).classList.remove('hidden');
+  document.querySelectorAll('.tab-btn').forEach(b=>{
+    const on = b.dataset.tab===name;
+    b.classList.toggle('bg-rose-600', on);
+    b.classList.toggle('text-white', on);
+    b.classList.toggle('border-rose-600', on);
+  });
+}
+
+// إعدادات عامة
+document.getElementById('brandInput').addEventListener('input', e=>{ brand = e.target.value || 'ZADORA'; lsSet(LS_KEYS.brand, brand); refreshAll(); });
+document.getElementById('heroTitleInput').addEventListener('input', e=>{ hero.title = e.target.value; lsSet(LS_KEYS.hero, hero); refreshAll(); });
+document.getElementById('heroSubInput').addEventListener('input', e=>{ hero.subtitle = e.target.value; lsSet(LS_KEYS.hero, hero); refreshAll(); });
+document.getElementById('heroImgInput').addEventListener('change', e=>{
+  const file = e.target.files[0]; if(!file) return;
+  const r = new FileReader(); r.onload = ev =>{ hero.image = String(ev.target.result); lsSet(LS_KEYS.hero, hero); refreshAll(); };
+  r.readAsDataURL(file);
+});
+
+// أقسام
+let editingCat = null;
+function listCats(){
+  const wrap = document.getElementById('catsList');
+  wrap.innerHTML = categories.map(c=>`
+    <div class="rounded-2xl border overflow-hidden bg-white">
+      <div class="aspect-[4/3] w-full overflow-hidden">
+        <img src="${c.image}" class="w-full h-full object-cover" />
+      </div>
+      <div class="p-3 flex items-center justify-between">
+        <div class="font-semibold">${c.name}</div>
+        <div class="flex gap-2">
+          <button class="rounded-xl border px-3 py-1 hover:bg-gray-50" onclick='editCat("${c.name}")'>تعديل</button>
+          <button class="rounded-xl border px-3 py-1 hover:bg-gray-50" onclick='deleteCat("${c.name}")'>حذف</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function editCat(name){
+  const c = categories.find(x=>x.name===name); if(!c) return;
+  editingCat = name;
+  document.getElementById('catName').value = c.name;
+  document.getElementById('catImgPreview').src = c.image;
+}
+function deleteCat(name){
+  if(!confirm('مسح القسم؟')) return;
+  categories = categories.filter(c=>c.name!==name);
+  lsSet(LS_KEYS.cats, categories); fillCatSelect(); listCats(); renderCategories();
+}
+document.getElementById('catImgInput').addEventListener('change', e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader(); r.onload = ev => document.getElementById('catImgPreview').src = String(ev.target.result);
+  r.readAsDataURL(f);
+});
+document.getElementById('saveCat').onclick = ()=>{
+  const name = document.getElementById('catName').value.trim();
+  const img = document.getElementById('catImgPreview').src;
+  if(!name) return alert('اكتب اسم القسم');
+  if(editingCat){
+    categories = categories.map(c=> c.name===editingCat? {name, image:img}: c);
+  }else{
+    if(categories.some(c=>c.name===name)) return alert('القسم موجود بالفعل');
+    categories.push({name, image:img});
+  }
+  editingCat=null; document.getElementById('catName').value=''; document.getElementById('catImgPreview').src='';
+  lsSet(LS_KEYS.cats, categories); fillCatSelect(); listCats(); renderCategories();
+};
+document.getElementById('resetCat').onclick = ()=>{ editingCat=null; document.getElementById('catName').value=''; document.getElementById('catImgPreview').src=''; };
+function fillCatSelect(){
+  const sel = document.getElementById('pCategory');
+  sel.innerHTML = '<option value="">اختر القسم</option>' + categories.map(c=> `<option>${c.name}</option>`).join('');
+}
+
+// منتجات
+let editingProd = null;
+function listProds(){
+  const wrap = document.getElementById('productsList');
+  wrap.innerHTML = products.map(p=>`
+    <div class="rounded-2xl border bg-white overflow-hidden">
+      <div class="aspect-[4/3] w-full overflow-hidden">
+        <img src="${p.image}" class="w-full h-full object-cover"/>
+      </div>
+      <div class="p-3">
+        <div class="font-semibold">${p.title}</div>
+        <div class="text-sm text-gray-500 mt-1">${p.category||''}</div>
+        <div class="flex items-baseline gap-2 mt-2">
+          <span class="text-lg font-extrabold">${p.price} ج.م</span>
+          <span class="text-sm line-through text-gray-400">${p.oldPrice} ج.م</span>
+        </div>
+        <div class="mt-3 flex items-center gap-2">
+          <button class="rounded-xl border px-3 py-1 hover:bg-gray-50" onclick='editProd(${JSON.stringify(p.id)})'>تعديل</button>
+          <button class="rounded-xl border px-3 py-1 hover:bg-gray-50" onclick='deleteProd(${JSON.stringify(p.id)})'>حذف</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function editProd(id){
+  const p = products.find(x=>String(x.id)===String(id)); if(!p) return;
+  editingProd = id;
+  pTitle.value = p.title; pPrice.value=p.price; pOld.value=p.oldPrice;
+  pRating.value=p.rating; pReviews.value=p.reviews; pMinQty.value=p.minQty;
+  pBadge.value=p.badge||''; pCategory.value=p.category||''; pImgPreview.src=p.image;
+}
+function deleteProd(id){
+  if(!confirm('مسح المنتج؟')) return;
+  products = products.filter(p=>String(p.id)!==String(id));
+  lsSet(LS_KEYS.prods, products); listProds(); renderProducts();
+}
+pImgInput.addEventListener('change', e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader(); r.onload = ev => pImgPreview.src = String(ev.target.result);
+  r.readAsDataURL(f);
+});
+saveProduct.onclick = ()=>{
+  const form = {
+    title: pTitle.value.trim(),
+    price: Number(pPrice.value||0),
+    oldPrice: Number(pOld.value||0),
+    rating: Number(pRating.value||0),
+    reviews: Number(pReviews.value||0),
+    minQty: Number(pMinQty.value||0),
+    badge: pBadge.value.trim(),
+    category: pCategory.value,
+    image: pImgPreview.src || ''
+  };
+  if(!form.title) return alert('اكتب اسم المنتج');
+  if(editingProd){
+    products = products.map(p=> String(p.id)===String(editingProd)? {...form, id: editingProd}: p);
+  }else{
+    const nextId = products.length? Math.max(...products.map(p=>Number(p.id)||0))+1: 1;
+    products.push({...form, id: nextId});
+  }
+  editingProd=null;
+  ['pTitle','pPrice','pOld','pRating','pReviews','pMinQty','pBadge'].forEach(id=> document.getElementById(id).value='');
+  pCategory.value=''; pImgPreview.src='';
+  lsSet(LS_KEYS.prods, products); listProds(); renderProducts();
+};
+resetProduct.onclick = ()=>{
+  editingProd=null; ['pTitle','pPrice','pOld','pRating','pReviews','pMinQty','pBadge'].forEach(id=> document.getElementById(id).value='');
+  pCategory.value=''; pImgPreview.src='';
+};
+
+// تصدير/استيراد/إرجاع
+exportJson.onclick = null;
+document.getElementById('exportJson').onclick = ()=>{
+  const data = { brand, hero, categories, products };
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'zadora_store_export.json'; a.click(); URL.revokeObjectURL(url);
+};
+document.getElementById('importJson').addEventListener('change', e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader(); r.onload = ev => {
+    try{
+      const data = JSON.parse(String(ev.target.result||'{}'));
+      if(data.brand) brand = data.brand;
+      if(data.hero) hero = data.hero;
+      if(Array.isArray(data.categories)) categories = data.categories;
+      if(Array.isArray(data.products)) products = data.products;
+      lsSet(LS_KEYS.brand, brand); lsSet(LS_KEYS.hero, hero); lsSet(LS_KEYS.cats, categories); lsSet(LS_KEYS.prods, products);
+      refreshAll(); fillCatSelect(); listCats(); listProds();
+    }catch{ alert('ملف غير صالح'); }
+  }; r.readAsText(f);
+});
+document.getElementById('resetAll').onclick = ()=>{
+  if(!confirm('إرجاع كل شيء للوضع الافتراضي؟')) return;
+  brand = DEFAULT_BRAND; hero = DEFAULT_HERO; categories = DEFAULT_CATS.slice(); products = DEFAULT_PRODS.slice();
+  lsSet(LS_KEYS.brand, brand); lsSet(LS_KEYS.hero, hero); lsSet(LS_KEYS.cats, categories); lsSet(LS_KEYS.prods, products);
+  refreshAll(); fillCatSelect(); listCats(); listProds();
+};
+
+// بدء
+refreshAll(); fillCatSelect(); listCats(); listProds();
+</script>
+</body>
+</html>

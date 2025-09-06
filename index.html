@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -48,6 +47,9 @@
         </form>
       </div>
 
+      <!-- زر الأقسام (يفتح درج جانبي) -->
+      <button id="catsToggle" class="rounded-xl border px-3 py-2 hover:bg-gray-50 hidden sm:inline-flex">📂 الأقسام</button>
+
       <!-- السلة -->
       <button id="openCart" class="relative rounded-xl border px-3 py-2 hover:bg-gray-50">
         🛒 السلة
@@ -77,6 +79,8 @@
         <input id="search2" placeholder="إبحث عن منتج..." class="w-full rounded-xl border px-3 py-2 pr-10" />
         <button id="searchBtn2" type="submit" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">🔍</button>
       </form>
+      <!-- زر الأقسام للموبايل -->
+      <button id="catsToggleMobile" class="mt-2 w-full rounded-xl border px-3 py-2 hover:bg-gray-50">📂 تصفح الأقسام</button>
     </div>
   </header>
 
@@ -352,6 +356,21 @@
     </div>
   </div>
 
+  <!-- درج الأقسام (Sidebar) -->
+  <div id="catsDrawer" class="fixed inset-0 hidden z-50 modal-bg">
+    <div class="absolute inset-0" id="catsCloseBg"></div>
+    <aside class="absolute right-0 top-0 bottom-0 w-full sm:w-[420px] bg-white md:rounded-l-3xl shadow-2xl overflow-y-auto">
+      <div class="sticky top-0 glass border-b p-4 flex items-center justify-between">
+        <div class="font-bold">الأقسام</div>
+        <button id="catsClose" class="rounded-xl accent-bg px-4 py-2 text-sm">إغلاق</button>
+      </div>
+      <div class="p-4">
+        <input id="catsFilter" class="w-full rounded-xl border px-3 py-2" placeholder="ابحث داخل الأقسام..."/>
+        <div id="catsDrawerList" class="mt-3 grid grid-cols-1 gap-2"></div>
+      </div>
+    </aside>
+  </div>
+
   <!-- مودال الحساب (تسجيل) -->
   <div id="authModal" class="fixed inset-0 hidden z-50 modal-bg">
     <div class="absolute inset-0" id="authCloseBg"></div>
@@ -399,7 +418,7 @@
 /* =====================[ إعدادات عامة + دعم ]===================== */
 const WHATSAPP_PHONE = '201119508881';           // رقم واتساب بصيغة دولية (20 + الرقم بدون 0)
 const SUPPORT_EMAIL  = 'sales@example.com';
-document.getElementById('waBtn').href = 'https://wa.me/' + WHATSAPP_PHONE;
+if (document.getElementById('waBtn')) document.getElementById('waBtn').href = 'https://wa.me/' + WHATSAPP_PHONE;
 /* (اختياري) لو عندك Google Client ID حطه هنا وأعد تحميل الصفحة */
 const GOOGLE_CLIENT_ID = ''; // مثال: "1234567890-abcdefg.apps.googleusercontent.com"
 
@@ -429,7 +448,8 @@ const LS_KEYS = {
   brand:'zl_brand', hero:'zl_hero', cats:'zl_cats', prods:'zl_prods',
   cart:'zl_cart', customer:'zl_customer',
   social:'zl_social', footer:'zl_footer',
-  user:'zl_user', invoices:'zl_invoices'
+  user:'zl_user', invoices:'zl_invoices',
+  chat:'zl_chat_history'
 };
 const DEFAULT_BRAND = 'ZADORA';
 const DEFAULT_HERO = {
@@ -730,6 +750,7 @@ function refreshAll(){
   document.getElementById('brandInChat').textContent = brand;
   renderHero(); renderBenefits(); renderCategories(); renderProducts();
   renderFooter(); renderCartIcon(); updateAccountUI();
+  renderCatsDrawerList('');
 }
 
 /* =====================[ لوحة التحكم ]===================== */
@@ -753,8 +774,8 @@ function openAdminPanel(){
 }
 if (!isAdmin) openAdminBtn.classList.add('hidden');
 openAdminBtn.onclick = () => { if (!isAdmin) { location.hash = '#/admin'; ensureAdmin(); return; } openAdminPanel(); };
-document.getElementById('closeAdmin').onclick = ()=> modal.classList.add('hidden');
-document.getElementById('adminCloseBg').onclick = ()=> modal.classList.add('hidden');
+if (document.getElementById('closeAdmin')) document.getElementById('closeAdmin').onclick = ()=> modal.classList.add('hidden');
+if (document.getElementById('adminCloseBg')) document.getElementById('adminCloseBg').onclick = ()=> modal.classList.add('hidden');
 
 document.querySelectorAll('.tab-btn').forEach(btn=> btn.addEventListener('click', ()=> switchTab(btn.dataset.tab)));
 function switchTab(name){
@@ -769,17 +790,17 @@ function switchTab(name){
 }
 
 /* إعدادات عامة */
-document.getElementById('brandInput').addEventListener('input', e=>{ brand = e.target.value || 'ZADORA'; lsSet(LS_KEYS.brand, brand); refreshAll(); });
-document.getElementById('heroTitleInput').addEventListener('input', e=>{ hero.title = e.target.value; lsSet(LS_KEYS.hero, hero); refreshAll(); });
-document.getElementById('heroSubInput').addEventListener('input', e=>{ hero.subtitle = e.target.value; lsSet(LS_KEYS.hero, hero); refreshAll(); });
-document.getElementById('heroImgInput').addEventListener('change', e=>{
+if (document.getElementById('brandInput')) document.getElementById('brandInput').addEventListener('input', e=>{ brand = e.target.value || 'ZADORA'; lsSet(LS_KEYS.brand, brand); refreshAll(); });
+if (document.getElementById('heroTitleInput')) document.getElementById('heroTitleInput').addEventListener('input', e=>{ hero.title = e.target.value; lsSet(LS_KEYS.hero, hero); refreshAll(); });
+if (document.getElementById('heroSubInput')) document.getElementById('heroSubInput').addEventListener('input', e=>{ hero.subtitle = e.target.value; lsSet(LS_KEYS.hero, hero); refreshAll(); });
+if (document.getElementById('heroImgInput')) document.getElementById('heroImgInput').addEventListener('change', e=>{
   const file = e.target.files[0]; if(!file) return;
   const r = new FileReader(); r.onload = ev =>{ hero.image = String(ev.target.result); lsSet(LS_KEYS.hero, hero); refreshAll(); };
   r.readAsDataURL(file);
 });
 
 /* إعداد الفوتر والسوشيال من اللوحة */
-document.getElementById('footerInput').addEventListener('input', e=>{
+if (document.getElementById('footerInput')) document.getElementById('footerInput').addEventListener('input', e=>{
   footerText = e.target.value; lsSet(LS_KEYS.footer, footerText); renderFooter();
 });
 [
@@ -794,6 +815,7 @@ document.getElementById('footerInput').addEventListener('input', e=>{
 let editingCat = null;
 function listCats(){
   const wrap = document.getElementById('catsList');
+  if(!wrap) return;
   wrap.innerHTML = categories.map(c=>`
     <div class="rounded-2xl border overflow-hidden bg-white">
       <div class="aspect-[4/3] w-full overflow-hidden">
@@ -817,14 +839,14 @@ function editCat(name){
 function deleteCat(name){
   if(!confirm('مسح القسم؟')) return;
   categories = categories.filter(c=>c.name!==name);
-  lsSet(LS_KEYS.cats, categories); fillCatSelect(); listCats(); renderCategories(); renderRoute();
+  lsSet(LS_KEYS.cats, categories); fillCatSelect(); listCats(); renderCategories(); renderRoute(); renderCatsDrawerList('');
 }
-document.getElementById('catImgInput').addEventListener('change', e=>{
+if (document.getElementById('catImgInput')) document.getElementById('catImgInput').addEventListener('change', e=>{
   const f = e.target.files[0]; if(!f) return;
   const r = new FileReader(); r.onload = ev => document.getElementById('catImgPreview').src = String(ev.target.result);
   r.readAsDataURL(f);
 });
-document.getElementById('saveCat').onclick = ()=>{
+if (document.getElementById('saveCat')) document.getElementById('saveCat').onclick = ()=>{
   const name = document.getElementById('catName').value.trim();
   const img = document.getElementById('catImgPreview').src;
   if(!name) return alert('اكتب اسم القسم');
@@ -834,11 +856,12 @@ document.getElementById('saveCat').onclick = ()=>{
     categories.push({name, image:img});
   }
   editingCat=null; document.getElementById('catName').value=''; document.getElementById('catImgPreview').src='';
-  lsSet(LS_KEYS.cats, categories); fillCatSelect(); listCats(); renderCategories(); renderRoute();
+  lsSet(LS_KEYS.cats, categories); fillCatSelect(); listCats(); renderCategories(); renderRoute(); renderCatsDrawerList('');
 };
-document.getElementById('resetCat').onclick = ()=>{ editingCat=null; document.getElementById('catName').value=''; document.getElementById('catImgPreview').src=''; };
+if (document.getElementById('resetCat')) document.getElementById('resetCat').onclick = ()=>{ editingCat=null; document.getElementById('catName').value=''; document.getElementById('catImgPreview').src=''; };
 function fillCatSelect(){
   const sel = document.getElementById('pCategory');
+  if(!sel) return;
   sel.innerHTML = '<option value="">اختر القسم</option>' + categories.map(c=> `<option>${c.name}</option>`).join('');
 }
 
@@ -846,6 +869,7 @@ function fillCatSelect(){
 let editingProd = null;
 function listProds(){
   const wrap = document.getElementById('productsList');
+  if(!wrap) return;
   wrap.innerHTML = products.map(p=>`
     <div class="rounded-2xl border bg-white overflow-hidden">
       <div class="aspect-[4/3] w-full overflow-hidden">
@@ -877,12 +901,12 @@ function deleteProd(id){
   products = products.filter(p=>String(p.id)!==String(id));
   lsSet(LS_KEYS.prods, products); listProds(); renderProducts(); renderRoute();
 }
-pImgInput.addEventListener('change', e=>{
+if (document.getElementById('pImgInput')) document.getElementById('pImgInput').addEventListener('change', e=>{
   const f = e.target.files[0]; if(!f) return;
   const r = new FileReader(); r.onload = ev => pImgPreview.src = String(ev.target.result);
   r.readAsDataURL(f);
 });
-saveProduct.onclick = ()=>{
+if (document.getElementById('saveProduct')) document.getElementById('saveProduct').onclick = ()=>{
   const form = {
     title: pTitle.value.trim(),
     price: Number(pPrice.value||0),
@@ -905,19 +929,19 @@ saveProduct.onclick = ()=>{
   pCategory.value=''; pImgPreview.src='';
   lsSet(LS_KEYS.prods, products); listProds(); renderProducts(); renderRoute();
 };
-resetProduct.onclick = ()=>{
+if (document.getElementById('resetProduct')) document.getElementById('resetProduct').onclick = ()=>{
   editingProd=null; ['pTitle','pPrice','pOld','pRating','pReviews','pMinQty','pBadge'].forEach(id=> document.getElementById(id).value='');
   pCategory.value=''; pImgPreview.src='';
 };
 
 /* تصدير/استيراد/إرجاع */
-document.getElementById('exportJson').onclick = ()=>{
+if (document.getElementById('exportJson')) document.getElementById('exportJson').onclick = ()=>{
   const data = { brand, hero, categories, products, social, footer: footerText };
   const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href = url; a.download = 'zadora_store_export.json'; a.click(); URL.revokeObjectURL(url);
 };
-document.getElementById('importJson').addEventListener('change', e=>{
+if (document.getElementById('importJson')) document.getElementById('importJson').addEventListener('change', e=>{
   const f = e.target.files[0]; if(!f) return;
   const r = new FileReader(); r.onload = ev => {
     try{
@@ -937,7 +961,7 @@ document.getElementById('importJson').addEventListener('change', e=>{
     }catch{ alert('ملف غير صالح'); }
   }; r.readAsText(f);
 });
-document.getElementById('resetAll').onclick = ()=>{
+if (document.getElementById('resetAll')) document.getElementById('resetAll').onclick = ()=>{
   if(!confirm('إرجاع كل شيء للوضع الافتراضي؟')) return;
   brand = DEFAULT_BRAND; hero = DEFAULT_HERO; categories = DEFAULT_CATS.slice(); products = DEFAULT_PRODS.slice();
   social = DEFAULT_SOCIAL; footerText = DEFAULT_FOOTER;
@@ -1018,7 +1042,12 @@ chatToggle.onclick = ()=> chatPanel.classList.toggle('hidden');
 chatClose.onclick  = ()=> chatPanel.classList.add('hidden');
 document.querySelectorAll('.quick').forEach(b=> b.onclick = ()=> { sendMsg(b.textContent); });
 
-let chatHistory = lsGet('zl_chat_history', []);
+let chatHistory = lsGet(LS_KEYS.chat, []);
+// منع التهنيج: احتفظ بآخر 60 رسالة فقط
+if (Array.isArray(chatHistory) && chatHistory.length > 60) {
+  chatHistory = chatHistory.slice(-60);
+  lsSet(LS_KEYS.chat, chatHistory);
+}
 function renderChat(){
   chatBody.innerHTML = chatHistory.map(m => `
     <div class="flex ${m.role==='user'?'justify-start':'justify-end'}">
@@ -1028,7 +1057,12 @@ function renderChat(){
     </div>`).join('');
   chatBody.scrollTop = chatBody.scrollHeight;
 }
-function push(role,text){ chatHistory.push({role,text,ts:Date.now()}); lsSet('zl_chat_history', chatHistory); renderChat(); }
+function push(role,text){
+  chatHistory.push({role,text,ts:Date.now()});
+  // قصّ الرسائل لأحدث 60
+  if (chatHistory.length > 60) chatHistory = chatHistory.slice(-60);
+  lsSet(LS_KEYS.chat, chatHistory); renderChat();
+}
 function replyBot(q){
   const t = q.trim(); const s = w => t.includes(w); let a = '';
   if (s('شحن')||s('توصيل')||s('المحافظة')||s('المحافظات')) a='الشحن خلال 24-72 ساعة لكل المحافظات. السعر حسب الوزن والمحافظة. هنجمع الأوردر ونتواصل للتأكيد.';
@@ -1042,10 +1076,10 @@ function replyBot(q){
 }
 function sendMsg(text){
   const v = (text ?? chatInput.value).trim(); if(!v) return;
-  push('user', v); chatInput.value=''; setTimeout(()=> replyBot(v), 400);
+  push('user', v); chatInput.value=''; setTimeout(()=> replyBot(v), 300);
 }
-chatSend.onclick = ()=> sendMsg();
-chatInput.addEventListener('keydown', (e)=> { if(e.key==='Enter') sendMsg(); });
+if (chatSend) chatSend.onclick = ()=> sendMsg();
+if (chatInput) chatInput.addEventListener('keydown', (e)=> { if(e.key==='Enter') sendMsg(); });
 
 /* =====================[ الحساب + الفواتير ]===================== */
 const accountBtn   = document.getElementById('accountBtn');
@@ -1068,13 +1102,13 @@ function updateAccountUI(){
     menuLogout.classList.add('hidden');
   }
 }
-accountBtn.addEventListener('click', ()=> accountMenu.classList.toggle('hidden'));
+if (accountBtn) accountBtn.addEventListener('click', ()=> accountMenu.classList.toggle('hidden'));
 document.addEventListener('click', (e)=>{
   if(!e.target.closest('.dropdown')) accountMenu.classList.add('hidden');
 });
-menuLogin.onclick = ()=> openAuth();
-menuInvoices.onclick = ()=> openInvoices();
-menuLogout.onclick = ()=> { user=null; lsSet(LS_KEYS.user, user); updateAccountUI(); };
+if (menuLogin) menuLogin.onclick = ()=> openAuth();
+if (menuInvoices) menuInvoices.onclick = ()=> openInvoices();
+if (menuLogout) menuLogout.onclick = ()=> { user=null; lsSet(LS_KEYS.user, user); updateAccountUI(); };
 
 const authModal = document.getElementById('authModal');
 const authClose = document.getElementById('authClose');
@@ -1092,8 +1126,8 @@ function openAuth(){
   authModal.classList.remove('hidden');
 }
 function closeAuth(){ authModal.classList.add('hidden'); }
-authClose.onclick = closeAuth; authCloseBg.onclick = closeAuth;
-authSave.onclick = ()=>{
+if (authClose) authClose.onclick = closeAuth; if (authCloseBg) authCloseBg.onclick = closeAuth;
+if (authSave) authSave.onclick = ()=>{
   const name  = document.getElementById('authName').value.trim();
   const email = document.getElementById('authEmail').value.trim();
   const phone = document.getElementById('authPhone').value.trim();
@@ -1116,8 +1150,8 @@ window.onGoogleCredential = (resp)=>{
 /* فواتيري */
 const invModal = document.getElementById('invModal');
 const invBody  = document.getElementById('invBody');
-document.getElementById('invClose').onclick = ()=> invModal.classList.add('hidden');
-document.getElementById('invCloseBg').onclick = ()=> invModal.classList.add('hidden');
+if (document.getElementById('invClose')) document.getElementById('invClose').onclick = ()=> invModal.classList.add('hidden');
+if (document.getElementById('invCloseBg')) document.getElementById('invCloseBg').onclick = ()=> invModal.classList.add('hidden');
 
 function openInvoices(){
   renderInvoices(); invModal.classList.remove('hidden');
@@ -1184,14 +1218,14 @@ ${note}
 الهاتف: ${inv.customer.phone||'-'}
 المحافظة/المدينة: ${inv.customer.city||'-'}`;
 }
-document.getElementById('cartCheckoutWA').onclick = ()=>{
+if (document.getElementById('cartCheckoutWA')) document.getElementById('cartCheckoutWA').onclick = ()=>{
   if(!cart.length) return;
   const inv = saveInvoice('whatsapp');
   const text = buildOrderText(inv);
   const url = 'https://wa.me/' + WHATSAPP_PHONE + '?text=' + encodeURIComponent(text);
   window.open(url, '_blank');
 };
-document.getElementById('cartCheckoutEmail').onclick = ()=>{
+if (document.getElementById('cartCheckoutEmail')) document.getElementById('cartCheckoutEmail').onclick = ()=>{
   if(!cart.length) return;
   const inv = saveInvoice('email');
   const subject = encodeURIComponent(`طلب جديد - ${brand} - #${inv.id}`);
@@ -1199,15 +1233,48 @@ document.getElementById('cartCheckoutEmail').onclick = ()=>{
   window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
 };
 
+/* =====================[ درج الأقسام ]===================== */
+const catsDrawer = document.getElementById('catsDrawer');
+const catsCloseBg = document.getElementById('catsCloseBg');
+const catsClose = document.getElementById('catsClose');
+const catsFilter = document.getElementById('catsFilter');
+const catsDrawerList = document.getElementById('catsDrawerList');
+const catsToggle = document.getElementById('catsToggle');
+const catsToggleMobile = document.getElementById('catsToggleMobile');
+
+function openCats(){ catsDrawer.classList.remove('hidden'); catsFilter.value=''; renderCatsDrawerList(''); catsFilter.focus(); }
+function closeCats(){ catsDrawer.classList.add('hidden'); }
+if (catsToggle) catsToggle.onclick = openCats;
+if (catsToggleMobile) catsToggleMobile.onclick = openCats;
+if (catsCloseBg) catsCloseBg.onclick = closeCats;
+if (catsClose) catsClose.onclick = closeCats;
+if (catsFilter) catsFilter.oninput = (e)=> renderCatsDrawerList(e.target.value);
+
+function renderCatsDrawerList(filter){
+  if(!catsDrawerList) return;
+  const q = normalize(filter||'');
+  const list = q ? categories.filter(c=> normalize(c.name).includes(q)) : categories;
+  catsDrawerList.innerHTML = list.length ? list.map(c=>`
+    <a href="#/c/${encodeURIComponent(c.name)}" class="flex items-center gap-3 rounded-xl border p-3 hover:bg-gray-50 cat-link">
+      <img src="${c.image}" class="w-16 h-12 object-cover rounded-lg border"/>
+      <div class="font-medium">${c.name}</div>
+    </a>`).join('') : `<div class="rounded-xl border p-4 text-sm text-gray-500">لا نتائج.</div>`;
+  // كل لينك يغلق الدرج بعد الضغط
+  catsDrawerList.querySelectorAll('.cat-link').forEach(a=>{
+    a.addEventListener('click', ()=>{ closeCats(); setTimeout(()=>{ window.location.hash = a.getAttribute('href'); }, 0); });
+  });
+}
+
 /* =====================[ أحداث السلة + فتح/غلق ]===================== */
-document.getElementById('openCart').onclick = openCart;
-document.getElementById('closeCart').onclick = closeCart;
-document.getElementById('cartCloseBg').onclick = closeCart;
-document.getElementById('cartClear').onclick = clearCart;
+if (document.getElementById('openCart')) document.getElementById('openCart').onclick = openCart;
+if (document.getElementById('closeCart')) document.getElementById('closeCart').onclick = closeCart;
+if (document.getElementById('cartCloseBg')) document.getElementById('cartCloseBg').onclick = closeCart;
+if (document.getElementById('cartClear')) document.getElementById('cartClear').onclick = clearCart;
 
 // حفظ بيانات العميل + نوع العميل
 ['cusName','cusPhone','cusCity','cusTier'].forEach(id=>{
   const el = document.getElementById(id);
+  if(!el) return;
   el.addEventListener('input', ()=>{
     customer = {
       name:  document.getElementById('cusName').value.trim(),

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -5,18 +6,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ZADORA Lite</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Sign-In (اختياري: فعّل فقط لو هتحط Client ID) -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
+    :root{
+      /* ألوان الثيم */
+      --accent: #C19A6B;     /* جملي */
+      --accent-700:#A67C52;  /* أغمق */
+      --accent-50:#F4ECE3;   /* فاتح */
+    }
     body{ background:#fafafa; color:#111827; }
     .container{ max-width:1120px; margin:0 auto; }
     .glass{ backdrop-filter: blur(6px); background: rgba(255,255,255,.85); }
     .modal-bg{ background: rgba(0,0,0,.45); }
+    /* أدوات للون الجملي بدل كلاس روز */
+    .accent-bg{ background-color:var(--accent) !important; color:#fff !important; }
+    .accent-bg:hover{ background-color:var(--accent-700) !important; }
+    .accent-border{ border-color:var(--accent) !important; }
+    .accent-text{ color:var(--accent) !important; }
+    .accent-50{ background-color:var(--accent-50) !important; }
+    /* منيو طايرة بسيطة */
+    .dropdown{ position:relative; }
+    .dropdown-panel{ position:absolute; inset-inline-start:0; top:100%; margin-top:.5rem;
+      width:16rem; background:#fff; border:1px solid #e5e7eb; border-radius:1rem;
+      box-shadow:0 20px 50px rgba(0,0,0,.08); overflow:hidden; z-index:60;
+    }
   </style>
 </head>
 <body class="min-h-screen">
   <!-- الهيدر -->
   <header class="sticky top-0 z-40 glass border-b">
     <div class="container px-4 py-3 flex items-center gap-3">
-      <div class="font-extrabold text-xl text-rose-600" id="brandName">ZADORA</div>
+      <div class="font-extrabold text-xl text-black" id="brandName">ZADORA</div>
       <div class="flex-1"></div>
 
       <!-- بحث (ديسكتوب) -->
@@ -27,11 +48,24 @@
         </form>
       </div>
 
-      <!-- زر السلة -->
+      <!-- السلة -->
       <button id="openCart" class="relative rounded-xl border px-3 py-2 hover:bg-gray-50">
         🛒 السلة
-        <span id="cartCount" class="absolute -top-2 -left-2 min-w-[22px] h-[22px] text-xs rounded-full bg-rose-600 text-white px-1 flex items-center justify-center hidden">0</span>
+        <span id="cartCount" class="absolute -top-2 -left-2 min-w-[22px] h-[22px] text-xs rounded-full accent-bg px-1 flex items-center justify-center hidden">0</span>
       </button>
+
+      <!-- الحساب -->
+      <div class="dropdown">
+        <button id="accountBtn" class="rounded-xl border px-3 py-2 hover:bg-gray-50">👤 حسابي</button>
+        <div id="accountMenu" class="dropdown-panel hidden text-sm">
+          <div class="px-3 py-2 bg-neutral-50 border-b">
+            <div id="accountHello">مرحبًا، ضيف</div>
+          </div>
+          <button id="menuLogin" class="w-full text-right px-3 py-2 hover:bg-gray-50">تسجيل الدخول</button>
+          <button id="menuInvoices" class="w-full text-right px-3 py-2 hover:bg-gray-50 hidden">فواتيري</button>
+          <button id="menuLogout" class="w-full text-right px-3 py-2 hover:bg-gray-50 hidden">تسجيل الخروج</button>
+        </div>
+      </div>
 
       <!-- لوحة التحكم -->
       <button id="openAdmin" class="rounded-xl border px-3 py-2 hover:bg-gray-50">⚙️ لوحة التحكم</button>
@@ -64,7 +98,7 @@
           <p class="mt-2 text-white/80">خصومات خاصة بالجملة + عروض صناديق جاهزة أسبوعيًا.</p>
           <div class="mt-5 flex items-center gap-2">
             <input class="flex-1 rounded-xl px-3 py-2 text-neutral-900" placeholder="اكتب بريدك الإلكتروني" dir="rtl"/>
-            <button class="rounded-xl bg-rose-600 px-4 py-2 font-semibold hover:bg-rose-700">اشترك</button>
+            <button class="rounded-xl accent-bg px-4 py-2 font-semibold">اشترك</button>
           </div>
         </div>
         <div class="relative min-h-[220px]">
@@ -78,8 +112,8 @@
   <footer class="mt-10 border-t">
     <div class="container px-4 py-8 grid md:grid-cols-4 gap-8 text-right">
       <div>
-        <div class="font-bold text-lg"><span class="text-rose-600">✦</span> <span id="brandNameFooter">ZADORA</span></div>
-        <p class="mt-3 text-sm text-gray-600">منصة جملة للأدوات المنزلية: حد أدنى 12 قطعة، شحن سريع، وضمان استبدال.</p>
+        <div class="font-bold text-lg"><span class="accent-text">✦</span> <span id="brandNameFooter" class="text-black">ZADORA</span></div>
+        <p class="mt-3 text-sm text-gray-600" id="footerAbout">منصة جملة للأدوات المنزلية: حد أدنى 12 قطعة، شحن سريع، وضمان استبدال.</p>
       </div>
       <div>
         <h4 class="font-semibold mb-2">خدمة العملاء</h4>
@@ -100,13 +134,14 @@
       <div>
         <h4 class="font-semibold mb-2">تابعنا</h4>
         <ul class="space-y-1 text-sm text-gray-600">
-          <li><a class="hover:underline">Facebook</a></li>
-          <li><a class="hover:underline">Instagram</a></li>
-          <li><a class="hover:underline">TikTok</a></li>
+          <li><a id="linkFacebook"  class="hover:underline">Facebook</a></li>
+          <li><a id="linkInstagram" class="hover:underline">Instagram</a></li>
+          <li><a id="linkTikTok"    class="hover:underline">TikTok</a></li>
+          <li><a id="linkTelegram"  class="hover:underline">Telegram</a></li>
         </ul>
       </div>
     </div>
-    <div class="py-4 text-center text-xs text-gray-500">© <span id="year"></span> <span id="brandNameCopy">ZADORA</span>. All rights reserved.</div>
+    <div class="py-4 text-center text-xs text-gray-500">© <span id="year"></span> <span id="brandNameCopy" class="text-black">ZADORA</span>. All rights reserved.</div>
   </footer>
 
   <!-- لوحة التحكم -->
@@ -121,15 +156,15 @@
           </label>
           <button id="exportJson" class="rounded-xl border px-3 py-2 text-sm hover:bg-gray-50">تصدير</button>
           <button id="resetAll" class="rounded-xl border px-3 py-2 text-sm hover:bg-gray-50">إرجاع الافتراضي</button>
-          <button id="closeAdmin" class="rounded-xl bg-rose-600 text-white px-4 py-2 text-sm">إغلاق</button>
+          <button id="closeAdmin" class="rounded-xl accent-bg px-4 py-2 text-sm">إغلاق</button>
         </div>
       </div>
 
       <div class="p-4">
         <div class="flex gap-2 mb-4">
-          <button data-tab="products" class="tab-btn rounded-xl px-4 py-2 text-sm border">المنتجات</button>
+          <button data-tab="products"  class="tab-btn rounded-xl px-4 py-2 text-sm border">المنتجات</button>
           <button data-tab="categories" class="tab-btn rounded-xl px-4 py-2 text-sm border">الأقسام</button>
-          <button data-tab="settings" class="tab-btn rounded-xl px-4 py-2 text-sm border">الإعدادات</button>
+          <button data-tab="settings"   class="tab-btn rounded-xl px-4 py-2 text-sm border">الإعدادات</button>
         </div>
 
         <!-- إعدادات -->
@@ -142,6 +177,19 @@
               <input id="heroTitleInput" class="w-full rounded-xl border px-3 py-2"/>
               <label class="text-sm font-medium">وصف الهيرو</label>
               <textarea id="heroSubInput" class="w-full rounded-xl border px-3 py-2 min-h-[112px]"></textarea>
+
+              <div class="space-y-2 mt-4">
+                <label class="text-sm font-medium">وصف الفوتر</label>
+                <textarea id="footerInput" class="w-full rounded-xl border px-3 py-2 min-h-[90px]"
+                  placeholder="اكتب النص التعريفي الذي يظهر في الفوتر"></textarea>
+
+                <div class="text-sm font-medium mt-2">روابط السوشيال</div>
+                <input id="linkFBInput" class="w-full rounded-xl border px-3 py-2" placeholder="https://facebook.com/yourpage" />
+                <input id="linkIGInput" class="w-full rounded-xl border px-3 py-2" placeholder="https://instagram.com/yourpage" />
+                <input id="linkTTInput" class="w-full rounded-xl border px-3 py-2" placeholder="https://tiktok.com/@yourpage" />
+                <input id="linkTGInput" class="w-full rounded-xl border px-3 py-2" placeholder="https://t.me/yourchannel" />
+                <p class="text-xs text-gray-500">اترك أي خانة فاضية لو مش عايز الرابط يظهر.</p>
+              </div>
             </div>
             <div class="space-y-2">
               <div class="text-sm font-medium">صورة الهيرو</div>
@@ -170,7 +218,7 @@
                 </label>
               </div>
               <div class="flex gap-2">
-                <button id="saveCat" class="flex-1 rounded-xl bg-rose-600 text-white py-2 font-semibold">حفظ</button>
+                <button id="saveCat" class="flex-1 rounded-xl accent-bg py-2 font-semibold">حفظ</button>
                 <button id="resetCat" class="rounded-xl border px-3">إلغاء</button>
               </div>
             </div>
@@ -204,7 +252,7 @@
                 </label>
               </div>
               <div class="flex gap-2">
-                <button id="saveProduct" class="flex-1 rounded-xl bg-rose-600 text-white py-2 font-semibold">إضافة/تحديث</button>
+                <button id="saveProduct" class="flex-1 rounded-xl accent-bg py-2 font-semibold">إضافة/تحديث</button>
                 <button id="resetProduct" class="rounded-xl border px-3">إلغاء</button>
               </div>
             </div>
@@ -218,7 +266,7 @@
 
   <!-- ويدجت الشات -->
   <div id="chatRoot" class="fixed bottom-4 right-4 z-50">
-    <button id="chatToggle" class="rounded-full shadow-lg bg-rose-600 text-white w-14 h-14 flex items-center justify-center text-2xl">💬</button>
+    <button id="chatToggle" class="rounded-full shadow-lg accent-bg w-14 h-14 flex items-center justify-center text-2xl">💬</button>
     <div id="chatPanel" class="hidden mt-3 w-[320px] sm:w-[360px] rounded-2xl shadow-2xl border bg-white overflow-hidden">
       <div class="flex items-center justify-between px-4 py-3 bg-neutral-900 text-white">
         <div class="font-semibold">دعم <span id="brandInChat">ZADORA</span></div>
@@ -234,7 +282,7 @@
         </div>
         <div class="flex items-center gap-2">
           <input id="chatInput" class="flex-1 rounded-xl border px-3 py-2" placeholder="اكتب سؤالك..." />
-          <button id="chatSend" class="rounded-xl bg-rose-600 text-white px-4 py-2">إرسال</button>
+          <button id="chatSend" class="rounded-xl accent-bg px-4 py-2">إرسال</button>
         </div>
         <a id="waBtn" class="block text-center text-sm mt-2 rounded-xl border py-2 hover:bg-gray-50" target="_blank" rel="noopener">تواصل واتساب الآن</a>
       </div>
@@ -249,7 +297,7 @@
         <div class="font-bold">سلة المشتريات</div>
         <div class="flex items-center gap-2">
           <button id="cartClear" class="rounded-xl border px-3 py-2 text-sm hover:bg-gray-50">تفريغ السلة</button>
-          <button id="closeCart" class="rounded-xl bg-rose-600 text-white px-4 py-2 text-sm">إغلاق</button>
+          <button id="closeCart" class="rounded-xl accent-bg px-4 py-2 text-sm">إغلاق</button>
         </div>
       </div>
 
@@ -270,7 +318,7 @@
                 <option value="half">نص جملة</option>
                 <option value="retail">قطاعي</option>
               </select>
-              <div id="tierMsg" class="text-sm text-rose-600"></div>
+              <div id="tierMsg" class="text-sm accent-text"></div>
             </div>
           </div>
 
@@ -290,11 +338,11 @@
             <hr class="my-2">
             <div class="flex items-center justify-between text-lg">
               <div class="font-bold">الإجمالي</div>
-              <div id="cartTotal" class="font-extrabold text-rose-600">0 ج.م</div>
+              <div id="cartTotal" class="font-extrabold accent-text">0 ج.م</div>
             </div>
             <p class="text-xs text-gray-500 mt-2">* الكميات تتحرك بمضاعفات الحد الأدنى لكل صنف.</p>
             <div class="mt-3 grid grid-cols-1 gap-2">
-              <button id="cartCheckoutWA" class="rounded-xl bg-rose-600 text-white px-4 py-2 font-semibold hover:bg-rose-700">إكمال الطلب على واتساب</button>
+              <button id="cartCheckoutWA" class="rounded-xl accent-bg px-4 py-2 font-semibold">إكمال الطلب على واتساب</button>
               <button id="cartCheckoutEmail" class="rounded-xl border px-4 py-2 hover:bg-gray-50">طلب عبر البريد</button>
             </div>
           </div>
@@ -304,11 +352,56 @@
     </div>
   </div>
 
+  <!-- مودال الحساب (تسجيل) -->
+  <div id="authModal" class="fixed inset-0 hidden z-50 modal-bg">
+    <div class="absolute inset-0" id="authCloseBg"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-full sm:w-[500px] bg-white md:rounded-l-3xl shadow-2xl overflow-y-auto">
+      <div class="sticky top-0 glass border-b p-4 flex items-center justify-between">
+        <div class="font-bold">تسجيل الدخول</div>
+        <button id="authClose" class="rounded-xl accent-bg px-4 py-2 text-sm">إغلاق</button>
+      </div>
+      <div class="p-4 space-y-3">
+        <div class="text-sm text-gray-600">سجل بإدخال بياناتك، أو فعّل الدخول بجوجل (اختياري).</div>
+        <input id="authName"  class="w-full rounded-xl border px-3 py-2" placeholder="الاسم الكامل"/>
+        <input id="authEmail" class="w-full rounded-xl border px-3 py-2" placeholder="البريد الإلكتروني"/>
+        <input id="authPhone" class="w-full rounded-xl border px-3 py-2" placeholder="رقم الهاتف"/>
+        <button id="authSave" class="w-full rounded-xl accent-bg px-4 py-2 font-semibold">تسجيل / دخول</button>
+
+        <!-- Google One Tap / Button -->
+        <div id="googleArea" class="mt-4 hidden">
+          <div class="text-center my-2 text-xs text-gray-500">أو</div>
+          <div id="g_id_onload"
+               data-client_id=""
+               data-context="signin"
+               data-callback="onGoogleCredential"
+               data-itp_support="true">
+          </div>
+          <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-text="signin_with" data-size="large" data-logo_alignment="left"></div>
+          <div class="text-xs text-gray-500 mt-2">ضع Client ID في الكود لتفعيل زر جوجل.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- مودال الفواتير -->
+  <div id="invModal" class="fixed inset-0 hidden z-50 modal-bg">
+    <div class="absolute inset-0" id="invCloseBg"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-full md:w-[760px] bg-white md:rounded-l-3xl shadow-2xl overflow-y-auto">
+      <div class="sticky top-0 glass border-b p-4 flex items-center justify-between">
+        <div class="font-bold">فواتيري</div>
+        <button id="invClose" class="rounded-xl accent-bg px-4 py-2 text-sm">إغلاق</button>
+      </div>
+      <div id="invBody" class="p-4"></div>
+    </div>
+  </div>
+
 <script>
 /* =====================[ إعدادات عامة + دعم ]===================== */
 const WHATSAPP_PHONE = '201119508881';           // رقم واتساب بصيغة دولية (20 + الرقم بدون 0)
 const SUPPORT_EMAIL  = 'sales@example.com';
 document.getElementById('waBtn').href = 'https://wa.me/' + WHATSAPP_PHONE;
+/* (اختياري) لو عندك Google Client ID حطه هنا وأعد تحميل الصفحة */
+const GOOGLE_CLIENT_ID = ''; // مثال: "1234567890-abcdefg.apps.googleusercontent.com"
 
 /* =====================[ Admin PIN + Routing ]===================== */
 const ADMIN_PIN = '1234';
@@ -332,7 +425,12 @@ function ensureAdmin() {
 }
 
 /* =====================[ بيانات + LocalStorage ]===================== */
-const LS_KEYS = { brand:'zl_brand', hero:'zl_hero', cats:'zl_cats', prods:'zl_prods', cart:'zl_cart', customer:'zl_customer' };
+const LS_KEYS = {
+  brand:'zl_brand', hero:'zl_hero', cats:'zl_cats', prods:'zl_prods',
+  cart:'zl_cart', customer:'zl_customer',
+  social:'zl_social', footer:'zl_footer',
+  user:'zl_user', invoices:'zl_invoices'
+};
 const DEFAULT_BRAND = 'ZADORA';
 const DEFAULT_HERO = {
   title: 'جُملة راقية بلمسة ZADORA',
@@ -347,13 +445,14 @@ const DEFAULT_CATS = [
   { name:'منسوجات', image:'https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?q=80&w=1200&auto=format&fit=crop' },
   { name:'بلاستيك واستالس', image:'https://images.unsplash.com/photo-1542444592-1e6c9f952a25?q=80&w=1200&auto=format&fit=crop' },
 ];
-/* خليّنا الحد الأدنى الافتراضي للمنتجات 12 */
 const DEFAULT_PRODS = [
   { id:1, title:'طقم تلاجة بيركس – 3 قطع', price:420, oldPrice:480, rating:4.7, reviews:126, image:'https://images.unsplash.com/photo-1601050690290-27f9864c06c0?q=80&w=1200&auto=format&fit=crop', badge:'الأكثر طلبًا', minQty:12, category:'مطبخ' },
   { id:2, title:'لانش بوكس حراري', price:165, oldPrice:199, rating:4.6, reviews:98, image:'https://images.unsplash.com/photo-1517673132405-a56a62b18caf?q=80&w=1200&auto=format&fit=crop', badge:'عرض خاص', minQty:12, category:'تخزين وتنظيم' },
   { id:3, title:'مج سيراميك مطفي', price:85, oldPrice:110, rating:4.4, reviews:210, image:'https://images.unsplash.com/photo-1523365280197-f1783db9fe62?q=80&w=1200&auto=format&fit=crop', badge:'جديد', minQty:12, category:'مشروبات ومجات' },
   { id:4, title:'علب تخزين محكمة – 6 قطع', price:350, oldPrice:399, rating:4.8, reviews:73, image:'https://images.unsplash.com/photo-1592840496694-26d035b08cc6?q=80&w=1200&auto=format&fit=crop', badge:'الأفضل قيمة', minQty:12, category:'تخزين وتنظيم' },
 ];
+const DEFAULT_SOCIAL = { facebook:'', instagram:'', tiktok:'', telegram:'' };
+const DEFAULT_FOOTER = 'منصة جملة للأدوات المنزلية: حد أدنى 12 قطعة، شحن سريع، وضمان استبدال.';
 const STORE_MIN_QTY = 12;
 
 function lsGet(k, fb){ try{ const v = localStorage.getItem(k); return v? JSON.parse(v): fb; }catch{ return fb; } }
@@ -365,6 +464,10 @@ let categories = lsGet(LS_KEYS.cats, DEFAULT_CATS);
 let products = lsGet(LS_KEYS.prods, DEFAULT_PRODS);
 let cart = lsGet(LS_KEYS.cart, []);               // [{id, qty}]
 let customer = lsGet(LS_KEYS.customer, {name:'', phone:'', city:'', tier:'wh'});
+let social = lsGet(LS_KEYS.social, DEFAULT_SOCIAL);
+let footerText = lsGet(LS_KEYS.footer, DEFAULT_FOOTER);
+let user = lsGet(LS_KEYS.user, null);
+let invoices = lsGet(LS_KEYS.invoices, []);
 
 /* =====================[ بحث + ترتيب ]===================== */
 let currentSort = 'default';
@@ -507,7 +610,7 @@ function renderHero(){
           <button class="mt-5 inline-flex items-center gap-1 rounded-xl bg-white text-neutral-900 px-4 py-2 text-sm font-semibold hover:bg-white/90">تسوق الآن</button>
         </div>
       </div>
-      <div class="relative overflow-hidden rounded-2xl bg-rose-600 text-white min-h-[220px]">
+      <div class="relative overflow-hidden rounded-2xl accent-bg min-h-[220px]">
         <img src="https://images.unsplash.com/photo-1549778399-f94fd24d4697?q=80&w=1600&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-40">
         <div class="relative p-8">
           <h3 class="text-xl md:text-2xl font-extrabold">ZADORA Box</h3>
@@ -526,7 +629,7 @@ function renderBenefits(){
   const el = document.getElementById('benefitsSection');
   el.innerHTML = `<div class="grid sm:grid-cols-3 gap-3">
       ${data.map(b=>`<div class="flex items-center gap-4 rounded-2xl border p-4 bg-white">
-        <div class="rounded-2xl p-3 bg-rose-50">✦</div>
+        <div class="rounded-2xl p-3 accent-50">✦</div>
         <div class="text-right">
           <div class="font-semibold">${b.title}</div>
           <div class="text-sm text-gray-600">${b.desc}</div>
@@ -539,7 +642,7 @@ function renderCategories(){
   el.innerHTML = `
     <div class="flex items-center justify-between mb-3">
       <h3 class="text-lg md:text-xl font-bold">تسوق بالأقسام</h3>
-      <a href="#/" class="text-rose-600 hover:underline cursor-pointer">عرض الكل</a>
+      <a href="#/" class="accent-text hover:underline cursor-pointer">عرض الكل</a>
     </div>
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
       ${categories.map(cat => `
@@ -555,7 +658,7 @@ function productCard(p){
   <div class="group rounded-2xl border bg-white overflow-hidden hover:shadow-md transition-shadow">
     <div class="relative">
       <img src="${p.image}" class="w-full h-56 object-cover"/>
-      ${p.badge ? `<span class="absolute top-3 right-3 bg-rose-600 text-white text-xs px-2 py-1 rounded-full">${p.badge}</span>` : ''}
+      ${p.badge ? `<span class="absolute top-3 right-3 accent-bg text-xs px-2 py-1 rounded-full">${p.badge}</span>` : ''}
       <button class="absolute bottom-3 left-3 bg-white/90 backdrop-blur text-sm rounded-xl px-3 py-1 hover:bg-white">
         حد أدنى: ${effMin(p)}
       </button>
@@ -567,7 +670,7 @@ function productCard(p){
         <span class="text-sm line-through text-gray-400">${fmt(p.oldPrice)}</span>
       </div>
       <div class="mt-3 flex items-center gap-2">
-        <button class="flex-1 rounded-xl bg-rose-600 text-white py-2 font-semibold hover:bg-rose-700 btn-add" data-id="${p.id}">أضف للسلة</button>
+        <button class="flex-1 rounded-xl accent-bg py-2 font-semibold btn-add" data-id="${p.id}">أضف للسلة</button>
         <button class="rounded-xl border px-3 py-2 hover:bg-gray-50" title="إضافة للمفضلة">♡</button>
       </div>
     </div>
@@ -596,6 +699,29 @@ function renderProducts(){
   sel.value = currentSort;
   sel.onchange = (e) => { currentSort = e.target.value; renderProducts(); };
 }
+function renderFooter(){
+  // نص الفوتر
+  const about = document.getElementById('footerAbout');
+  if (about) about.textContent = footerText || '';
+  // روابط سوشيال
+  const setLink = (id, url) => {
+    const a = document.getElementById(id);
+    if (!a) return;
+    const val = (url || '').trim();
+    if (val) {
+      const href = /^https?:\/\//i.test(val) ? val : ('https://' + val);
+      a.href = href; a.target = '_blank'; a.rel = 'noopener';
+      a.classList.remove('text-gray-400','pointer-events-none');
+    } else {
+      a.removeAttribute('href'); a.removeAttribute('target'); a.removeAttribute('rel');
+      a.classList.add('text-gray-400','pointer-events-none');
+    }
+  };
+  setLink('linkFacebook',  social.facebook);
+  setLink('linkInstagram', social.instagram);
+  setLink('linkTikTok',    social.tiktok);
+  setLink('linkTelegram',  social.telegram);
+}
 function refreshAll(){
   document.getElementById('brandName').textContent = brand;
   document.getElementById('brandNameFooter').textContent = brand;
@@ -603,7 +729,7 @@ function refreshAll(){
   document.getElementById('year').textContent = new Date().getFullYear();
   document.getElementById('brandInChat').textContent = brand;
   renderHero(); renderBenefits(); renderCategories(); renderProducts();
-  renderCartIcon();
+  renderFooter(); renderCartIcon(); updateAccountUI();
 }
 
 /* =====================[ لوحة التحكم ]===================== */
@@ -615,6 +741,14 @@ function openAdminPanel(){
   document.getElementById('heroTitleInput').value = hero.title;
   document.getElementById('heroSubInput').value = hero.subtitle;
   document.getElementById('heroImgPreview').src = hero.image;
+
+  // الفوتر والسوشيال
+  document.getElementById('footerInput').value = footerText || '';
+  document.getElementById('linkFBInput').value = social.facebook || '';
+  document.getElementById('linkIGInput').value = social.instagram || '';
+  document.getElementById('linkTTInput').value = social.tiktok || '';
+  document.getElementById('linkTGInput').value = social.telegram || '';
+
   switchTab('products'); fillCatSelect(); listCats(); listProds();
 }
 if (!isAdmin) openAdminBtn.classList.add('hidden');
@@ -628,9 +762,9 @@ function switchTab(name){
   document.getElementById('tab-'+name).classList.remove('hidden');
   document.querySelectorAll('.tab-btn').forEach(b=>{
     const on = b.dataset.tab===name;
-    b.classList.toggle('bg-rose-600', on);
+    b.classList.toggle('accent-bg', on);
     b.classList.toggle('text-white', on);
-    b.classList.toggle('border-rose-600', on);
+    b.classList.toggle('accent-border', on);
   });
 }
 
@@ -642,6 +776,18 @@ document.getElementById('heroImgInput').addEventListener('change', e=>{
   const file = e.target.files[0]; if(!file) return;
   const r = new FileReader(); r.onload = ev =>{ hero.image = String(ev.target.result); lsSet(LS_KEYS.hero, hero); refreshAll(); };
   r.readAsDataURL(file);
+});
+
+/* إعداد الفوتر والسوشيال من اللوحة */
+document.getElementById('footerInput').addEventListener('input', e=>{
+  footerText = e.target.value; lsSet(LS_KEYS.footer, footerText); renderFooter();
+});
+[
+  ['linkFBInput','facebook'],['linkIGInput','instagram'],
+  ['linkTTInput','tiktok'], ['linkTGInput','telegram']
+].forEach(([id,key])=>{
+  const el = document.getElementById(id); if(!el) return;
+  el.addEventListener('input', e=>{ social[key]=e.target.value.trim(); lsSet(LS_KEYS.social, social); renderFooter(); });
 });
 
 /* أقسام */
@@ -766,7 +912,7 @@ resetProduct.onclick = ()=>{
 
 /* تصدير/استيراد/إرجاع */
 document.getElementById('exportJson').onclick = ()=>{
-  const data = { brand, hero, categories, products };
+  const data = { brand, hero, categories, products, social, footer: footerText };
   const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href = url; a.download = 'zadora_store_export.json'; a.click(); URL.revokeObjectURL(url);
@@ -780,7 +926,13 @@ document.getElementById('importJson').addEventListener('change', e=>{
       if(data.hero) hero = data.hero;
       if(Array.isArray(data.categories)) categories = data.categories;
       if(Array.isArray(data.products)) products = data.products;
-      lsSet(LS_KEYS.brand, brand); lsSet(LS_KEYS.hero, hero); lsSet(LS_KEYS.cats, categories); lsSet(LS_KEYS.prods, products);
+      if(data.social) social = data.social;
+      if(typeof data.footer === 'string') footerText = data.footer;
+
+      lsSet(LS_KEYS.brand, brand); lsSet(LS_KEYS.hero, hero);
+      lsSet(LS_KEYS.cats, categories); lsSet(LS_KEYS.prods, products);
+      lsSet(LS_KEYS.social, social); lsSet(LS_KEYS.footer, footerText);
+
       refreshAll(); fillCatSelect(); listCats(); listProds(); renderRoute();
     }catch{ alert('ملف غير صالح'); }
   }; r.readAsText(f);
@@ -788,7 +940,10 @@ document.getElementById('importJson').addEventListener('change', e=>{
 document.getElementById('resetAll').onclick = ()=>{
   if(!confirm('إرجاع كل شيء للوضع الافتراضي؟')) return;
   brand = DEFAULT_BRAND; hero = DEFAULT_HERO; categories = DEFAULT_CATS.slice(); products = DEFAULT_PRODS.slice();
-  lsSet(LS_KEYS.brand, brand); lsSet(LS_KEYS.hero, hero); lsSet(LS_KEYS.cats, categories); lsSet(LS_KEYS.prods, products);
+  social = DEFAULT_SOCIAL; footerText = DEFAULT_FOOTER;
+  lsSet(LS_KEYS.brand, brand); lsSet(LS_KEYS.hero, hero);
+  lsSet(LS_KEYS.cats, categories); lsSet(LS_KEYS.prods, products);
+  lsSet(LS_KEYS.social, social); lsSet(LS_KEYS.footer, footerText);
   refreshAll(); fillCatSelect(); listCats(); listProds(); renderRoute();
 };
 
@@ -809,7 +964,7 @@ function renderCategoryView(cat) {
           <option value="priceHigh">السعر: من الأعلى للأقل</option>
           <option value="ratingHigh">الأعلى تقييمًا</option>
         </select>
-        <a href="#/" class="text-rose-600 hover:underline">عودة للكل</a>
+        <a href="#/" class="accent-text hover:underline">عودة للكل</a>
       </div>
     </div>
     <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
@@ -867,7 +1022,7 @@ let chatHistory = lsGet('zl_chat_history', []);
 function renderChat(){
   chatBody.innerHTML = chatHistory.map(m => `
     <div class="flex ${m.role==='user'?'justify-start':'justify-end'}">
-      <div class="max-w-[80%] rounded-2xl px-3 py-2 text-sm ${m.role==='user'?'bg-white border':'bg-rose-600 text-white'}">
+      <div class="max-w-[80%] rounded-2xl px-3 py-2 text-sm ${m.role==='user'?'bg-white border':'accent-bg'}">
         ${m.text}
       </div>
     </div>`).join('');
@@ -879,7 +1034,7 @@ function replyBot(q){
   if (s('شحن')||s('توصيل')||s('المحافظة')||s('المحافظات')) a='الشحن خلال 24-72 ساعة لكل المحافظات. السعر حسب الوزن والمحافظة. هنجمع الأوردر ونتواصل للتأكيد.';
   else if (s('استرجاع')||s('ارجاع')||s('استبدال')) a='الاستبدال خلال 7 أيام للقطع المعيوبة/المكسورة – بنبدل فورًا أو نرجع قيمتها.';
   else if (s('حد أدنى')||s('اقل كمية')||s('أقل كمية')) a='الحد الأدنى للطلب: 12 قطعة لكل صنف (أو كرتونة كاملة لبعض المنتجات).';
-  else if (s('دفع')||س('تحويل')||s('فيزا')||s('كاش')) a='طرق الدفع: كاش عند الاستلام (القاهرة/الجيزة)، تحويل بنكي، أو فودافون كاش.';
+  else if (s('دفع')||s('تحويل')||s('فيزا')||s('كاش')) a='طرق الدفع: كاش عند الاستلام (القاهرة/الجيزة)، تحويل بنكي، أو فودافون كاش.';
   else if (s('سعر')||s('سعره')||s('ثمن')) a='الأسعار بالجملة ظاهرة تحت كل منتج. لأسعار جملة كبيرة ابعتلنا على واتساب.';
   else if (s('تواصل')||s('واتساب')||s('رقم')) a=`تقدر تكلم فريق المبيعات مباشرة: واتساب ${WHATSAPP_PHONE} أو إيميل ${SUPPORT_EMAIL}.`;
   else a='مفهوم! 😊 لو سؤالك عن الشحن/الاسترجاع/الحد الأدنى/الدفع اكتب الكلمة، أو تواصل على زر واتساب بالأسفل.';
@@ -891,6 +1046,158 @@ function sendMsg(text){
 }
 chatSend.onclick = ()=> sendMsg();
 chatInput.addEventListener('keydown', (e)=> { if(e.key==='Enter') sendMsg(); });
+
+/* =====================[ الحساب + الفواتير ]===================== */
+const accountBtn   = document.getElementById('accountBtn');
+const accountMenu  = document.getElementById('accountMenu');
+const accountHello = document.getElementById('accountHello');
+const menuLogin    = document.getElementById('menuLogin');
+const menuInvoices = document.getElementById('menuInvoices');
+const menuLogout   = document.getElementById('menuLogout');
+
+function updateAccountUI(){
+  if(user){
+    accountHello.textContent = `مرحبًا، ${user.name || user.email || 'عميلنا'}`;
+    menuLogin.classList.add('hidden');
+    menuInvoices.classList.remove('hidden');
+    menuLogout.classList.remove('hidden');
+  }else{
+    accountHello.textContent = 'مرحبًا، ضيف';
+    menuLogin.classList.remove('hidden');
+    menuInvoices.classList.add('hidden');
+    menuLogout.classList.add('hidden');
+  }
+}
+accountBtn.addEventListener('click', ()=> accountMenu.classList.toggle('hidden'));
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('.dropdown')) accountMenu.classList.add('hidden');
+});
+menuLogin.onclick = ()=> openAuth();
+menuInvoices.onclick = ()=> openInvoices();
+menuLogout.onclick = ()=> { user=null; lsSet(LS_KEYS.user, user); updateAccountUI(); };
+
+const authModal = document.getElementById('authModal');
+const authClose = document.getElementById('authClose');
+const authCloseBg = document.getElementById('authCloseBg');
+const authSave  = document.getElementById('authSave');
+
+function openAuth(){
+  document.getElementById('authName').value  = user?.name  || '';
+  document.getElementById('authEmail').value = user?.email || '';
+  document.getElementById('authPhone').value = user?.phone || '';
+  // تفعيل Google لو فيه Client ID
+  document.getElementById('googleArea').classList.toggle('hidden', !GOOGLE_CLIENT_ID);
+  const g = document.getElementById('g_id_onload');
+  if (g && GOOGLE_CLIENT_ID) g.setAttribute('data-client_id', GOOGLE_CLIENT_ID);
+  authModal.classList.remove('hidden');
+}
+function closeAuth(){ authModal.classList.add('hidden'); }
+authClose.onclick = closeAuth; authCloseBg.onclick = closeAuth;
+authSave.onclick = ()=>{
+  const name  = document.getElementById('authName').value.trim();
+  const email = document.getElementById('authEmail').value.trim();
+  const phone = document.getElementById('authPhone').value.trim();
+  if(!email && !phone){ alert('اكتب بريد إلكتروني أو رقم هاتف.'); return; }
+  user = { name, email, phone, ts: Date.now() };
+  lsSet(LS_KEYS.user, user);
+  updateAccountUI(); closeAuth();
+};
+// Google callback
+window.onGoogleCredential = (resp)=>{
+  try{
+    const token = resp.credential;
+    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+    user = { name: payload.name, email: payload.email, ts:Date.now(), google:true };
+    lsSet(LS_KEYS.user, user);
+    updateAccountUI(); closeAuth();
+  }catch(e){ console.log(e); alert('تعذر إتمام تسجيل جوجل.'); }
+};
+
+/* فواتيري */
+const invModal = document.getElementById('invModal');
+const invBody  = document.getElementById('invBody');
+document.getElementById('invClose').onclick = ()=> invModal.classList.add('hidden');
+document.getElementById('invCloseBg').onclick = ()=> invModal.classList.add('hidden');
+
+function openInvoices(){
+  renderInvoices(); invModal.classList.remove('hidden');
+}
+function renderInvoices(){
+  if(!invoices.length){
+    invBody.innerHTML = `<div class="rounded-2xl border bg-white p-6">لا توجد فواتير محفوظة بعد.</div>`;
+    return;
+  }
+  invBody.innerHTML = invoices.slice().reverse().map(inv=>{
+    const dt = new Date(inv.ts);
+    const items = inv.items.map(i=> `${i.title} × ${i.qty}`).join('، ');
+    return `
+    <div class="rounded-2xl border bg-white p-4 mb-3">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="font-semibold">#${inv.id}</div>
+        <div class="text-sm text-gray-500">${dt.toLocaleString('ar-EG')}</div>
+      </div>
+      <div class="text-sm text-gray-600 mt-1">${items}</div>
+      <div class="flex items-center justify-between mt-2">
+        <div class="text-sm">الحالة: <span class="accent-text">${inv.status}</span></div>
+        <div class="font-bold">${fmt(inv.total)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function saveInvoice(channel){
+  if(!cart.length) return null;
+  const id  = Math.random().toString(36).slice(2,6).toUpperCase() + '-' + new Date().toISOString().slice(2,10).replace(/-/g,'');
+  const items = cart.map(it=>{
+    const p = getProd(it.id);
+    return { id: it.id, title: p?.title || '', price: p?.price || 0, qty: it.qty };
+  });
+  const subtotal = cartSubtotal();
+  const tier = customer.tier || 'wh';
+  let discount = 0;
+  if (tier==='retail') discount = Math.round(subtotal*0.10);
+  const total = subtotal - discount;
+
+  const inv = {
+    id, ts: Date.now(), items, subtotal, discount, total,
+    tier, channel, customer: {...customer}, status:'قيد التأكيد'
+  };
+  invoices.push(inv); lsSet(LS_KEYS.invoices, invoices);
+  return inv;
+}
+
+/* إكمال الطلب عبر واتساب / بريد */
+function buildOrderText(inv){
+  const lines = inv.items.map(i=>`• ${i.title} — كمية: ${i.qty} — ${i.price * i.qty} ج.م`).join('\n');
+  const note =
+    inv.tier==='retail' ? `خصم قطاعي 10%: -${inv.discount} ج.م` :
+    inv.tier==='wh'     ? `كاش باك 2%: ${Math.round(inv.subtotal*0.02)} ج.م` :
+                          'هدية: بوكس من ZADORA';
+  return `طلب جديد من ${brand}:
+رقم الفاتورة: #${inv.id}
+${lines}
+----------------
+الإجمالي الفرعي: ${inv.subtotal} ج.م
+${note}
+الإجمالي: ${inv.total} ج.م
+نوع العميل: ${inv.tier==='wh'?'جملة الجملة':inv.tier==='half'?'نص جملة':'قطاعي'}
+الاسم: ${inv.customer.name||'-'}
+الهاتف: ${inv.customer.phone||'-'}
+المحافظة/المدينة: ${inv.customer.city||'-'}`;
+}
+document.getElementById('cartCheckoutWA').onclick = ()=>{
+  if(!cart.length) return;
+  const inv = saveInvoice('whatsapp');
+  const text = buildOrderText(inv);
+  const url = 'https://wa.me/' + WHATSAPP_PHONE + '?text=' + encodeURIComponent(text);
+  window.open(url, '_blank');
+};
+document.getElementById('cartCheckoutEmail').onclick = ()=>{
+  if(!cart.length) return;
+  const inv = saveInvoice('email');
+  const subject = encodeURIComponent(`طلب جديد - ${brand} - #${inv.id}`);
+  const body = encodeURIComponent(buildOrderText(inv));
+  window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
+};
 
 /* =====================[ أحداث السلة + فتح/غلق ]===================== */
 document.getElementById('openCart').onclick = openCart;
@@ -920,49 +1227,6 @@ document.addEventListener('click', (e)=>{
   const dec = e.target.closest('.qty-dec'); if(dec){ changeQty(dec.dataset.id, -1); return; }
   const rm  = e.target.closest('.item-remove'); if(rm){ removeItem(rm.dataset.id); return; }
 });
-
-/* إكمال الطلب عبر واتساب / بريد */
-function buildOrderText(){
-  const lines = cart.map(it=>{
-    const p = getProd(it.id); if(!p) return '';
-    const line = (p.price||0)*(it.qty||0);
-    return `• ${p.title} — كمية: ${it.qty} — ${line} ج.م`;
-  }).filter(Boolean).join('\n');
-
-  const subtotal = cartSubtotal();
-  const tier = customer.tier || 'wh';
-  let note = '';
-  let discount = 0;
-
-  if (tier==='retail'){ discount = Math.round(subtotal*0.10); note = `خصم قطاعي 10%: -${discount} ج.م`; }
-  if (tier==='wh'){ note = `كاش باك 2%: ${Math.round(subtotal*0.02)} ج.م`; }
-  if (tier==='half'){ note = 'هدية: بوكس من ZADORA'; }
-
-  const total = subtotal - discount;
-
-  return `طلب جديد من ${brand}:
-${lines}
-----------------
-الإجمالي الفرعي: ${subtotal} ج.م
-${note}
-الإجمالي: ${total} ج.م
-نوع العميل: ${tier==='wh'?'جملة الجملة':tier==='half'?'نص جملة':'قطاعي'}
-الاسم: ${customer.name||'-'}
-الهاتف: ${customer.phone||'-'}
-المحافظة/المدينة: ${customer.city||'-'}`;
-}
-document.getElementById('cartCheckoutWA').onclick = ()=>{
-  if(!cart.length) return;
-  const text = buildOrderText();
-  const url = 'https://wa.me/' + WHATSAPP_PHONE + '?text=' + encodeURIComponent(text);
-  window.open(url, '_blank');
-};
-document.getElementById('cartCheckoutEmail').onclick = ()=>{
-  if(!cart.length) return;
-  const subject = encodeURIComponent(`طلب جديد - ${brand}`);
-  const body = encodeURIComponent(buildOrderText());
-  window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
-};
 
 /* =====================[ بدء ]===================== */
 refreshAll(); fillCatSelect(); listCats(); listProds();

@@ -19,9 +19,19 @@
     <div class="container px-4 py-3 flex items-center gap-3">
       <div class="font-extrabold text-xl text-rose-600" id="brandName">ZADORA</div>
       <div class="flex-1"></div>
+
+      <!-- بحث -->
       <div class="hidden md:block w-[420px]">
         <input id="search" placeholder="إبحث عن منتج..." class="w-full rounded-xl border px-3 py-2" />
       </div>
+
+      <!-- زر السلة -->
+      <button id="openCart" class="relative rounded-xl border px-3 py-2 hover:bg-gray-50">
+        🛒 السلة
+        <span id="cartCount" class="absolute -top-2 -left-2 min-w-[22px] h-[22px] text-xs rounded-full bg-rose-600 text-white px-1 flex items-center justify-center hidden">0</span>
+      </button>
+
+      <!-- لوحة التحكم -->
       <button id="openAdmin" class="rounded-xl border px-3 py-2 hover:bg-gray-50">⚙️ لوحة التحكم</button>
     </div>
     <div class="md:hidden px-4 pb-3">
@@ -224,6 +234,59 @@
     </div>
   </div>
 
+  <!-- سلة المشتريات -->
+  <div id="cartModal" class="fixed inset-0 hidden z-50 modal-bg">
+    <div id="cartCloseBg" class="absolute inset-0"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-full md:w-[760px] bg-white rounded-none md:rounded-l-3xl shadow-2xl overflow-y-auto">
+      <div class="sticky top-0 glass border-b p-4 flex items-center justify-between">
+        <div class="font-bold">سلة المشتريات</div>
+        <div class="flex items-center gap-2">
+          <button id="cartClear" class="rounded-xl border px-3 py-2 text-sm hover:bg-gray-50">تفريغ السلة</button>
+          <button id="closeCart" class="rounded-xl bg-rose-600 text-white px-4 py-2 text-sm">إغلاق</button>
+        </div>
+      </div>
+
+      <div class="p-4 grid md:grid-cols-2 gap-4">
+        <div>
+          <div id="cartItems" class="space-y-3"></div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="rounded-2xl border bg-white p-4">
+            <div class="font-semibold mb-2">البيانات</div>
+            <div class="space-y-2">
+              <input id="cusName"  class="w-full rounded-xl border px-3 py-2" placeholder="الاسم"/>
+              <input id="cusPhone" class="w-full rounded-xl border px-3 py-2" placeholder="رقم الهاتف"/>
+              <input id="cusCity"  class="w-full rounded-xl border px-3 py-2" placeholder="المحافظة/المدينة"/>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border bg-white p-4">
+            <div class="flex items-center justify-between">
+              <div>الإجمالي الفرعي</div>
+              <div id="cartSubtotal" class="font-bold">0 ج.م</div>
+            </div>
+            <div class="flex items-center justify-between text-sm text-gray-600 mt-1">
+              <div>الشحن</div>
+              <div id="cartShipping">يُحسب حسب المحافظة</div>
+            </div>
+            <hr class="my-2">
+            <div class="flex items-center justify-between text-lg">
+              <div class="font-bold">الإجمالي</div>
+              <div id="cartTotal" class="font-extrabold text-rose-600">0 ج.م</div>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">* الكميات تتحرك بمضاعفات الحد الأدنى لكل صنف.</p>
+            <div class="mt-3 grid grid-cols-1 gap-2">
+              <button id="cartCheckoutWA" class="rounded-xl bg-rose-600 text-white px-4 py-2 font-semibold hover:bg-rose-700">إكمال الطلب على واتساب</button>
+              <button id="cartCheckoutEmail" class="rounded-xl border px-4 py-2 hover:bg-gray-50">طلب عبر البريد</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
 <script>
 /* =====================[ إعدادات عامة + دعم ]===================== */
 const WHATSAPP_PHONE = '201112345678';   // عدّل رقم الواتساب هنا بصيغة دولية
@@ -255,7 +318,7 @@ function ensureAdmin() {
 }
 
 /* =====================[ بيانات افتراضية + LocalStorage ]===================== */
-const LS_KEYS = { brand:'zl_brand', hero:'zl_hero', cats:'zl_cats', prods:'zl_prods' };
+const LS_KEYS = { brand:'zl_brand', hero:'zl_hero', cats:'zl_cats', prods:'zl_prods', cart:'zl_cart', customer:'zl_customer' };
 const DEFAULT_BRAND = 'ZADORA';
 const DEFAULT_HERO = {
   title: 'جُملة راقية بلمسة ZADORA',
@@ -283,6 +346,8 @@ let brand = lsGet(LS_KEYS.brand, DEFAULT_BRAND);
 let hero = lsGet(LS_KEYS.hero, DEFAULT_HERO);
 let categories = lsGet(LS_KEYS.cats, DEFAULT_CATS);
 let products = lsGet(LS_KEYS.prods, DEFAULT_PRODS);
+let cart = lsGet(LS_KEYS.cart, []);               // [{id, qty}]
+let customer = lsGet(LS_KEYS.customer, {name:'', phone:'', city:''});
 
 /* =====================[ بحث + ترتيب ]===================== */
 let currentSort = 'default';
@@ -305,6 +370,90 @@ function applyFilters(list){
   }
   return sortList(out, currentSort);
 }
+
+/* =====================[ Cart Logic ]===================== */
+function getProd(id){ return products.find(p=> String(p.id)===String(id)); }
+function saveCart(){ lsSet(LS_KEYS.cart, cart); renderCartIcon(); }
+function cartCount(){ return cart.reduce((s,i)=> s + (Number(i.qty)||0), 0); }
+function cartSubtotal(){ return cart.reduce((s,i)=> { const p=getProd(i.id); return s + (p?(p.price||0)*(i.qty||0):0); }, 0); }
+
+function renderCartIcon(){
+  const c = cartCount();
+  const b = document.getElementById('cartCount');
+  b.textContent = c;
+  b.classList.toggle('hidden', c===0);
+}
+
+function addToCart(id){
+  const p = getProd(id); if(!p) return;
+  const step = Number(p.minQty)||1;
+  const item = cart.find(x=> String(x.id)===String(id));
+  if(item){ item.qty += step; } else { cart.push({id, qty: step}); }
+  saveCart();
+  // افتح السلة بعد الإضافة
+  openCart();
+}
+
+function changeQty(id, dir){ // dir = +1 / -1 (بمضاعفات الحد الأدنى)
+  const p = getProd(id); if(!p) return;
+  const step = Number(p.minQty)||1;
+  const it = cart.find(x=> String(x.id)===String(id)); if(!it) return;
+  it.qty = Math.max(step, (it.qty||0) + dir*step);
+  saveCart(); renderCartPanel();
+}
+function removeItem(id){
+  cart = cart.filter(x=> String(x.id)!==String(id));
+  saveCart(); renderCartPanel();
+}
+function clearCart(){
+  cart = []; saveCart(); renderCartPanel();
+}
+
+function renderCartPanel(){
+  const wrap = document.getElementById('cartItems');
+  if(!wrap) return;
+  if(cart.length===0){
+    wrap.innerHTML = `<div class="rounded-2xl border bg-white p-6">سلتك فارغة.</div>`;
+  }else{
+    wrap.innerHTML = cart.map(it=>{
+      const p = getProd(it.id); if(!p) return '';
+      const line = (p.price||0)*(it.qty||0);
+      const step = Number(p.minQty)||1;
+      return `
+      <div class="rounded-2xl border bg-white p-3">
+        <div class="flex gap-3">
+          <img src="${p.image}" class="w-20 h-20 object-cover rounded-xl border" />
+          <div class="flex-1">
+            <div class="font-semibold">${p.title}</div>
+            <div class="text-sm text-gray-500">القسم: ${p.category||'-'} • حد أدنى: ${step}</div>
+            <div class="mt-2 flex items-center gap-2">
+              <button class="px-3 py-1 rounded-xl border qty-dec" data-id="${p.id}">−</button>
+              <div class="min-w-[56px] text-center font-semibold">${it.qty}</div>
+              <button class="px-3 py-1 rounded-xl border qty-inc" data-id="${p.id}">+</button>
+              <button class="ml-auto px-3 py-1 rounded-xl border text-sm hover:bg-gray-50 item-remove" data-id="${p.id}">حذف</button>
+            </div>
+          </div>
+        </div>
+        <div class="mt-2 text-right"><span class="font-bold">${line}</span> ج.م</div>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('cartSubtotal').textContent = cartSubtotal() + ' ج.م';
+  document.getElementById('cartTotal').textContent = cartSubtotal() + ' ج.م';
+
+  // حقول العميل
+  document.getElementById('cusName').value = customer.name||'';
+  document.getElementById('cusPhone').value = customer.phone||'';
+  document.getElementById('cusCity').value = customer.city||'';
+
+  // تفعيل/تعطيل الأزرار حسب السلة
+  document.getElementById('cartCheckoutWA').disabled = cart.length===0;
+  document.getElementById('cartCheckoutEmail').disabled = cart.length===0;
+  document.getElementById('cartClear').disabled = cart.length===0;
+}
+
+function openCart(){ document.getElementById('cartModal').classList.remove('hidden'); renderCartPanel(); }
+function closeCart(){ document.getElementById('cartModal').classList.add('hidden'); }
 
 /* =====================[ Render ]===================== */
 function renderHero(){
@@ -396,7 +545,7 @@ function renderProducts(){
               <span class="text-sm line-through text-gray-400">${p.oldPrice} ج.م</span>
             </div>
             <div class="mt-3 flex items-center gap-2">
-              <button class="flex-1 rounded-xl bg-rose-600 text-white py-2 font-semibold hover:bg-rose-700">أضف للسلة</button>
+              <button class="flex-1 rounded-xl bg-rose-600 text-white py-2 font-semibold hover:bg-rose-700 btn-add" data-id="${p.id}">أضف للسلة</button>
               <button class="rounded-xl border px-3 py-2 hover:bg-gray-50" title="إضافة للمفضلة">♡</button>
             </div>
           </div>
@@ -414,6 +563,7 @@ function refreshAll(){
   document.getElementById('year').textContent = new Date().getFullYear();
   document.getElementById('brandInChat').textContent = brand;
   renderHero(); renderBenefits(); renderCategories(); renderProducts();
+  renderCartIcon();
 }
 
 /* =====================[ لوحة التحكم ]===================== */
@@ -515,7 +665,7 @@ function listProds(){
   wrap.innerHTML = products.map(p=>`
     <div class="rounded-2xl border bg-white overflow-hidden">
       <div class="aspect-[4/3] w-full overflow-hidden">
-        <img src="${p.image}" class="w-full ه-full object-cover"/>
+        <img src="${p.image}" class="w-full h-full object-cover"/>
       </div>
       <div class="p-3">
         <div class="font-semibold">${p.title}</div>
@@ -642,7 +792,7 @@ function renderCategoryView(cat) {
                 <span class="text-sm line-through text-gray-400">${p.oldPrice} ج.م</span>
               </div>
               <div class="mt-3 flex items-center gap-2">
-                <button class="flex-1 rounded-xl bg-rose-600 text-white py-2 font-semibold hover:bg-rose-700">أضف للسلة</button>
+                <button class="flex-1 rounded-xl bg-rose-600 text-white py-2 font-semibold hover:bg-rose-700 btn-add" data-id="${p.id}">أضف للسلة</button>
                 <button class="rounded-xl border px-3 py-2 hover:bg-gray-50">♡</button>
               </div>
             </div>
@@ -738,11 +888,76 @@ function sendMsg(text){
 chatSend.onclick = ()=> sendMsg();
 chatInput.addEventListener('keydown', (e)=> { if(e.key==='Enter') sendMsg(); });
 
+/* =====================[ أحداث السلة + فتح/غلق ]===================== */
+document.getElementById('openCart').onclick = openCart;
+document.getElementById('closeCart').onclick = closeCart;
+document.getElementById('cartCloseBg').onclick = closeCart;
+document.getElementById('cartClear').onclick = clearCart;
+
+// حفظ بيانات العميل
+['cusName','cusPhone','cusCity'].forEach(id=>{
+  const el = document.getElementById(id);
+  el.addEventListener('input', ()=>{
+    customer = {
+      name:  document.getElementById('cusName').value.trim(),
+      phone: document.getElementById('cusPhone').value.trim(),
+      city:  document.getElementById('cusCity').value.trim()
+    };
+    lsSet(LS_KEYS.customer, customer);
+  });
+});
+
+// تفويض نقرات داخل الوثيقة (أزرار السلة + أضف للسلة)
+document.addEventListener('click', (e)=>{
+  const add = e.target.closest('.btn-add');
+  if(add){ addToCart(add.dataset.id); return; }
+
+  const inc = e.target.closest('.qty-inc');
+  if(inc){ changeQty(inc.dataset.id, +1); return; }
+
+  const dec = e.target.closest('.qty-dec');
+  if(dec){ changeQty(dec.dataset.id, -1); return; }
+
+  const rm = e.target.closest('.item-remove');
+  if(rm){ removeItem(rm.dataset.id); return; }
+});
+
+// إكمال الطلب عبر واتساب / بريد
+function buildOrderText(){
+  const lines = cart.map(it=>{
+    const p = getProd(it.id); if(!p) return '';
+    const line = (p.price||0)*(it.qty||0);
+    return `• ${p.title} — كمية: ${it.qty} — ${line} ج.م`;
+  }).filter(Boolean).join('\n');
+
+  const total = cartSubtotal();
+  return `طلب جديد من ${brand}:
+${lines}
+----------------
+الإجمالي: ${total} ج.م
+الاسم: ${customer.name||'-'}
+الهاتف: ${customer.phone||'-'}
+المحافظة/المدينة: ${customer.city||'-'}`;
+}
+document.getElementById('cartCheckoutWA').onclick = ()=>{
+  if(!cart.length) return;
+  const text = buildOrderText();
+  const url = 'https://wa.me/' + WHATSAPP_PHONE + '?text=' + encodeURIComponent(text);
+  window.open(url, '_blank');
+};
+document.getElementById('cartCheckoutEmail').onclick = ()=>{
+  if(!cart.length) return;
+  const subject = encodeURIComponent(`طلب جديد - ${brand}`);
+  const body = encodeURIComponent(buildOrderText());
+  window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
+};
+
 /* =====================[ بدء ]===================== */
 refreshAll(); fillCatSelect(); listCats(); listProds();
 renderRoute();
 attachSearch();
 renderChat();
+renderCartIcon();
 
 if (location.hash === '#/admin' && !isAdmin) ensureAdmin();
 window.addEventListener('hashchange', () => {

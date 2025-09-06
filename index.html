@@ -1188,9 +1188,18 @@ function renderCatsDrawerList(filter){
     </a>`).join('') || `<div class="text-sm text-gray-500">لا نتائج.</div>`;
 }
 
-/* ===== الشريط الجانبي: زر الإخفاء ===== */
-const tickerClose=document.getElementById('sideTickerClose');
-if(tickerClose) tickerClose.onclick=()=> document.getElementById('sideTicker').classList.add('hidden');
+/* ===== الشريط الجانبي: زر الإغلاق ===== */
+const tickerClose = document.getElementById('sideTickerClose');
+if (tickerClose) tickerClose.onclick = () =>
+  document.getElementById('sideTicker').classList.add('hidden');
+
+// رابط الشريط الجانبي إلى واتساب — أضِف السطرين دول هنا
+const sideTickerEl = document.getElementById('sideTicker');
+if (sideTickerEl) sideTickerEl.href = 'https://wa.me/' + WHATSAPP_PHONE;
+
+/* ==== بدء ==== */
+refreshAll(); fillCatSelect(); listCats(); listProds();
+renderRoute(); attachSearch(); renderChat(); renderCartIcon();
 
 /* ===== بدء ===== */
 refreshAll(); fillCatSelect(); listCats(); listProds();

@@ -1,6 +1,31 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+  <head>
+  ...
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+ /* ===== الشريط الجانبي المتحرك ===== */
+#sideTicker .marquee {
+  white-space: nowrap;
+  display: inline-block;
+  padding-inline: 16px;
+  animation: tickerBounce 12s linear infinite alternate;
+  will-change: transform;
+}
+@keyframes tickerBounce {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-55%); }
+}
+/* موبايل: ابعده عن زر الشات */
+@media (max-width: 640px){
+  #sideTicker { bottom: 120px !important; top: auto !important; transform: none !important; }
+}
+
+  </style>
+  ...
+</head>
+
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ZADORA Lite</title>

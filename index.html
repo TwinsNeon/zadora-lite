@@ -220,7 +220,7 @@ function ensureAdmin() {
     sessionStorage.setItem('zl_admin', '1');
     const btn = document.getElementById('openAdmin');
     if (btn) btn.classList.remove('hidden');
-    openAdminPanel(); // هتتعرّف تحت بعد ما المودال يبقى موجود
+    openAdminPanel();
   } else {
     alert('PIN غير صحيح');
     location.hash = '#/';

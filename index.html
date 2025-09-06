@@ -26,44 +26,7 @@
       width:16rem; background:#fff; border:1px solid #e5e7eb; border-radius:1rem;
       box-shadow:0 20px 50px rgba(0,0,0,.08); overflow:hidden; z-index:60; 
   }                  
-  /* ===== الشريط الجانبي الرأسي (رايح/جاي ببطء) ===== */
-#edgeRibbon{
-  position: fixed;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 45;                 /* أقل من الشات (z-50) علشان ما يغطيهوش */
-  animation: edgeFloat 14s ease-in-out infinite alternate;
-}
-#edgeRibbon .pill{
-  width: 48px;                 /* عرض الشريط */
-  height: 420px;               /* طول الشريط */
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 24px;         /* حواف دائرية */
-  box-shadow: 0 10px 30px rgba(0,0,0,.12);
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden;
-}
-#edgeRibbon .label{
-  display: inline-block;
-  transform: rotate(-90deg);   /* نخلي النص عمودي */
-  white-space: nowrap;
-  font-weight: 800;
-  letter-spacing: .02em;
-  color: #111827;
-}
-#edgeRibbon .dot{ color: var(--accent); margin: 0 .6rem; }
 
-@keyframes edgeFloat{
-  0%   { transform: translateY(-56%); }  /* طلوع ناعم */
-  100% { transform: translateY(-44%); }  /* نزول ناعم */
-}
-
-/* موبايل: صغّر الطول شوية */
-@media (max-width:640px){
-  #edgeRibbon{ right: 6px; }
-  #edgeRibbon .pill{ height: 340px; width: 44px; }
 }
 
 

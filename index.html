@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
+    /* الكود اهو: الشريط يتحرك كذا مرّة ورا بعض بدون ما الكارت نفسه يهتز */
     :root{
       --accent:#C19A6B;      /* جملي */
       --accent-700:#A67C52;  /* أغمق */
@@ -36,9 +37,24 @@
       0%{ transform:translateX(0); }
       100%{ transform:translateX(-55%); }
     }
+
+    /* Burst للحروف فقط: يدي نغزات متتالية للنص بدون تحريك الكارت */
+    #sideTicker .marquee.bursting{ animation: tickerBurstText .7s ease-in-out 5; }
+    @keyframes tickerBurstText{
+      0%   { transform: translateX(0); }
+      35%  { transform: translateX(-14px); }
+      70%  { transform: translateX(0); }
+      100% { transform: translateX(-6px); }
+    }
+
     /* على الموبايل: نزّله فوق زر الشات */
     @media (max-width:640px){
       #sideTicker{ bottom:120px !important; top:auto !important; transform:none !important; right:.75rem !important; }
+    }
+
+    /* احترام تفضيل تقليل الحركة */
+    @media (prefers-reduced-motion: reduce){
+      #sideTicker .marquee, #sideTicker .marquee.bursting { animation: none !important; }
     }
   </style>
 </head>
@@ -217,6 +233,14 @@
               </div>
               <label class="inline-flex items-center gap-2 rounded-xl border px-3 py-2 cursor-pointer hover:bg-gray-50">
                 <input id="heroImgInput" type="file" accept="image/*" class="hidden" /> رفع صورة
+              </label>
+
+              <div class="text-sm font-medium mt-6">صورة ZADORA Box</div>
+              <div class="aspect-[4/3] w-full overflow-hidden rounded-xl border bg-white" id="boxImgWrap">
+                <img id="boxImgPreview" class="w-full h-full object-cover" />
+              </div>
+              <label class="inline-flex items-center gap-2 rounded-xl border px-3 py-2 cursor-pointer hover:bg-gray-50">
+                <input id="boxImgInput" type="file" accept="image/*" class="hidden" /> رفع صورة
               </label>
             </div>
           </div>
@@ -475,7 +499,8 @@ const DEFAULT_BRAND = 'ZADORA';
 const DEFAULT_HERO = {
   title:'جُملة راقية بلمسة ZADORA',
   subtitle:'اطلب بالكرتونة أو حد أدنى 12 قطعة — أسعار واضحة، خامات مضمونة، وصور جاهزة لزيادة مبيعاتك فورًا.',
-  image:'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1600&auto=format&fit=crop'
+  image:'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1600&auto=format&fit=crop',
+  boxImage:'https://images.unsplash.com/photo-1549778399-f94fd24d4697?q=80&w=1600&auto=format&fit=crop'
 };
 const DEFAULT_CATS = [
   { name:'مطبخ', image:'https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?q=80&w=1200&auto=format&fit=crop' },
@@ -505,6 +530,14 @@ let social = lsGet('zl_social', {facebook:'', instagram:'', tiktok:'', telegram:
 let footerText = lsGet(LS_KEYS.footer, 'منصة جملة للأدوات المنزلية: حد أدنى 12 قطعة، شحن سريع، وضمان استبدال.');
 let user = lsGet(LS_KEYS.user, null);
 let invoices = lsGet(LS_KEYS.invoices, []);
+
+// ===== توافق نسخ قديمة: لو boxImage مش موجودة في LocalStorage أضفها تلقائيًا =====
+try {
+  if (!hero || typeof hero !== 'object') hero = DEFAULT_HERO;
+  if (!hero.image) hero.image = DEFAULT_HERO.image;
+  if (!hero.boxImage) hero.boxImage = DEFAULT_HERO.boxImage;
+  lsSet(LS_KEYS.hero, hero);
+} catch(e) {}
 
 /* =====================[ بحث + ترتيب ]===================== */
 let currentSort = 'default';
@@ -637,7 +670,7 @@ function renderHero(){
       </div>
     </div>
     <div class="relative overflow-hidden rounded-2xl accent-bg min-h-[220px]">
-      <img src="https://images.unsplash.com/photo-1549778399-f94fd24d4697?q=80&w=1600&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-40">
+      <img src="${hero.boxImage}" class="absolute inset-0 w-full h-full object-cover opacity-40">
       <div class="relative p-8">
         <h3 class="text-xl md:text-2xl font-extrabold">ZADORA Box</h3>
         <p class="mt-2 text-sm text-white/90">باكدچ متنوعة جاهزة للعرض في المحل</p>
@@ -756,12 +789,13 @@ function openAdminPanel(){
   document.getElementById('heroTitleInput').value=hero.title;
   document.getElementById('heroSubInput').value=hero.subtitle;
   document.getElementById('heroImgPreview').src=hero.image;
+  document.getElementById('boxImgPreview').src=hero.boxImage || '';
   document.getElementById('footerInput').value=footerText||'';
   ['FB','IG','TT','TG'].forEach(k=>{
     const map={FB:'facebook',IG:'instagram',TT:'tiktok',TG:'telegram'};
     const el=document.getElementById('link'+k+'Input'); if(el) el.value=social[map[k]]||'';
   });
-  switchTab('products'); fillCatSelect(); listCats(); listProds();
+  switchTab('settings'); fillCatSelect(); listCats(); listProds();
 }
 if(!isAdmin) openAdminBtn.classList.add('hidden');
 openAdminBtn.onclick=()=>{ if(!isAdmin){ location.hash='#/admin'; ensureAdmin(); return; } openAdminPanel(); };
@@ -787,6 +821,11 @@ document.getElementById('heroSubInput').addEventListener('input', e=>{ hero.subt
 document.getElementById('heroImgInput').addEventListener('change', e=>{
   const file=e.target.files[0]; if(!file) return;
   const r=new FileReader(); r.onload=ev=>{ hero.image=String(ev.target.result); lsSet(LS_KEYS.hero,hero); refreshAll(); };
+  r.readAsDataURL(file);
+});
+document.getElementById('boxImgInput').addEventListener('change', e=>{
+  const file=e.target.files[0]; if(!file) return;
+  const r=new FileReader(); r.onload=ev=>{ hero.boxImage=String(ev.target.result); lsSet(LS_KEYS.hero,hero); refreshAll(); };
   r.readAsDataURL(file);
 });
 
@@ -1211,6 +1250,26 @@ renderRoute(); attachSearch(); renderChat(); renderCartIcon();
 
 if(location.hash==='#/admin' && !isAdmin) ensureAdmin();
 window.addEventListener('hashchange', ()=>{ if(location.hash==='#/admin' && !isAdmin) ensureAdmin(); renderRoute(); attachSearch(); });
+
+/* ===== Burst للنص فقط: اشتغل عند التحميل وبعدين يرجع للماركي العادية ===== */
+(function(){
+  const mq = document.querySelector('#sideTicker .marquee');
+  if(!mq) return;
+  const runBurstText = () => {
+    mq.classList.remove('bursting'); // إعادة التشغيل
+    void mq.offsetWidth;
+    mq.classList.add('bursting');
+  };
+  mq.addEventListener('animationend', (e)=>{
+    if(e.animationName === 'tickerBurstText'){
+      mq.classList.remove('bursting'); // رجّع الماركي الأساسية
+    }
+  });
+  runBurstText(); // 5 نغزات متتالية أول ما تفتح الصفحة
+
+  // لو عايز تكررها كل فترة، فك الكومنت وحدد المدة بالمللي ثانية:
+  // setInterval(runBurstText, 12000);
+})();
 </script>
 </body>
 </html>

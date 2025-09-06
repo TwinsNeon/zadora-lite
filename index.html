@@ -19,9 +19,12 @@
       <div class="font-extrabold text-xl text-rose-600" id="brandName">ZADORA</div>
       <div class="flex-1"></div>
 
-      <!-- بحث -->
+      <!-- بحث (ديسكتوب) -->
       <div class="hidden md:block w-[420px]">
-        <input id="search" placeholder="إبحث عن منتج..." class="w-full rounded-xl border px-3 py-2" />
+        <form id="searchForm" class="relative">
+          <input id="search" placeholder="إبحث عن منتج..." class="w-full rounded-xl border px-3 py-2 pr-10" />
+          <button id="searchBtn" type="submit" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">🔍</button>
+        </form>
       </div>
 
       <!-- زر السلة -->
@@ -33,8 +36,13 @@
       <!-- لوحة التحكم -->
       <button id="openAdmin" class="rounded-xl border px-3 py-2 hover:bg-gray-50">⚙️ لوحة التحكم</button>
     </div>
+
+    <!-- بحث (موبايل) -->
     <div class="md:hidden px-4 pb-3">
-      <input id="search2" placeholder="إبحث عن منتج..." class="w-full rounded-xl border px-3 py-2" />
+      <form id="searchForm2" class="relative">
+        <input id="search2" placeholder="إبحث عن منتج..." class="w-full rounded-xl border px-3 py-2 pr-10" />
+        <button id="searchBtn2" type="submit" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">🔍</button>
+      </form>
     </div>
   </header>
 
@@ -298,7 +306,7 @@
 
 <script>
 /* =====================[ إعدادات عامة + دعم ]===================== */
-const WHATSAPP_PHONE = '201112444190';           // ← رقمك بصيغة دولية
+const WHATSAPP_PHONE = '201119508881';           // رقم واتساب بصيغة دولية (20 + الرقم بدون 0)
 const SUPPORT_EMAIL  = 'sales@example.com';
 document.getElementById('waBtn').href = 'https://wa.me/' + WHATSAPP_PHONE;
 
@@ -339,14 +347,13 @@ const DEFAULT_CATS = [
   { name:'منسوجات', image:'https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?q=80&w=1200&auto=format&fit=crop' },
   { name:'بلاستيك واستالس', image:'https://images.unsplash.com/photo-1542444592-1e6c9f952a25?q=80&w=1200&auto=format&fit=crop' },
 ];
-/* خليّنا الحد الأدنى الافتراضي للمنتجات 12 في البيانات الجاهزة */
+/* خليّنا الحد الأدنى الافتراضي للمنتجات 12 */
 const DEFAULT_PRODS = [
   { id:1, title:'طقم تلاجة بيركس – 3 قطع', price:420, oldPrice:480, rating:4.7, reviews:126, image:'https://images.unsplash.com/photo-1601050690290-27f9864c06c0?q=80&w=1200&auto=format&fit=crop', badge:'الأكثر طلبًا', minQty:12, category:'مطبخ' },
   { id:2, title:'لانش بوكس حراري', price:165, oldPrice:199, rating:4.6, reviews:98, image:'https://images.unsplash.com/photo-1517673132405-a56a62b18caf?q=80&w=1200&auto=format&fit=crop', badge:'عرض خاص', minQty:12, category:'تخزين وتنظيم' },
   { id:3, title:'مج سيراميك مطفي', price:85, oldPrice:110, rating:4.4, reviews:210, image:'https://images.unsplash.com/photo-1523365280197-f1783db9fe62?q=80&w=1200&auto=format&fit=crop', badge:'جديد', minQty:12, category:'مشروبات ومجات' },
   { id:4, title:'علب تخزين محكمة – 6 قطع', price:350, oldPrice:399, rating:4.8, reviews:73, image:'https://images.unsplash.com/photo-1592840496694-26d035b08cc6?q=80&w=1200&auto=format&fit=crop', badge:'الأفضل قيمة', minQty:12, category:'تخزين وتنظيم' },
 ];
-/* حد أدنى عام للمحل */
 const STORE_MIN_QTY = 12;
 
 function lsGet(k, fb){ try{ const v = localStorage.getItem(k); return v? JSON.parse(v): fb; }catch{ return fb; } }
@@ -362,7 +369,11 @@ let customer = lsGet(LS_KEYS.customer, {name:'', phone:'', city:'', tier:'wh'});
 /* =====================[ بحث + ترتيب ]===================== */
 let currentSort = 'default';
 let currentQuery = '';
-function normalize(s){ return String(s||'').toLowerCase(); }
+function normalize(s){
+  return String(s||'').toLowerCase()
+    .replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه')
+    .replace(/[^\p{L}\p{N}\s]/gu,'').trim();
+}
 function sortList(list, key) {
   const arr = [...list];
   if (key === 'priceLow')  arr.sort((a,b)=> (a.price||0) - (b.price||0));
@@ -373,7 +384,14 @@ function sortList(list, key) {
 function applyFilters(list){
   let out = list;
   const q = normalize(currentQuery.trim());
-  if(q){ out = out.filter(p => normalize(p.title).includes(q) || normalize(p.category).includes(q)); }
+  const q2 = q.endsWith('ا') ? q.slice(0,-1) : '';
+  if(q){
+    out = out.filter(p=>{
+      const t = normalize(p.title);
+      const c = normalize(p.category);
+      return t.includes(q) || c.includes(q) || (q2 && (t.includes(q2) || c.includes(q2)));
+    });
+  }
   return sortList(out, currentSort);
 }
 
@@ -446,7 +464,7 @@ function renderCartPanel(){
   document.getElementById('cusCity').value  = customer.city||'';
   document.getElementById('cusTier').value  = customer.tier||'wh';
 
-  // ملخص مالي مع مزايا الشرائح
+  // ملخص مالي + مزايا الشريحة
   const subtotal = cartSubtotal();
   document.getElementById('cartSubtotal').textContent = fmt(subtotal);
 
@@ -467,7 +485,7 @@ function renderCartPanel(){
   const total = subtotal - discount;
   document.getElementById('cartTotal').textContent = fmt(total);
 
-  // تفعيل/تعطيل الأزرار
+  // تفعيل/تعطيل أزرار
   document.getElementById('cartCheckoutWA').disabled = cart.length===0;
   document.getElementById('cartCheckoutEmail').disabled = cart.length===0;
   document.getElementById('cartClear').disabled = cart.length===0;
@@ -808,13 +826,28 @@ function renderRoute(){
   else renderHome();
 }
 
-/* =====================[ البحث المباشر ]===================== */
+/* =====================[ البحث: كتابة + Enter + زر 🔍 ]===================== */
 function attachSearch(){
-  const boxes = [document.getElementById('search'), document.getElementById('search2')].filter(Boolean);
-  boxes.forEach(inp=>{
-    inp.value = currentQuery;
-    inp.oninput = (e)=>{ currentQuery = e.target.value; renderRoute(); };
-    inp.onkeydown = (e)=>{ if(e.key==='Escape'){ e.target.value=''; currentQuery=''; renderRoute(); } };
+  const fields = [
+    { input: document.getElementById('search'),  form: document.getElementById('searchForm') },
+    { input: document.getElementById('search2'), form: document.getElementById('searchForm2') }
+  ].filter(x => x.input && x.form);
+
+  fields.forEach(({input, form})=>{
+    input.value = currentQuery;
+
+    // بحث مباشر أثناء الكتابة
+    input.oninput = (e)=>{ currentQuery = e.target.value; renderRoute(); };
+
+    // Esc يمسح البحث
+    input.onkeydown = (e)=>{ if(e.key==='Escape'){ input.value=''; currentQuery=''; renderRoute(); } };
+
+    // Enter أو زر 🔍
+    form.onsubmit = (e)=>{
+      e.preventDefault();
+      currentQuery = input.value.trim();
+      renderRoute();
+    };
   });
 }
 
@@ -846,7 +879,7 @@ function replyBot(q){
   if (s('شحن')||s('توصيل')||s('المحافظة')||s('المحافظات')) a='الشحن خلال 24-72 ساعة لكل المحافظات. السعر حسب الوزن والمحافظة. هنجمع الأوردر ونتواصل للتأكيد.';
   else if (s('استرجاع')||s('ارجاع')||s('استبدال')) a='الاستبدال خلال 7 أيام للقطع المعيوبة/المكسورة – بنبدل فورًا أو نرجع قيمتها.';
   else if (s('حد أدنى')||s('اقل كمية')||s('أقل كمية')) a='الحد الأدنى للطلب: 12 قطعة لكل صنف (أو كرتونة كاملة لبعض المنتجات).';
-  else if (s('دفع')||s('تحويل')||s('فيزا')||s('كاش')) a='طرق الدفع: كاش عند الاستلام (القاهرة/الجيزة)، تحويل بنكي، أو فودافون كاش.';
+  else if (s('دفع')||س('تحويل')||s('فيزا')||s('كاش')) a='طرق الدفع: كاش عند الاستلام (القاهرة/الجيزة)، تحويل بنكي، أو فودافون كاش.';
   else if (s('سعر')||s('سعره')||s('ثمن')) a='الأسعار بالجملة ظاهرة تحت كل منتج. لأسعار جملة كبيرة ابعتلنا على واتساب.';
   else if (s('تواصل')||s('واتساب')||s('رقم')) a=`تقدر تكلم فريق المبيعات مباشرة: واتساب ${WHATSAPP_PHONE} أو إيميل ${SUPPORT_EMAIL}.`;
   else a='مفهوم! 😊 لو سؤالك عن الشحن/الاسترجاع/الحد الأدنى/الدفع اكتب الكلمة، أو تواصل على زر واتساب بالأسفل.';

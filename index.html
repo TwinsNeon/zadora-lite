@@ -47,8 +47,18 @@
         </form>
       </div>
 
-      <!-- زر الأقسام (يفتح درج جانبي) -->
-      <button id="catsToggle" class="rounded-xl border px-3 py-2 hover:bg-gray-50 hidden sm:inline-flex">📂 الأقسام</button>
+<!-- استبدل كل كود زر الأقسام بكود واحد فقط زي ده -->
+<button id="catsToggle"
+  class="inline-flex items-center gap-2 rounded-xl border px-3 py-2 hover:bg-gray-50 accent-text"
+  aria-label="الأقسام" title="الأقسام">
+  <!-- أيقونة 3 شرطات -->
+  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M4 6h16M4 12h16M4 18h16"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+  <span class="hidden md:inline">الأقسام</span>
+</button>
+
 
       <!-- السلة -->
       <button id="openCart" class="relative rounded-xl border px-3 py-2 hover:bg-gray-50">

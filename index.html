@@ -200,7 +200,34 @@
   </div>
 
 <script>
-// ====== بيانات افتراضية + LocalStorage ======
+/* =====================[ Admin PIN + Routing ]===================== */
+// PIN الإدارة (غيّره لو حابب)
+const ADMIN_PIN = '1234';
+let isAdmin = sessionStorage.getItem('zl_admin') === '1';
+
+// إظهار/إخفاء أقسام الهوم (لما نفتح صفحة قسم)
+function showHomeSections(show) {
+  document.getElementById('heroSection').classList.toggle('hidden', !show);
+  document.getElementById('benefitsSection').classList.toggle('hidden', !show);
+  document.getElementById('categoriesSection').classList.toggle('hidden', !show);
+}
+
+// طلب PIN
+function ensureAdmin() {
+  const pin = prompt('أدخل رقم PIN الإدارة:');
+  if (pin === ADMIN_PIN) {
+    isAdmin = true;
+    sessionStorage.setItem('zl_admin', '1');
+    const btn = document.getElementById('openAdmin');
+    if (btn) btn.classList.remove('hidden');
+    openAdminPanel(); // هتتعرّف تحت بعد ما المودال يبقى موجود
+  } else {
+    alert('PIN غير صحيح');
+    location.hash = '#/';
+  }
+}
+
+/* =====================[ بيانات افتراضية + LocalStorage ]===================== */
 const LS_KEYS = { brand:'zl_brand', hero:'zl_hero', cats:'zl_cats', prods:'zl_prods' };
 const DEFAULT_BRAND = 'ZADORA';
 const DEFAULT_HERO = {
@@ -230,7 +257,7 @@ let hero = lsGet(LS_KEYS.hero, DEFAULT_HERO);
 let categories = lsGet(LS_KEYS.cats, DEFAULT_CATS);
 let products = lsGet(LS_KEYS.prods, DEFAULT_PRODS);
 
-// ====== Render ======
+/* =====================[ Render ]===================== */
 function renderHero(){
   const el = document.getElementById('heroSection');
   el.innerHTML = `
@@ -275,11 +302,11 @@ function renderCategories(){
   el.innerHTML = `
     <div class="flex items-center justify-between mb-3">
       <h3 class="text-lg md:text-xl font-bold">تسوق بالأقسام</h3>
-      <a class="text-rose-600 hover:underline cursor-pointer">عرض الكل</a>
+      <a href="#/" class="text-rose-600 hover:underline cursor-pointer">عرض الكل</a>
     </div>
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
       ${categories.map(cat => `
-        <a class="group relative block overflow-hidden rounded-2xl border bg-white">
+        <a href="#/c/${encodeURIComponent(cat.name)}" class="group relative block overflow-hidden rounded-2xl border bg-white">
           <img src="${cat.image}" alt="${cat.name}" class="h-28 w-full object-cover transition-transform duration-300 group-hover:scale-105" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
           <div class="absolute bottom-2 right-2 text-white text-sm font-semibold">${cat.name}</div>
@@ -331,16 +358,29 @@ function refreshAll(){
   renderHero(); renderBenefits(); renderCategories(); renderProducts();
 }
 
-// ====== لوحة التحكم ======
+/* =====================[ لوحة التحكم ]===================== */
 const modal = document.getElementById('adminModal');
-document.getElementById('openAdmin').onclick = () => {
+const openAdminBtn = document.getElementById('openAdmin');
+
+// دالة فتح اللوحة (تُستخدم للأدمن فقط)
+function openAdminPanel(){
   modal.classList.remove('hidden');
   document.getElementById('brandInput').value = brand;
   document.getElementById('heroTitleInput').value = hero.title;
   document.getElementById('heroSubInput').value = hero.subtitle;
   document.getElementById('heroImgPreview').src = hero.image;
   switchTab('products'); fillCatSelect(); listCats(); listProds();
+}
+
+// أخفي زر اللوحة للزوّار
+if (!isAdmin) openAdminBtn.classList.add('hidden');
+
+// الضغط على الزر (لو زائر، حيطلب PIN)
+openAdminBtn.onclick = () => {
+  if (!isAdmin) { location.hash = '#/admin'; ensureAdmin(); return; }
+  openAdminPanel();
 };
+
 document.getElementById('closeAdmin').onclick = ()=> modal.classList.add('hidden');
 document.getElementById('adminCloseBg').onclick = ()=> modal.classList.add('hidden');
 
@@ -356,7 +396,7 @@ function switchTab(name){
   });
 }
 
-// إعدادات عامة
+/* إعدادات عامة */
 document.getElementById('brandInput').addEventListener('input', e=>{ brand = e.target.value || 'ZADORA'; lsSet(LS_KEYS.brand, brand); refreshAll(); });
 document.getElementById('heroTitleInput').addEventListener('input', e=>{ hero.title = e.target.value; lsSet(LS_KEYS.hero, hero); refreshAll(); });
 document.getElementById('heroSubInput').addEventListener('input', e=>{ hero.subtitle = e.target.value; lsSet(LS_KEYS.hero, hero); refreshAll(); });
@@ -366,7 +406,7 @@ document.getElementById('heroImgInput').addEventListener('change', e=>{
   r.readAsDataURL(file);
 });
 
-// أقسام
+/* أقسام */
 let editingCat = null;
 function listCats(){
   const wrap = document.getElementById('catsList');
@@ -393,7 +433,7 @@ function editCat(name){
 function deleteCat(name){
   if(!confirm('مسح القسم؟')) return;
   categories = categories.filter(c=>c.name!==name);
-  lsSet(LS_KEYS.cats, categories); fillCatSelect(); listCats(); renderCategories();
+  lsSet(LS_KEYS.cats, categories); fillCatSelect(); listCats(); renderCategories(); renderRoute();
 }
 document.getElementById('catImgInput').addEventListener('change', e=>{
   const f = e.target.files[0]; if(!f) return;
@@ -411,7 +451,7 @@ document.getElementById('saveCat').onclick = ()=>{
     categories.push({name, image:img});
   }
   editingCat=null; document.getElementById('catName').value=''; document.getElementById('catImgPreview').src='';
-  lsSet(LS_KEYS.cats, categories); fillCatSelect(); listCats(); renderCategories();
+  lsSet(LS_KEYS.cats, categories); fillCatSelect(); listCats(); renderCategories(); renderRoute();
 };
 document.getElementById('resetCat').onclick = ()=>{ editingCat=null; document.getElementById('catName').value=''; document.getElementById('catImgPreview').src=''; };
 function fillCatSelect(){
@@ -419,7 +459,7 @@ function fillCatSelect(){
   sel.innerHTML = '<option value="">اختر القسم</option>' + categories.map(c=> `<option>${c.name}</option>`).join('');
 }
 
-// منتجات
+/* منتجات */
 let editingProd = null;
 function listProds(){
   const wrap = document.getElementById('productsList');
@@ -452,7 +492,7 @@ function editProd(id){
 function deleteProd(id){
   if(!confirm('مسح المنتج؟')) return;
   products = products.filter(p=>String(p.id)!==String(id));
-  lsSet(LS_KEYS.prods, products); listProds(); renderProducts();
+  lsSet(LS_KEYS.prods, products); listProds(); renderProducts(); renderRoute();
 }
 pImgInput.addEventListener('change', e=>{
   const f = e.target.files[0]; if(!f) return;
@@ -481,15 +521,14 @@ saveProduct.onclick = ()=>{
   editingProd=null;
   ['pTitle','pPrice','pOld','pRating','pReviews','pMinQty','pBadge'].forEach(id=> document.getElementById(id).value='');
   pCategory.value=''; pImgPreview.src='';
-  lsSet(LS_KEYS.prods, products); listProds(); renderProducts();
+  lsSet(LS_KEYS.prods, products); listProds(); renderProducts(); renderRoute();
 };
 resetProduct.onclick = ()=>{
   editingProd=null; ['pTitle','pPrice','pOld','pRating','pReviews','pMinQty','pBadge'].forEach(id=> document.getElementById(id).value='');
   pCategory.value=''; pImgPreview.src='';
 };
 
-// تصدير/استيراد/إرجاع
-exportJson.onclick = null;
+/* تصدير/استيراد/إرجاع */
 document.getElementById('exportJson').onclick = ()=>{
   const data = { brand, hero, categories, products };
   const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
@@ -506,7 +545,7 @@ document.getElementById('importJson').addEventListener('change', e=>{
       if(Array.isArray(data.categories)) categories = data.categories;
       if(Array.isArray(data.products)) products = data.products;
       lsSet(LS_KEYS.brand, brand); lsSet(LS_KEYS.hero, hero); lsSet(LS_KEYS.cats, categories); lsSet(LS_KEYS.prods, products);
-      refreshAll(); fillCatSelect(); listCats(); listProds();
+      refreshAll(); fillCatSelect(); listCats(); listProds(); renderRoute();
     }catch{ alert('ملف غير صالح'); }
   }; r.readAsText(f);
 });
@@ -514,11 +553,71 @@ document.getElementById('resetAll').onclick = ()=>{
   if(!confirm('إرجاع كل شيء للوضع الافتراضي؟')) return;
   brand = DEFAULT_BRAND; hero = DEFAULT_HERO; categories = DEFAULT_CATS.slice(); products = DEFAULT_PRODS.slice();
   lsSet(LS_KEYS.brand, brand); lsSet(LS_KEYS.hero, hero); lsSet(LS_KEYS.cats, categories); lsSet(LS_KEYS.prods, products);
-  refreshAll(); fillCatSelect(); listCats(); listProds();
+  refreshAll(); fillCatSelect(); listCats(); listProds(); renderRoute();
 };
 
-// بدء
+/* =====================[ Router بالهاش ]===================== */
+function renderCategoryView(cat) {
+  showHomeSections(false);
+  const items = products.filter(p => (p.category || '') === cat);
+  const el = document.getElementById('productsSection');
+  el.innerHTML = `
+    <div class="flex items-center justify-between mb-3">
+      <div class="text-lg md:text-xl font-bold">قسم: ${cat}</div>
+      <a href="#/" class="text-rose-600 hover:underline">عودة للكل</a>
+    </div>
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
+      ${
+        items.length
+        ? items.map(p => `
+          <div class="group rounded-2xl border bg-white overflow-hidden hover:shadow-md transition-shadow">
+            <div class="relative">
+              <img src="${p.image}" class="w-full h-56 object-cover"/>
+              ${p.badge ? `<span class="absolute top-3 right-3 bg-rose-600 text-white text-xs px-2 py-1 rounded-full">${p.badge}</span>` : ''}
+              <button class="absolute bottom-3 left-3 bg-white/90 backdrop-blur text-sm rounded-xl px-3 py-1 hover:bg-white">حد أدنى: ${p.minQty}</button>
+            </div>
+            <div class="p-3" dir="rtl">
+              <h4 class="font-semibold min-h-[44px]">${p.title}</h4>
+              <div class="flex items-baseline gap-2 mt-2">
+                <span class="text-lg font-extrabold">${p.price} ج.م</span>
+                <span class="text-sm line-through text-gray-400">${p.oldPrice} ج.م</span>
+              </div>
+              <div class="mt-3 flex items-center gap-2">
+                <button class="flex-1 rounded-xl bg-rose-600 text-white py-2 font-semibold hover:bg-rose-700">أضف للسلة</button>
+                <button class="rounded-xl border px-3 py-2 hover:bg-gray-50">♡</button>
+              </div>
+            </div>
+          </div>`).join('')
+        : `<div class="rounded-2xl border bg-white p-6">لا توجد منتجات لهذا القسم حتى الآن.</div>`
+      }
+    </div>`;
+}
+function renderHome() {
+  showHomeSections(true);
+  renderProducts();
+}
+function renderRoute() {
+  const h = decodeURIComponent(location.hash || '#/');
+  if (h.startsWith('#/c/')) {
+    const cat = h.slice(4);
+    renderCategoryView(cat);
+  } else {
+    renderHome();
+  }
+}
+
+/* =====================[ بدء ]===================== */
 refreshAll(); fillCatSelect(); listCats(); listProds();
+renderRoute();
+
+// لو فتحْت #/admin و إنت مش أدمن، اطلب PIN
+if (location.hash === '#/admin' && !isAdmin) ensureAdmin();
+
+// راقب تغيّر الهاش (للروتنج + الإدارة)
+window.addEventListener('hashchange', () => {
+  if (location.hash === '#/admin' && !isAdmin) ensureAdmin();
+  renderRoute();
+});
 </script>
 </body>
 </html>

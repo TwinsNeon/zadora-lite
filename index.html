@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ZADORA Lite</title>
+  <title>ZADORA Lite — Cloud Config</title>
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    /* الكود اهو: الشريط يتحرك كذا مرّة ورا بعض بدون ما الكارت نفسه يهتز */
+    /* الشريط يتحرك كذا مرّة ورا بعض بدون ما الكارت نفسه يهتز */
     :root{
       --accent:#C19A6B;      /* جملي */
       --accent-700:#A67C52;  /* أغمق */
@@ -137,7 +137,7 @@
           </div>
         </div>
         <div class="relative min-h-[220px]">
-          <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1600&auto=format&fit=crop" alt="newsletter" class="absolute inset-0 w-full h-full object-cover opacity-70"/>
+          <img id="newsletterImg" src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1600&auto=format&fit=crop" alt="newsletter" class="absolute inset-0 w-full h-full object-cover opacity-70"/>
         </div>
       </div>
     </div>
@@ -179,130 +179,48 @@
     <div class="py-4 text-center text-xs text-gray-500">© <span id="year"></span> <span id="brandNameCopy" class="text-black">ZADORA</span>. All rights reserved.</div>
   </footer>
 
-  <!-- لوحة التحكم -->
+  <!-- لوحة التحكم (مختصرة) -->
   <div id="adminModal" class="fixed inset-0 hidden z-50 modal-bg">
     <div class="absolute inset-0" id="adminCloseBg"></div>
     <div class="absolute right-0 top-0 bottom-0 w-full md:w-[760px] bg-white rounded-none md:rounded-l-3xl shadow-2xl overflow-y-auto">
       <div class="sticky top-0 glass border-b p-4 flex items-center justify-between">
         <div class="font-bold">لوحة التحكم</div>
         <div class="flex items-center gap-2">
-          <label class="rounded-xl border px-3 py-2 text-sm cursor-pointer hover:bg-gray-50">
-            <input type="file" id="importJson" accept="application/json" class="hidden" /> استيراد
-          </label>
           <button id="exportJson" class="rounded-xl border px-3 py-2 text-sm hover:bg-gray-50">تصدير</button>
           <button id="resetAll" class="rounded-xl border px-3 py-2 text-sm hover:bg-gray-50">إرجاع الافتراضي</button>
           <button id="closeAdmin" class="rounded-xl accent-bg px-4 py-2 text-sm">إغلاق</button>
         </div>
       </div>
 
-      <div class="p-4">
-        <div class="flex gap-2 mb-4">
-          <button data-tab="products"  class="tab-btn rounded-xl px-4 py-2 text-sm border">المنتجات</button>
-          <button data-tab="categories" class="tab-btn rounded-xl px-4 py-2 text-sm border">الأقسام</button>
-          <button data-tab="settings"   class="tab-btn rounded-xl px-4 py-2 text-sm border">الإعدادات</button>
-        </div>
+      <div class="p-4" dir="rtl">
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="text-sm font-medium">اسم البراند</label>
+            <input id="brandInput" class="w-full rounded-xl border px-3 py-2" placeholder="ZADORA"/>
+            <label class="text-sm font-medium">عنوان الهيرو</label>
+            <input id="heroTitleInput" class="w-full rounded-xl border px-3 py-2"/>
+            <label class="text-sm font-medium">وصف الهيرو</label>
+            <textarea id="heroSubInput" class="w-full rounded-xl border px-3 py-2 min-h-[112px]"></textarea>
+            <div class="text-sm font-medium mt-4">صورة الهيرو</div>
+            <input id="heroImgInput" class="w-full rounded-xl border px-3 py-2" placeholder="رابط صورة أو ارفع من جهازك بالنسخة الكاملة"/>
+            <div class="text-sm font-medium mt-4">صورة ZADORA Box</div>
+            <input id="boxImgInputTxt" class="w-full rounded-xl border px-3 py-2" placeholder="رابط صورة"/>
+          </div>
 
-        <!-- إعدادات -->
-        <div id="tab-settings" class="tab-pane hidden" dir="rtl">
-          <div class="grid md:grid-cols-2 gap-4">
-            <div class="space-y-2">
-              <label class="text-sm font-medium">اسم البراند</label>
-              <input id="brandInput" class="w-full rounded-xl border px-3 py-2" placeholder="ZADORA"/>
-              <label class="text-sm font-medium">عنوان الهيرو</label>
-              <input id="heroTitleInput" class="w-full rounded-xl border px-3 py-2"/>
-              <label class="text-sm font-medium">وصف الهيرو</label>
-              <textarea id="heroSubInput" class="w-full rounded-xl border px-3 py-2 min-h-[112px]"></textarea>
-
-              <div class="space-y-2 mt-4">
-                <label class="text-sm font-medium">وصف الفوتر</label>
-                <textarea id="footerInput" class="w-full rounded-xl border px-3 py-2 min-h-[90px]"
-                  placeholder="اكتب النص التعريفي الذي يظهر في الفوتر"></textarea>
-
-                <div class="text-sm font-medium mt-2">روابط السوشيال</div>
-                <input id="linkFBInput" class="w-full rounded-xl border px-3 py-2" placeholder="https://facebook.com/yourpage" />
-                <input id="linkIGInput" class="w-full rounded-xl border px-3 py-2" placeholder="https://instagram.com/yourpage" />
-                <input id="linkTTInput" class="w-full rounded-xl border px-3 py-2" placeholder="https://tiktok.com/@yourpage" />
-                <input id="linkTGInput" class="w-full rounded-xl border px-3 py-2" placeholder="https://t.me/yourchannel" />
-                <p class="text-xs text-gray-500">اترك أي خانة فاضية لو مش عايز الرابط يظهر.</p>
-              </div>
-            </div>
-            <div class="space-y-2">
-              <div class="text-sm font-medium">صورة الهيرو</div>
-              <div class="aspect-[4/3] w-full overflow-hidden rounded-xl border bg-white" id="heroImgWrap">
-                <img id="heroImgPreview" class="w-full h-full object-cover" />
-              </div>
-              <label class="inline-flex items-center gap-2 rounded-xl border px-3 py-2 cursor-pointer hover:bg-gray-50">
-                <input id="heroImgInput" type="file" accept="image/*" class="hidden" /> رفع صورة
-              </label>
-
-              <div class="text-sm font-medium mt-6">صورة ZADORA Box</div>
-              <div class="aspect-[4/3] w-full overflow-hidden rounded-xl border bg-white" id="boxImgWrap">
-                <img id="boxImgPreview" class="w-full h-full object-cover" />
-              </div>
-              <label class="inline-flex items-center gap-2 rounded-xl border px-3 py-2 cursor-pointer hover:bg-gray-50">
-                <input id="boxImgInput" type="file" accept="image/*" class="hidden" /> رفع صورة
-              </label>
-            </div>
+          <div class="space-y-2">
+            <div class="text-sm font-medium">وصف الفوتر</div>
+            <textarea id="footerInput" class="w-full rounded-xl border px-3 py-2 min-h-[90px]"
+              placeholder="النص التعريفي الذي يظهر في الفوتر"></textarea>
+            <div class="text-sm font-medium mt-2">روابط السوشيال</div>
+            <input id="linkFBInput" class="w-full rounded-xl border px-3 py-2" placeholder="https://facebook.com/yourpage" />
+            <input id="linkIGInput" class="w-full rounded-xl border px-3 py-2" placeholder="https://instagram.com/yourpage" />
+            <input id="linkTTInput" class="w-full rounded-xl border px-3 py-2" placeholder="https://tiktok.com/@yourpage" />
+            <input id="linkTGInput" class="w-full rounded-xl border px-3 py-2" placeholder="https://t.me/yourchannel" />
           </div>
         </div>
-
-        <!-- أقسام -->
-        <div id="tab-categories" class="tab-pane hidden" dir="rtl">
-          <div class="grid md:grid-cols-3 gap-4">
-            <div class="space-y-3">
-              <input id="catName" class="w-full rounded-xl border px-3 py-2" placeholder="اسم القسم"/>
-              <div class="space-y-2">
-                <div class="text-sm font-medium">صورة القسم</div>
-                <div class="aspect-[4/3] w-full overflow-hidden rounded-xl border bg-white">
-                  <img id="catImgPreview" class="w-full h-full object-cover" />
-                </div>
-                <label class="inline-flex items-center gap-2 rounded-xl border px-3 py-2 cursor-pointer hover:bg-gray-50">
-                  <input id="catImgInput" type="file" accept="image/*" class="hidden" /> رفع صورة
-                </label>
-              </div>
-              <div class="flex gap-2">
-                <button id="saveCat" class="flex-1 rounded-xl accent-bg py-2 font-semibold">حفظ</button>
-                <button id="resetCat" class="rounded-xl border px-3">إلغاء</button>
-              </div>
-            </div>
-            <div class="md:col-span-2 grid sm:grid-cols-2 gap-3" id="catsList"></div>
-          </div>
+        <div class="mt-4">
+          <button id="saveAdmin" class="rounded-xl accent-bg px-4 py-2 font-semibold">حفظ في السحابة</button>
         </div>
-
-        <!-- منتجات -->
-        <div id="tab-products" class="tab-pane hidden" dir="rtl">
-          <div class="grid md:grid-cols-3 gap-4">
-            <div class="space-y-3">
-              <input id="pTitle" class="w-full rounded-xl border px-3 py-2" placeholder="اسم المنتج"/>
-              <div class="grid grid-cols-2 gap-2">
-                <input id="pPrice" class="rounded-xl border px-3 py-2" placeholder="السعر" type="number"/>
-                <input id="pOld" class="rounded-xl border px-3 py-2" placeholder="السعر قبل" type="number"/>
-              </div>
-              <div class="grid grid-cols-3 gap-2">
-                <input id="pRating" class="rounded-xl border px-3 py-2" placeholder="تقييم" type="number" step="0.1"/>
-                <input id="pReviews" class="rounded-xl border px-3 py-2" placeholder="مراجعات" type="number"/>
-                <input id="pMinQty" class="rounded-xl border px-3 py-2" placeholder="حد أدنى" type="number"/>
-              </div>
-              <input id="pBadge" class="w-full rounded-xl border px-3 py-2" placeholder="شارة (جديد/عرض خاص)"/>
-              <select id="pCategory" class="w-full rounded-xl border px-3 py-2"></select>
-              <div class="space-y-2">
-                <div class="text-sm font-medium">صورة المنتج</div>
-                <div class="aspect-[4/3] w-full overflow-hidden rounded-xl border bg-white">
-                  <img id="pImgPreview" class="w-full h-full object-cover" />
-                </div>
-                <label class="inline-flex items-center gap-2 rounded-xl border px-3 py-2 cursor-pointer hover:bg-gray-50">
-                  <input id="pImgInput" type="file" accept="image/*" class="hidden" /> رفع صورة
-                </label>
-              </div>
-              <div class="flex gap-2">
-                <button id="saveProduct" class="flex-1 rounded-xl accent-bg py-2 font-semibold">إضافة/تحديث</button>
-                <button id="resetProduct" class="rounded-xl border px-3">إلغاء</button>
-              </div>
-            </div>
-            <div class="md:col-span-2 grid sm:grid-cols-2 gap-3" id="productsList"></div>
-          </div>
-        </div>
-
       </div>
     </div>
   </div>
@@ -358,12 +276,8 @@
           <button id="closeCart" class="rounded-xl accent-bg px-4 py-2 text-sm">إغلاق</button>
         </div>
       </div>
-
       <div class="p-4 grid md:grid-cols-2 gap-4">
-        <div>
-          <div id="cartItems" class="space-y-3"></div>
-        </div>
-
+        <div><div id="cartItems" class="space-y-3"></div></div>
         <div class="space-y-3">
           <div class="rounded-2xl border bg-white p-4">
             <div class="font-semibold mb-2">البيانات</div>
@@ -379,7 +293,6 @@
               <div id="tierMsg" class="text-sm accent-text"></div>
             </div>
           </div>
-
           <div class="rounded-2xl border bg-white p-4">
             <div class="flex items-center justify-between">
               <div>الإجمالي الفرعي</div>
@@ -406,7 +319,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 
@@ -425,47 +337,7 @@
     </div>
   </div>
 
-  <!-- مودال الحساب (تسجيل) -->
-  <div id="authModal" class="fixed inset-0 hidden z-50 modal-bg">
-    <div class="absolute inset-0" id="authCloseBg"></div>
-    <div class="absolute right-0 top-0 bottom-0 w-full sm:w-[500px] bg-white md:rounded-l-3xl shadow-2xl overflow-y-auto">
-      <div class="sticky top-0 glass border-b p-4 flex items-center justify-between">
-        <div class="font-bold">تسجيل الدخول</div>
-        <button id="authClose" class="rounded-xl accent-bg px-4 py-2 text-sm">إغلاق</button>
-      </div>
-      <div class="p-4 space-y-3">
-        <div class="text-sm text-gray-600">سجل بإدخال بياناتك، أو فعّل الدخول بجوجل (اختياري).</div>
-        <input id="authName"  class="w-full rounded-xl border px-3 py-2" placeholder="الاسم الكامل"/>
-        <input id="authEmail" class="w-full rounded-xl border px-3 py-2" placeholder="البريد الإلكتروني"/>
-        <input id="authPhone" class="w-full rounded-xl border px-3 py-2" placeholder="رقم الهاتف"/>
-        <button id="authSave" class="w-full rounded-xl accent-bg px-4 py-2 font-semibold">تسجيل / دخول</button>
-
-        <div id="googleArea" class="mt-4 hidden">
-          <div class="text-center my-2 text-xs text-gray-500">أو</div>
-          <div id="g_id_onload"
-               data-client_id=""
-               data-context="signin"
-               data-callback="onGoogleCredential"
-               data-itp_support="true">
-          </div>
-          <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-text="signin_with" data-size="large" data-logo_alignment="left"></div>
-          <div class="text-xs text-gray-500 mt-2">ضع Client ID في الكود لتفعيل زر جوجل.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- مودال الفواتير -->
-  <div id="invModal" class="fixed inset-0 hidden z-50 modal-bg">
-    <div class="absolute inset-0" id="invCloseBg"></div>
-    <div class="absolute right-0 top-0 bottom-0 w-full md:w-[760px] bg-white md:rounded-l-3xl shadow-2xl overflow-y-auto">
-      <div class="sticky top-0 glass border-b p-4 flex items-center justify-between">
-        <div class="font-bold">فواتيري</div>
-        <button id="invClose" class="rounded-xl accent-bg px-4 py-2 text-sm">إغلاق</button>
-      </div>
-      <div id="invBody" class="p-4"></div>
-    </div>
-  </div>
+  <!-- مودالات أخرى (الدخول والفواتير) محذوفة اختصاراً -->
 
 <script>
 /* =====================[ إعدادات عامة + دعم ]===================== */
@@ -474,27 +346,18 @@ const SUPPORT_EMAIL  = 'sales@example.com';
 const waBtn = document.getElementById('waBtn'); if (waBtn) waBtn.href = 'https://wa.me/' + WHATSAPP_PHONE;
 const GOOGLE_CLIENT_ID = '';
 
-/* =====================[ Admin PIN + Routing ]===================== */
+/* =====================[ Admin PIN ]===================== */
 const ADMIN_PIN = '1234';
 let isAdmin = sessionStorage.getItem('zl_admin') === '1';
 
-function showHomeSections(show){
-  document.getElementById('heroSection').classList.toggle('hidden', !show);
-  document.getElementById('benefitsSection').classList.toggle('hidden', !show);
-  document.getElementById('categoriesSection').classList.toggle('hidden', !show);
-}
-function ensureAdmin(){
-  const pin = prompt('أدخل رقم PIN الإدارة:');
-  if (pin === ADMIN_PIN){ isAdmin = true; sessionStorage.setItem('zl_admin','1'); openAdminPanel(); }
-  else { alert('PIN غير صحيح'); location.hash = '#/'; }
-}
-
-/* =====================[ بيانات + LocalStorage ]===================== */
+/* =====================[ مفاتيح التخزين ]===================== */
 const LS_KEYS = {
   brand:'zl_brand', hero:'zl_hero', cats:'zl_cats', prods:'zl_prods',
   cart:'zl_cart', customer:'zl_customer', social:'zl_social', footer:'zl_footer',
   user:'zl_user', invoices:'zl_invoices', chat:'zl_chat_history'
 };
+
+/* =====================[ قيم افتراضية ]===================== */
 const DEFAULT_BRAND = 'ZADORA';
 const DEFAULT_HERO = {
   title:'جُملة راقية بلمسة ZADORA',
@@ -517,9 +380,17 @@ const DEFAULT_PRODS = [
   { id:4, title:'علب تخزين محكمة – 6 قطع', price:350, oldPrice:399, rating:4.8, reviews:73, image:'https://images.unsplash.com/photo-1592840496694-26d035b08cc6?q=80&w=1200&auto=format&fit=crop', badge:'الأفضل قيمة', minQty:12, category:'تخزين وتنظيم' },
 ];
 
+/* =====================[ Helpers ]===================== */
 function lsGet(k, fb){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; }catch{ return fb; } }
 function lsSet(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} }
+const fmt = n => `${Number(n||0).toLocaleString('ar-EG')} ج.م`;
+function normalize(s){
+  return String(s||'').toLowerCase()
+    .replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه')
+    .replace(/[^\p{L}\p{N}\s]/gu,'').trim();
+}
 
+/* =====================[ حالة التطبيق ]===================== */
 let brand = lsGet(LS_KEYS.brand, DEFAULT_BRAND);
 let hero = lsGet(LS_KEYS.hero, DEFAULT_HERO);
 let categories = lsGet(LS_KEYS.cats, DEFAULT_CATS);
@@ -531,7 +402,7 @@ let footerText = lsGet(LS_KEYS.footer, 'منصة جملة للأدوات الم�
 let user = lsGet(LS_KEYS.user, null);
 let invoices = lsGet(LS_KEYS.invoices, []);
 
-// ===== توافق نسخ قديمة: لو boxImage مش موجودة في LocalStorage أضفها تلقائيًا =====
+/* ===== توافق نسخ قديمة: لو boxImage مش موجودة أضفها تلقائيًا ===== */
 try {
   if (!hero || typeof hero !== 'object') hero = DEFAULT_HERO;
   if (!hero.image) hero.image = DEFAULT_HERO.image;
@@ -539,124 +410,30 @@ try {
   lsSet(LS_KEYS.hero, hero);
 } catch(e) {}
 
-/* =====================[ بحث + ترتيب ]===================== */
-let currentSort = 'default';
-let currentQuery = '';
-function normalize(s){
-  return String(s||'').toLowerCase()
-    .replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه')
-    .replace(/[^\p{L}\p{N}\s]/gu,'').trim();
-}
-function sortList(list, key){
-  const arr = [...list];
-  if (key==='priceLow')  arr.sort((a,b)=>(a.price||0)-(b.price||0));
-  if (key==='priceHigh') arr.sort((a,b)=>(b.price||0)-(a.price||0));
-  if (key==='ratingHigh')arr.sort((a,b)=>(b.rating||0)-(a.rating||0));
-  return arr;
-}
-function applyFilters(list){
-  let out=list;
-  const q = normalize(currentQuery.trim());
-  const q2 = q.endsWith('ا') ? q.slice(0,-1) : '';
-  if(q){
-    out = out.filter(p=>{
-      const t = normalize(p.title); const c = normalize(p.category);
-      return t.includes(q)||c.includes(q)||(q2 && (t.includes(q2)||c.includes(q2)));
-    });
-  }
-  return sortList(out, currentSort);
+/* =====================[ Cloud Config ]===================== */
+const CLOUD_URL = 'zl_config.json';
+async function loadCloud(){
+  try{
+    const res = await fetch(CLOUD_URL + '?t=' + Date.now(), {cache:'no-store'});
+    if(!res.ok) return;
+    const data = await res.json();
+    if(data.brand) brand = data.brand;
+    if(data.hero)  hero = {...hero, ...data.hero};
+    if(Array.isArray(data.categories)) categories = data.categories;
+    if(Array.isArray(data.products))   products   = data.products;
+    if(data.social) social = {...social, ...data.social};
+    if(typeof data.footer === 'string') footerText = data.footer;
+    // احفظ في LocalStorage برضه
+    lsSet(LS_KEYS.brand, brand);
+    lsSet(LS_KEYS.hero, hero);
+    lsSet(LS_KEYS.cats, categories);
+    lsSet(LS_KEYS.prods, products);
+    lsSet('zl_social', social);
+    lsSet(LS_KEYS.footer, footerText);
+  }catch(e){ console.warn('cloud config error', e); }
 }
 
-/* =====================[ Cart Logic ]===================== */
-const fmt = n => `${Number(n||0).toLocaleString('ar-EG')} ج.م`;
-const effMin = p => Number(p.minQty)||12;
-function getProd(id){ return products.find(p=> String(p.id)===String(id)); }
-function saveCart(){ lsSet(LS_KEYS.cart, cart); renderCartIcon(); }
-function cartCount(){ return cart.reduce((s,i)=> s+(Number(i.qty)||0), 0); }
-function cartSubtotal(){ return cart.reduce((s,i)=>{ const p=getProd(i.id); return s+(p?(p.price||0)*(i.qty||0):0);},0); }
-
-function renderCartIcon(){
-  const c = cartCount();
-  const b = document.getElementById('cartCount');
-  b.textContent = c; b.classList.toggle('hidden', c===0);
-}
-function addToCart(id){
-  const p=getProd(id); if(!p) return;
-  const step=effMin(p);
-  const it=cart.find(x=> String(x.id)===String(id));
-  if(it){ it.qty+=step; } else { cart.push({id, qty:step}); }
-  saveCart(); openCart();
-}
-function changeQty(id, dir){
-  const p=getProd(id); if(!p) return;
-  const step=effMin(p);
-  const it=cart.find(x=> String(x.id)===String(id)); if(!it) return;
-  it.qty=Math.max(step,(it.qty||0)+dir*step);
-  saveCart(); renderCartPanel();
-}
-function removeItem(id){ cart=cart.filter(x=> String(x.id)!==String(id)); saveCart(); renderCartPanel(); }
-function clearCart(){ cart=[]; saveCart(); renderCartPanel(); }
-
-function renderCartPanel(){
-  const wrap=document.getElementById('cartItems'); if(!wrap) return;
-  if(cart.length===0){
-    wrap.innerHTML=`<div class="rounded-2xl border bg-white p-6">سلتك فارغة.</div>`;
-  }else{
-    wrap.innerHTML = cart.map(it=>{
-      const p=getProd(it.id); if(!p) return '';
-      const line=(p.price||0)*(it.qty||0); const step=effMin(p);
-      return `<div class="rounded-2xl border bg-white p-3">
-        <div class="flex gap-3">
-          <img src="${p.image}" class="w-20 h-20 object-cover rounded-xl border" />
-          <div class="flex-1">
-            <div class="font-semibold">${p.title}</div>
-            <div class="text-sm text-gray-500">القسم: ${p.category||'-'} • حد أدنى: ${step}</div>
-            <div class="mt-2 flex items-center gap-2">
-              <button class="px-3 py-1 rounded-xl border qty-dec" data-id="${p.id}">−</button>
-              <div class="min-w-[56px] text-center font-semibold">${it.qty}</div>
-              <button class="px-3 py-1 rounded-xl border qty-inc" data-id="${p.id}">+</button>
-              <button class="ml-auto px-3 py-1 rounded-xl border text-sm hover:bg-gray-50 item-remove" data-id="${p.id}">حذف</button>
-            </div>
-          </div>
-        </div>
-        <div class="mt-2 text-right"><span class="font-bold">${fmt(line)}</span></div>
-      </div>`;
-    }).join('');
-  }
-
-  document.getElementById('cusName').value  = customer.name||'';
-  document.getElementById('cusPhone').value = customer.phone||'';
-  document.getElementById('cusCity').value  = customer.city||'';
-  document.getElementById('cusTier').value  = customer.tier||'wh';
-
-  const subtotal = cartSubtotal();
-  document.getElementById('cartSubtotal').textContent = fmt(subtotal);
-
-  const tier = customer.tier||'wh';
-  let discount=0, msg='';
-  if(tier==='retail'){
-    discount = Math.round(subtotal*0.10);
-    document.getElementById('retailDiscountRow').classList.remove('hidden');
-    document.getElementById('retailDiscountVal').textContent = `-${fmt(discount)}`;
-    msg='مبروك! جالك خصم 10%';
-  }else{
-    document.getElementById('retailDiscountRow').classList.add('hidden');
-    if(tier==='wh') msg='مبروك! كسبت 2% كاش باك.';
-    if(tier==='half') msg='مبروك! كسبت بوكس من ZADORA.';
-  }
-  document.getElementById('tierMsg').textContent = msg;
-
-  const total=subtotal-discount;
-  document.getElementById('cartTotal').textContent=fmt(total);
-
-  document.getElementById('cartCheckoutWA').disabled = cart.length===0;
-  document.getElementById('cartCheckoutEmail').disabled = cart.length===0;
-  document.getElementById('cartClear').disabled = cart.length===0;
-}
-function openCart(){ document.getElementById('cartModal').classList.remove('hidden'); renderCartPanel(); }
-function closeCart(){ document.getElementById('cartModal').classList.add('hidden'); }
-
-/* =====================[ Render ]===================== */
+/* =====================[ Renderers (مختصرة) ]===================== */
 function renderHero(){
   const el=document.getElementById('heroSection');
   el.innerHTML=`
@@ -696,28 +473,13 @@ function renderBenefits(){
     </div>`).join('')}
   </div>`;
 }
-function renderCategories(){
-  const el=document.getElementById('categoriesSection');
-  el.innerHTML=`
-    <div class="flex items-center justify-between mb-3">
-      <h3 class="text-lg md:text-xl font-bold">تسوق بالأقسام</h3>
-      <a href="#/" class="accent-text hover:underline cursor-pointer">عرض الكل</a>
-    </div>
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-      ${categories.map(cat=>`
-        <a href="#/c/${encodeURIComponent(cat.name)}" class="group relative block overflow-hidden rounded-2xl border bg-white">
-          <img src="${cat.image}" alt="${cat.name}" class="h-28 w-full object-cover transition-transform duration-300 group-hover:scale-105" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-          <div class="absolute bottom-2 right-2 text-white text-sm font-semibold">${cat.name}</div>
-        </a>`).join('')}
-    </div>`;
-}
 function productCard(p){
+  const effMin = Number(p.minQty)||12;
   return `<div class="group rounded-2xl border bg-white overflow-hidden hover:shadow-md transition-shadow">
     <div class="relative">
       <img src="${p.image}" class="w-full h-56 object-cover"/>
       ${p.badge ? `<span class="absolute top-3 right-3 accent-bg text-xs px-2 py-1 rounded-full">${p.badge}</span>` : ''}
-      <button class="absolute bottom-3 left-3 bg-white/90 backdrop-blur text-sm rounded-xl px-3 py-1 hover:bg-white">حد أدنى: ${effMin(p)}</button>
+      <button class="absolute bottom-3 left-3 bg-white/90 backdrop-blur text-sm rounded-xl px-3 py-1 hover:bg-white">حد أدنى: ${effMin}</button>
     </div>
     <div class="p-3" dir="rtl">
       <h4 class="font-semibold min-h-[44px]">${p.title}</h4>
@@ -726,34 +488,36 @@ function productCard(p){
         <span class="text-sm line-through text-gray-400">${fmt(p.oldPrice)}</span>
       </div>
       <div class="mt-3 flex items-center gap-2">
-        <button class="flex-1 rounded-xl accent-bg py-2 font-semibold btn-add" data-id="${p.id}">أضف للسلة</button>
+        <button class="flex-1 rounded-xl accent-bg py-2 font-semibold">أضف للسلة</button>
         <button class="rounded-xl border px-3 py-2 hover:bg-gray-50" title="إضافة للمفضلة">♡</button>
       </div>
     </div>
   </div>`;
 }
-function renderProducts(){
-  const el=document.getElementById('productsSection');
-  const list=applyFilters(products);
+function renderCategories(){
+  const el=document.getElementById('categoriesSection');
   el.innerHTML=`
     <div class="flex items-center justify-between mb-3">
-      <h3 class="text-lg md:text-xl font-bold">${currentQuery ? `نتائج عن: "${currentQuery}"` : 'الأكثر مبيعًا'}</h3>
-      <div class="flex items-center gap-2 text-sm">
-        <span>ترتيب:</span>
-        <select id="homeSort" class="border rounded-xl px-2 py-1">
-          <option value="default">بدون ترتيب</option>
-          <option value="priceLow">السعر: من الأقل للأعلى</option>
-          <option value="priceHigh">السعر: من الأعلى للأقل</option>
-          <option value="ratingHigh">الأعلى تقييمًا</option>
-        </select>
-      </div>
+      <h3 class="text-lg md:text-xl font-bold">تسوق بالأقسام</h3>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+      ${categories.map(cat=>`
+        <div class="group relative block overflow-hidden rounded-2xl border bg-white">
+          <img src="${cat.image}" alt="${cat.name}" class="h-28 w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+          <div class="absolute bottom-2 right-2 text-white text-sm font-semibold">${cat.name}</div>
+        </div>`).join('')}
+    </div>`;
+}
+function renderProducts(){
+  const el=document.getElementById('productsSection');
+  el.innerHTML=`
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-lg md:text-xl font-bold">الأكثر مبيعًا</h3>
     </div>
     <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-      ${list.length ? list.map(productCard).join('') : `<div class="rounded-2xl border bg-white p-6">لا توجد نتائج مطابقة.</div>`}
+      ${products.map(productCard).join('')}
     </div>`;
-  const sel=document.getElementById('homeSort');
-  sel.value=currentSort;
-  sel.onchange=e=>{ currentSort=e.target.value; renderProducts(); };
 }
 function renderFooter(){
   const about=document.getElementById('footerAbout'); if(about) about.textContent=footerText||'';
@@ -776,500 +540,68 @@ function refreshAll(){
   document.getElementById('brandNameCopy').textContent=brand;
   document.getElementById('year').textContent=new Date().getFullYear();
   document.getElementById('brandInChat').textContent=brand;
-  renderHero(); renderBenefits(); renderCategories(); renderProducts(); renderFooter(); renderCartIcon(); updateAccountUI();
-  renderCatsDrawerList('');
-}
-
-/* =====================[ لوحة التحكم ]===================== */
-const modal=document.getElementById('adminModal');
-const openAdminBtn=document.getElementById('openAdmin');
-function openAdminPanel(){
-  modal.classList.remove('hidden');
-  document.getElementById('brandInput').value=brand;
-  document.getElementById('heroTitleInput').value=hero.title;
-  document.getElementById('heroSubInput').value=hero.subtitle;
-  document.getElementById('heroImgPreview').src=hero.image;
-  document.getElementById('boxImgPreview').src=hero.boxImage || '';
-  document.getElementById('footerInput').value=footerText||'';
-  ['FB','IG','TT','TG'].forEach(k=>{
-    const map={FB:'facebook',IG:'instagram',TT:'tiktok',TG:'telegram'};
-    const el=document.getElementById('link'+k+'Input'); if(el) el.value=social[map[k]]||'';
-  });
-  switchTab('settings'); fillCatSelect(); listCats(); listProds();
-}
-if(!isAdmin) openAdminBtn.classList.add('hidden');
-openAdminBtn.onclick=()=>{ if(!isAdmin){ location.hash='#/admin'; ensureAdmin(); return; } openAdminPanel(); };
-document.getElementById('closeAdmin').onclick=()=> modal.classList.add('hidden');
-document.getElementById('adminCloseBg').onclick=()=> modal.classList.add('hidden');
-
-document.querySelectorAll('.tab-btn').forEach(btn=> btn.addEventListener('click', ()=> switchTab(btn.dataset.tab)));
-function switchTab(name){
-  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.add('hidden'));
-  document.getElementById('tab-'+name).classList.remove('hidden');
-  document.querySelectorAll('.tab-btn').forEach(b=>{
-    const on=b.dataset.tab===name;
-    b.classList.toggle('accent-bg', on);
-    b.classList.toggle('text-white', on);
-    b.classList.toggle('accent-border', on);
-  });
-}
-
-/* إعدادات عامة */
-document.getElementById('brandInput').addEventListener('input', e=>{ brand=e.target.value||'ZADORA'; lsSet(LS_KEYS.brand,brand); refreshAll(); });
-document.getElementById('heroTitleInput').addEventListener('input', e=>{ hero.title=e.target.value; lsSet(LS_KEYS.hero,hero); refreshAll(); });
-document.getElementById('heroSubInput').addEventListener('input', e=>{ hero.subtitle=e.target.value; lsSet(LS_KEYS.hero,hero); refreshAll(); });
-document.getElementById('heroImgInput').addEventListener('change', e=>{
-  const file=e.target.files[0]; if(!file) return;
-  const r=new FileReader(); r.onload=ev=>{ hero.image=String(ev.target.result); lsSet(LS_KEYS.hero,hero); refreshAll(); };
-  r.readAsDataURL(file);
-});
-document.getElementById('boxImgInput').addEventListener('change', e=>{
-  const file=e.target.files[0]; if(!file) return;
-  const r=new FileReader(); r.onload=ev=>{ hero.boxImage=String(ev.target.result); lsSet(LS_KEYS.hero,hero); refreshAll(); };
-  r.readAsDataURL(file);
-});
-
-/* إعداد الفوتر والسوشيال */
-document.getElementById('footerInput').addEventListener('input', e=>{ footerText=e.target.value; lsSet(LS_KEYS.footer,footerText); renderFooter(); });
-[['linkFBInput','facebook'],['linkIGInput','instagram'],['linkTTInput','tiktok'],['linkTGInput','telegram']].forEach(([id,key])=>{
-  const el=document.getElementById(id); if(!el) return;
-  el.addEventListener('input', e=>{ social[key]=e.target.value.trim(); lsSet('zl_social',social); renderFooter(); });
-});
-
-/* أقسام */
-let editingCat=null;
-function listCats(){
-  const wrap=document.getElementById('catsList'); if(!wrap) return;
-  wrap.innerHTML=categories.map(c=>`
-    <div class="rounded-2xl border overflow-hidden bg-white">
-      <div class="aspect-[4/3] w-full overflow-hidden">
-        <img src="${c.image}" class="w-full h-full object-cover" />
-      </div>
-      <div class="p-3 flex items-center justify-between">
-        <div class="font-semibold">${c.name}</div>
-        <div class="flex gap-2">
-          <button class="rounded-xl border px-3 py-1 hover:bg-gray-50" onclick='editCat("${c.name}")'>تعديل</button>
-          <button class="rounded-xl border px-3 py-1 hover:bg-gray-50" onclick='deleteCat("${c.name}")'>حذف</button>
-        </div>
-      </div>
-    </div>`).join('');
-}
-function editCat(name){
-  const c=categories.find(x=>x.name===name); if(!c) return;
-  editingCat=name; catName.value=c.name; catImgPreview.src=c.image;
-}
-function deleteCat(name){
-  if(!confirm('مسح القسم؟')) return;
-  categories=categories.filter(c=>c.name!==name);
-  lsSet(LS_KEYS.cats,categories); fillCatSelect(); listCats(); renderCategories(); renderRoute(); renderCatsDrawerList('');
-}
-catImgInput.addEventListener('change', e=>{
-  const f=e.target.files[0]; if(!f) return;
-  const r=new FileReader(); r.onload=ev=> catImgPreview.src=String(ev.target.result); r.readAsDataURL(f);
-});
-saveCat.onclick=()=>{
-  const name=catName.value.trim(); const img=catImgPreview.src;
-  if(!name) return alert('اكتب اسم القسم');
-  if(editingCat){ categories=categories.map(c=> c.name===editingCat? {name, image:img}: c); }
-  else{
-    if(categories.some(c=>c.name===name)) return alert('القسم موجود بالفعل');
-    categories.push({name, image:img});
-  }
-  editingCat=null; catName.value=''; catImgPreview.src='';
-  lsSet(LS_KEYS.cats,categories); fillCatSelect(); listCats(); renderCategories(); renderRoute(); renderCatsDrawerList('');
-};
-resetCat.onclick=()=>{ editingCat=null; catName.value=''; catImgPreview.src=''; };
-function fillCatSelect(){
-  pCategory.innerHTML = '<option value="">اختر القسم</option>' + categories.map(c=>`<option>${c.name}</option>`).join('');
-}
-
-/* منتجات */
-let editingProd=null;
-function listProds(){
-  const wrap=document.getElementById('productsList'); if(!wrap) return;
-  wrap.innerHTML=products.map(p=>`
-    <div class="rounded-2xl border bg-white overflow-hidden">
-      <div class="aspect-[4/3] w-full overflow-hidden">
-        <img src="${p.image}" class="w-full h-full object-cover"/>
-      </div>
-      <div class="p-3">
-        <div class="font-semibold">${p.title}</div>
-        <div class="text-sm text-gray-500 mt-1">${p.category||''}</div>
-        <div class="flex items-baseline gap-2 mt-2">
-          <span class="text-lg font-extrabold">${fmt(p.price)}</span>
-          <span class="text-sm line-through text-gray-400">${fmt(p.oldPrice)}</span>
-        </div>
-        <div class="mt-3 flex items-center gap-2">
-          <button class="rounded-xl border px-3 py-1 hover:bg-gray-50" onclick='editProd(${JSON.stringify(p.id)})'>تعديل</button>
-          <button class="rounded-xl border px-3 py-1 hover:bg-gray-50" onclick='deleteProd(${JSON.stringify(p.id)})'>حذف</button>
-        </div>
-      </div>
-    </div>`).join('');
-}
-function editProd(id){
-  const p=products.find(x=> String(x.id)===String(id)); if(!p) return;
-  editingProd=id; pTitle.value=p.title; pPrice.value=p.price; pOld.value=p.oldPrice;
-  pRating.value=p.rating; pReviews.value=p.reviews; pMinQty.value=p.minQty;
-  pBadge.value=p.badge||''; pCategory.value=p.category||''; pImgPreview.src=p.image;
-}
-function deleteProd(id){
-  if(!confirm('مسح المنتج؟')) return;
-  products=products.filter(p=> String(p.id)!==String(id));
-  lsSet(LS_KEYS.prods,products); listProds(); renderProducts(); renderRoute();
-}
-pImgInput.addEventListener('change', e=>{
-  const f=e.target.files[0]; if(!f) return;
-  const r=new FileReader(); r.onload=ev=> pImgPreview.src=String(ev.target.result); r.readAsDataURL(f);
-});
-saveProduct.onclick=()=>{
-  const form={
-    title:pTitle.value.trim(),
-    price:Number(pPrice.value||0),
-    oldPrice:Number(pOld.value||0),
-    rating:Number(pRating.value||0),
-    reviews:Number(pReviews.value||0),
-    minQty:Number(pMinQty.value||0),
-    badge:pBadge.value.trim(),
-    category:pCategory.value,
-    image:pImgPreview.src||''
-  };
-  if(!form.title) return alert('اكتب اسم المنتج');
-  if(editingProd){ products=products.map(p=> String(p.id)===String(editingProd)? {...form, id:editingProd}:p); }
-  else{
-    const nextId=products.length? Math.max(...products.map(p=>Number(p.id)||0))+1:1;
-    products.push({...form, id:nextId});
-  }
-  editingProd=null; ['pTitle','pPrice','pOld','pRating','pReviews','pMinQty','pBadge'].forEach(id=> document.getElementById(id).value='');
-  pCategory.value=''; pImgPreview.src='';
-  lsSet(LS_KEYS.prods,products); listProds(); renderProducts(); renderRoute();
-};
-resetProduct.onclick=()=>{ editingProd=null; ['pTitle','pPrice','pOld','pRating','pReviews','pMinQty','pBadge'].forEach(id=> document.getElementById(id).value=''); pCategory.value=''; pImgPreview.src=''; };
-
-/* تصدير/استيراد/إرجاع */
-exportJson.onclick=()=>{
-  const data={ brand, hero, categories, products, social, footer:footerText };
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='zadora_store_export.json'; a.click(); URL.revokeObjectURL(url);
-};
-importJson.addEventListener('change', e=>{
-  const f=e.target.files[0]; if(!f) return;
-  const r=new FileReader(); r.onload=ev=>{
-    try{
-      const data=JSON.parse(String(ev.target.result||'{}'));
-      if(data.brand) brand=data.brand;
-      if(data.hero) hero=data.hero;
-      if(Array.isArray(data.categories)) categories=data.categories;
-      if(Array.isArray(data.products)) products=data.products;
-      if(data.social) social=data.social;
-      if(typeof data.footer==='string') footerText=data.footer;
-      lsSet(LS_KEYS.brand,brand); lsSet(LS_KEYS.hero,hero); lsSet(LS_KEYS.cats,categories); lsSet(LS_KEYS.prods,products); lsSet('zl_social',social); lsSet(LS_KEYS.footer,footerText);
-      refreshAll(); fillCatSelect(); listCats(); listProds(); renderRoute(); renderCatsDrawerList('');
-    }catch{ alert('ملف غير صالح'); }
-  }; r.readAsText(f);
-});
-resetAll.onclick=()=>{
-  if(!confirm('إرجاع كل شيء للوضع الافتراضي؟')) return;
-  brand=DEFAULT_BRAND; hero=DEFAULT_HERO; categories=DEFAULT_CATS.slice(); products=DEFAULT_PRODS.slice();
-  social={facebook:'',instagram:'',tiktok:'',telegram:''}; footerText='منصة جملة للأدوات المنزلية: حد أدنى 12 قطعة، شحن سريع، وضمان استبدال.';
-  lsSet(LS_KEYS.brand,brand); lsSet(LS_KEYS.hero,hero); lsSet(LS_KEYS.cats,categories); lsSet(LS_KEYS.prods,products); lsSet('zl_social',social); lsSet(LS_KEYS.footer,footerText);
-  refreshAll(); fillCatSelect(); listCats(); listProds(); renderRoute(); renderCatsDrawerList('');
-};
-
-/* =====================[ Router ]===================== */
-function renderCategoryView(cat){
-  showHomeSections(false);
-  const all=products.filter(p=> (p.category||'')===cat);
-  const list=applyFilters(all);
-  const el=document.getElementById('productsSection');
-  el.innerHTML=`
-    <div class="flex items-center justify-between mb-3">
-      <div class="text-lg md:text-xl font-bold">قسم: ${cat}</div>
-      <div class="flex items-center gap-3">
-        <select id="catSort" class="border rounded-xl px-2 py-1">
-          <option value="default">بدون ترتيب</option>
-          <option value="priceLow">السعر: من الأقل للأعلى</option>
-          <option value="priceHigh">السعر: من الأعلى للأقل</option>
-          <option value="ratingHigh">الأعلى تقييمًا</option>
-        </select>
-        <a href="#/" class="accent-text hover:underline">عودة للكل</a>
-      </div>
-    </div>
-    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-      ${list.length ? list.map(productCard).join('') : `<div class="rounded-2xl border bg-white p-6">لا توجد منتجات لهذا القسم حتى الآن.</div>`}
-    </div>`;
-  const sel=document.getElementById('catSort'); sel.value=currentSort; sel.onchange=e=>{ currentSort=e.target.value; renderCategoryView(cat); };
-}
-function renderHome(){ showHomeSections(true); renderProducts(); }
-function renderRoute(){
-  const h=decodeURIComponent(location.hash||'#/');
-  if(h.startsWith('#/c/')) renderCategoryView(h.slice(4));
-  else renderHome();
-}
-
-/* =====================[ البحث ]===================== */
-function attachSearch(){
-  const fields=[
-    { input:document.getElementById('search'),  form:document.getElementById('searchForm') },
-    { input:document.getElementById('search2'), form:document.getElementById('searchForm2') }
-  ].filter(x=> x.input && x.form);
-
-  fields.forEach(({input,form})=>{
-    input.value=currentQuery;
-    input.oninput=e=>{ currentQuery=e.target.value; renderRoute(); };
-    input.onkeydown=e=>{ if(e.key==='Escape'){ input.value=''; currentQuery=''; renderRoute(); } };
-    form.onsubmit=e=>{ e.preventDefault(); currentQuery=input.value.trim(); renderRoute(); };
-  });
-}
-
-/* =====================[ الشات ]===================== */
-const chatPanel=document.getElementById('chatPanel');
-const chatToggle=document.getElementById('chatToggle');
-const chatClose=document.getElementById('chatClose');
-const chatBody=document.getElementById('chatBody');
-const chatInput=document.getElementById('chatInput');
-const chatSend=document.getElementById('chatSend');
-
-chatToggle.onclick=()=> chatPanel.classList.toggle('hidden');
-chatClose.onclick =()=> chatPanel.classList.add('hidden');
-document.querySelectorAll('.quick').forEach(b=> b.onclick=()=>{ sendMsg(b.textContent); });
-
-let chatHistory=lsGet(LS_KEYS.chat, []);
-if(Array.isArray(chatHistory) && chatHistory.length>60){ chatHistory=chatHistory.slice(-60); lsSet(LS_KEYS.chat,chatHistory); }
-function renderChat(){
-  chatBody.innerHTML = chatHistory.map(m=>`
-    <div class="flex ${m.role==='user'?'justify-start':'justify-end'}">
-      <div class="max-w-[80%] rounded-2xl px-3 py-2 text-sm ${m.role==='user'?'bg-white border':'accent-bg'}">${m.text}</div>
-    </div>`).join('');
-  chatBody.scrollTop = chatBody.scrollHeight;
-}
-function push(role,text){
-  chatHistory.push({role,text,ts:Date.now()});
-  if(chatHistory.length>60) chatHistory=chatHistory.slice(-60);
-  lsSet(LS_KEYS.chat,chatHistory); renderChat();
-}
-function replyBot(q){
-  const t=q.trim(); const s=w=> t.includes(w); let a='';
-  if(s('شحن')||s('توصيل')||s('المحافظة')||s('المحافظات')) a='الشحن خلال 24-72 ساعة لكل المحافظات. السعر حسب الوزن والمحافظة. هنجمع الأوردر ونتواصل للتأكيد.';
-  else if(s('استرجاع')||s('ارجاع')||s('استبدال')) a='الاستبدال خلال 7 أيام للقطع المعيوبة/المكسورة – بنبدل فورًا أو نرجع قيمتها.';
-  else if(s('حد أدنى')||س('اقل كمية')||s('أقل كمية')) a='الحد الأدنى للطلب: 12 قطعة لكل صنف (أو كرتونة كاملة لبعض المنتجات).';
-  else if(s('دفع')||s('تحويل')||s('فيزا')||s('كاش')) a='طرق الدفع: كاش عند الاستلام (القاهرة/الجيزة)، تحويل بنكي، أو فودافون كاش.';
-  else if(s('سعر')||s('سعره')||s('ثمن')) a='الأسعار بالجملة ظاهرة تحت كل منتج. لأسعار جملة كبيرة ابعتلنا على واتساب.';
-  else if(s('تواصل')||s('واتساب')||s('رقم')) a=`تقدر تكلم فريق المبيعات مباشرة: واتساب ${WHATSAPP_PHONE} أو إيميل ${SUPPORT_EMAIL}.`;
-  else a='مفهوم! 😊 لو سؤالك عن الشحن/الاسترجاع/الحد الأدنى/الدفع اكتب الكلمة، أو تواصل على زر واتساب بالأسفل.';
-  push('bot',a);
-}
-function sendMsg(text){
-  const v=(text ?? chatInput.value).trim(); if(!v) return;
-  push('user',v); chatInput.value=''; setTimeout(()=> replyBot(v), 300);
-}
-chatSend.onclick=()=> sendMsg();
-chatInput.addEventListener('keydown', e=>{ if(e.key==='Enter') sendMsg(); });
-
-/* =====================[ الحساب + الفواتير ]===================== */
-const accountBtn=document.getElementById('accountBtn');
-const accountMenu=document.getElementById('accountMenu');
-const accountHello=document.getElementById('accountHello');
-const menuLogin=document.getElementById('menuLogin');
-const menuInvoices=document.getElementById('menuInvoices');
-const menuLogout=document.getElementById('menuLogout');
-
-function updateAccountUI(){
-  if(user){
-    accountHello.textContent=`مرحبًا، ${user.name || user.email || 'عميلنا'}`;
-    menuLogin.classList.add('hidden');
-    menuInvoices.classList.remove('hidden');
-    menuLogout.classList.remove('hidden');
-  }else{
-    accountHello.textContent='مرحبًا، ضيف';
-    menuLogin.classList.remove('hidden');
-    menuInvoices.classList.add('hidden');
-    menuLogout.classList.add('hidden');
-  }
-}
-accountBtn.addEventListener('click', ()=> accountMenu.classList.toggle('hidden'));
-document.addEventListener('click', (e)=>{ if(!e.target.closest('.dropdown')) accountMenu.classList.add('hidden'); });
-menuLogin.onclick = ()=> openAuth();
-menuInvoices.onclick = ()=> openInvoices();
-menuLogout.onclick = ()=>{ user=null; lsSet(LS_KEYS.user,user); updateAccountUI(); };
-
-const authModal=document.getElementById('authModal');
-const authClose=document.getElementById('authClose');
-const authCloseBg=document.getElementById('authCloseBg');
-const authSave=document.getElementById('authSave');
-
-function openAuth(){
-  document.getElementById('authName').value=user?.name||'';
-  document.getElementById('authEmail').value=user?.email||'';
-  document.getElementById('authPhone').value=user?.phone||'';
-  document.getElementById('googleArea').classList.toggle('hidden', !GOOGLE_CLIENT_ID);
-  const g=document.getElementById('g_id_onload'); if(g && GOOGLE_CLIENT_ID) g.setAttribute('data-client_id', GOOGLE_CLIENT_ID);
-  authModal.classList.remove('hidden');
-}
-function closeAuth(){ authModal.classList.add('hidden'); }
-authClose.onclick=closeAuth; authCloseBg.onclick=closeAuth;
-authSave.onclick=()=>{
-  const name=document.getElementById('authName').value.trim();
-  const email=document.getElementById('authEmail').value.trim();
-  const phone=document.getElementById('authPhone').value.trim();
-  if(!email && !phone){ alert('اكتب بريد إلكتروني أو رقم هاتف.'); return; }
-  user={ name, email, phone, ts:Date.now() };
-  lsSet(LS_KEYS.user,user); updateAccountUI(); closeAuth();
-};
-window.onGoogleCredential=(resp)=>{
-  try{
-    const token=resp.credential;
-    const payload=JSON.parse(atob(token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
-    user={ name:payload.name, email:payload.email, ts:Date.now(), google:true };
-    lsSet(LS_KEYS.user,user); updateAccountUI(); closeAuth();
-  }catch(e){ console.log(e); alert('تعذر إتمام تسجيل جوجل.'); }
-};
-
-/* فواتيري */
-const invModal=document.getElementById('invModal');
-const invBody=document.getElementById('invBody');
-document.getElementById('invClose').onclick=()=> invModal.classList.add('hidden');
-document.getElementById('invCloseBg').onclick=()=> invModal.classList.add('hidden');
-
-function openInvoices(){ renderInvoices(); invModal.classList.remove('hidden'); }
-function renderInvoices(){
-  if(!invoices.length){ invBody.innerHTML=`<div class="rounded-2xl border bg-white p-6">لا توجد فواتير محفوظة بعد.</div>`; return; }
-  invBody.innerHTML=invoices.slice().reverse().map(inv=>{
-    const dt=new Date(inv.ts);
-    const items=inv.items.map(i=>`${i.title} × ${i.qty}`).join('، ');
-    return `<div class="rounded-2xl border bg-white p-4 mb-3">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <div class="font-semibold">#${inv.id}</div>
-        <div class="text-sm text-gray-500">${dt.toLocaleString('ar-EG')}</div>
-      </div>
-      <div class="text-sm text-gray-600 mt-1">${items}</div>
-      <div class="flex items-center justify-between mt-2">
-        <div class="text-sm">الحالة: <span class="accent-text">${inv.status}</span></div>
-        <div class="font-bold">${fmt(inv.total)}</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-function saveInvoice(channel){
-  if(!cart.length) return null;
-  const id=Math.random().toString(36).slice(2,6).toUpperCase()+'-'+new Date().toISOString().slice(2,10).replace(/-/g,'');
-  const items=cart.map(it=>{ const p=getProd(it.id); return { id:it.id, title:p?.title||'', price:p?.price||0, qty:it.qty }; });
-  const subtotal=cartSubtotal();
-  const tier=customer.tier||'wh';
-  let discount=0; if(tier==='retail') discount=Math.round(subtotal*0.10);
-  const total=subtotal-discount;
-  const inv={ id, ts:Date.now(), items, subtotal, discount, total, tier, channel, customer:{...customer}, status:'قيد التأكيد' };
-  invoices.push(inv); lsSet(LS_KEYS.invoices,invoices); return inv;
-}
-
-/* إكمال الطلب */
-function buildOrderText(inv){
-  const lines=inv.items.map(i=>`• ${i.title} — كمية: ${i.qty} — ${i.price * i.qty} ج.م`).join('\n');
-  const note = inv.tier==='retail' ? `خصم قطاعي 10%: -${inv.discount} ج.م` :
-               inv.tier==='wh' ? `كاش باك 2%: ${Math.round(inv.subtotal*0.02)} ج.م` :
-               'هدية: بوكس من ZADORA';
-  return `طلب جديد من ${brand}:
-رقم الفاتورة: #${inv.id}
-${lines}
-----------------
-الإجمالي الفرعي: ${inv.subtotal} ج.م
-${note}
-الإجمالي: ${inv.total} ج.م
-نوع العميل: ${inv.tier==='wh'?'جملة الجملة':inv.tier==='half'?'نص جملة':'قطاعي'}
-الاسم: ${inv.customer.name||'-'}
-الهاتف: ${inv.customer.phone||'-'}
-المحافظة/المدينة: ${inv.customer.city||'-'}`;
-}
-document.getElementById('cartCheckoutWA').onclick=()=>{
-  if(!cart.length) return;
-  const inv=saveInvoice('whatsapp'); const text=buildOrderText(inv);
-  const url='https://wa.me/'+WHATSAPP_PHONE+'?text='+encodeURIComponent(text);
-  window.open(url,'_blank');
-};
-document.getElementById('cartCheckoutEmail').onclick=()=>{
-  if(!cart.length) return;
-  const inv=saveInvoice('email');
-  const subject=encodeURIComponent(`طلب جديد - ${brand} - #${inv.id}`);
-  const body=encodeURIComponent(buildOrderText(inv));
-  window.location.href=`mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
-};
-
-/* =====================[ أحداث عامة ]===================== */
-document.getElementById('openCart').onclick=openCart;
-document.getElementById('closeCart').onclick=closeCart;
-document.getElementById('cartCloseBg').onclick=closeCart;
-document.getElementById('cartClear').onclick=clearCart;
-
-['cusName','cusPhone','cusCity','cusTier'].forEach(id=>{
-  const el=document.getElementById(id);
-  el.addEventListener('input', ()=>{
-    customer={
-      name:document.getElementById('cusName').value.trim(),
-      phone:document.getElementById('cusPhone').value.trim(),
-      city:document.getElementById('cusCity').value.trim(),
-      tier:document.getElementById('cusTier').value
-    };
-    lsSet(LS_KEYS.customer,customer); renderCartPanel();
-  });
-});
-
-document.addEventListener('click', (e)=>{
-  const add=e.target.closest('.btn-add'); if(add){ addToCart(add.dataset.id); return; }
-  const inc=e.target.closest('.qty-inc'); if(inc){ changeQty(inc.dataset.id,+1); return; }
-  const dec=e.target.closest('.qty-dec'); if(dec){ changeQty(inc.dataset.id,-1); return; }
-  const rm=e.target.closest('.item-remove'); if(rm){ removeItem(rm.dataset.id); return; }
-});
-
-/* ===== درج الأقسام ===== */
-const catsDrawer=document.getElementById('catsDrawer');
-function openCats(){ catsDrawer.classList.remove('hidden'); document.getElementById('catsFilter').value=''; renderCatsDrawerList(''); }
-function closeCats(){ catsDrawer.classList.add('hidden'); }
-document.getElementById('catsToggle').onclick=openCats;
-document.getElementById('catsClose').onclick=closeCats;
-document.getElementById('catsCloseBg').onclick=closeCats;
-document.getElementById('catsFilter').addEventListener('input', e=> renderCatsDrawerList(e.target.value));
-document.getElementById('catsDrawerList').addEventListener('click', (e)=>{ if(e.target.closest('a')) closeCats(); });
-
-function renderCatsDrawerList(filter){
-  const wrap=document.getElementById('catsDrawerList'); if(!wrap) return;
-  const q=normalize(filter||'');
-  const list=categories.filter(c=> normalize(c.name).includes(q));
-  wrap.innerHTML=list.map(c=>`
-    <a href="#/c/${encodeURIComponent(c.name)}" class="rounded-xl border p-3 bg-white hover:bg-gray-50 flex items-center justify-between">
-      <span>${c.name}</span>
-      <span class="text-gray-400">›</span>
-    </a>`).join('') || `<div class="text-sm text-gray-500">لا نتائج.</div>`;
+  renderHero(); renderBenefits(); renderCategories(); renderProducts(); renderFooter();
 }
 
 /* ===== الشريط الجانبي: زر الإخفاء ===== */
 const tickerClose=document.getElementById('sideTickerClose');
 if(tickerClose) tickerClose.onclick=()=> document.getElementById('sideTicker').classList.add('hidden');
 
-/* ===== بدء ===== */
-refreshAll(); fillCatSelect(); listCats(); listProds();
-renderRoute(); attachSearch(); renderChat(); renderCartIcon();
-
-if(location.hash==='#/admin' && !isAdmin) ensureAdmin();
-window.addEventListener('hashchange', ()=>{ if(location.hash==='#/admin' && !isAdmin) ensureAdmin(); renderRoute(); attachSearch(); });
-
-/* ===== Burst للنص فقط: اشتغل عند التحميل وبعدين يرجع للماركي العادية ===== */
+/* ===== Burst للنص فقط عند التحميل ===== */
 (function(){
   const mq = document.querySelector('#sideTicker .marquee');
   if(!mq) return;
   const runBurstText = () => {
-    mq.classList.remove('bursting'); // إعادة التشغيل
-    void mq.offsetWidth;
-    mq.classList.add('bursting');
+    mq.classList.remove('bursting'); void mq.offsetWidth; mq.classList.add('bursting');
   };
-  mq.addEventListener('animationend', (e)=>{
-    if(e.animationName === 'tickerBurstText'){
-      mq.classList.remove('bursting'); // رجّع الماركي الأساسية
-    }
-  });
-  runBurstText(); // 5 نغزات متتالية أول ما تفتح الصفحة
-
-  // لو عايز تكررها كل فترة، فك الكومنت وحدد المدة بالمللي ثانية:
-  // setInterval(runBurstText, 12000);
+  mq.addEventListener('animationend', (e)=>{ if(e.animationName === 'tickerBurstText'){ mq.classList.remove('bursting'); } });
+  runBurstText();
 })();
+
+/* ===== بدء: حمّل إعدادات السحابة ثم ارسم ===== */
+(async function start(){
+  await loadCloud();         // ← يقرأ zl_config.json من نفس المجلد
+  refreshAll();
+})();
+
+/* فتح لوحة التحكم البسيطة */
+document.getElementById('openAdmin').onclick = () => {
+  if(!isAdmin){
+    const pin = prompt('أدخل رقم PIN الإدارة:');
+    if(pin !== ADMIN_PIN){ alert('PIN غير صحيح'); return; }
+    isAdmin = true; sessionStorage.setItem('zl_admin','1');
+  }
+  document.getElementById('adminModal').classList.remove('hidden');
+};
+document.getElementById('closeAdmin').onclick=()=> document.getElementById('adminModal').classList.add('hidden');
+
+/* حفظ في السحابة (تنزيل ملف JSON وتبديله في GitHub) */
+document.getElementById('saveAdmin').onclick = () => {
+  hero.image   = document.getElementById('heroImgInput').value || hero.image;
+  hero.boxImage= document.getElementById('boxImgInputTxt').value || hero.boxImage;
+  brand        = document.getElementById('brandInput').value || brand;
+  hero.title   = document.getElementById('heroTitleInput').value || hero.title;
+  hero.subtitle= document.getElementById('heroSubInput').value || hero.subtitle;
+  footerText   = document.getElementById('footerInput').value || footerText;
+  social.facebook = document.getElementById('linkFBInput').value;
+  social.instagram= document.getElementById('linkIGInput').value;
+  social.tiktok   = document.getElementById('linkTTInput').value;
+  social.telegram = document.getElementById('linkTGInput').value;
+
+  const data = { brand, hero, categories, products, social, footer: footerText };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='zl_config.json'; a.click();
+  URL.revokeObjectURL(url);
+  alert('تم تنزيل zl_config.json — ارفعه مكان الملف الحالي في GitHub.');
+};
+
+document.getElementById('exportJson').onclick = () => {
+  const data={ brand, hero, categories, products, social, footer:footerText };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='zl_config.json'; a.click(); URL.revokeObjectURL(url);
+};
+document.getElementById('resetAll').onclick=()=>{ if(confirm('إرجاع الافتراضي؟')){ brand=DEFAULT_BRAND; hero=DEFAULT_HERO; categories=DEFAULT_CATS.slice(); products=DEFAULT_PRODS.slice(); footerText='منصة جملة للأدوات المنزلية: حد أدنى 12 قطعة، شحن سريع، وضمان استبدال.'; refreshAll(); } };
 </script>
 </body>
 </html>

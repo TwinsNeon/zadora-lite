@@ -1051,7 +1051,7 @@ function replyBot(q){
   const t=q.trim(); const s=w=> t.includes(w); let a='';
   if(s('شحن')||s('توصيل')||s('المحافظة')||s('المحافظات')) a='الشحن خلال 24-72 ساعة لكل المحافظات. السعر حسب الوزن والمحافظة. هنجمع الأوردر ونتواصل للتأكيد.';
   else if(s('استرجاع')||s('ارجاع')||s('استبدال')) a='الاستبدال خلال 7 أيام للقطع المعيوبة/المكسورة – بنبدل فورًا أو نرجع قيمتها.';
-  else if(s('حد أدنى')||s('اقل كمية')||s('أقل كمية')) a='الحد الأدنى للطلب: 12 قطعة لكل صنف (أو كرتونة كاملة لبعض المنتجات).';
+  else if(s('حد أدنى')||س('اقل كمية')||s('أقل كمية')) a='الحد الأدنى للطلب: 12 قطعة لكل صنف (أو كرتونة كاملة لبعض المنتجات).';
   else if(s('دفع')||s('تحويل')||s('فيزا')||s('كاش')) a='طرق الدفع: كاش عند الاستلام (القاهرة/الجيزة)، تحويل بنكي، أو فودافون كاش.';
   else if(s('سعر')||s('سعره')||s('ثمن')) a='الأسعار بالجملة ظاهرة تحت كل منتج. لأسعار جملة كبيرة ابعتلنا على واتساب.';
   else if(s('تواصل')||s('واتساب')||s('رقم')) a=`تقدر تكلم فريق المبيعات مباشرة: واتساب ${WHATSAPP_PHONE} أو إيميل ${SUPPORT_EMAIL}.`;
@@ -1215,7 +1215,7 @@ document.getElementById('cartClear').onclick=clearCart;
 document.addEventListener('click', (e)=>{
   const add=e.target.closest('.btn-add'); if(add){ addToCart(add.dataset.id); return; }
   const inc=e.target.closest('.qty-inc'); if(inc){ changeQty(inc.dataset.id,+1); return; }
-  const dec=e.target.closest('.qty-dec'); if(dec){ changeQty(dec.dataset.id,-1); return; }
+  const dec=e.target.closest('.qty-dec'); if(dec){ changeQty(inc.dataset.id,-1); return; }
   const rm=e.target.closest('.item-remove'); if(rm){ removeItem(rm.dataset.id); return; }
 });
 

@@ -3,139 +3,90 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>ZADORA Lite — متجر بسيط يعمل من الموبايل</title>
+<title>ZADORA — تجارة الجملة</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#0f0f10; --card:#17181a; --muted:#9aa0a6; --text:#f5f5f5; --red:#d91111;
-  --accent:#C19A6B; --accent-700:#A67C52; --accent-50:#F4ECE3;
-}
-*{box-sizing:border-box}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:"Cairo",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+:root{--bg:#0f0f10;--card:#17181a;--muted:#9aa0a6;--text:#f5f5f5;--accent:#C19A6B;--accent-700:#A67C52}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:"Cairo",system-ui}
 a{color:inherit;text-decoration:none}
 .container{max-width:1100px;margin:0 auto;padding:0 14px}
-.header{position:sticky;top:0;z-index:50;background:#0b0c0d;border-bottom:1px solid #222}
-.header__in{display:flex;align-items:center;gap:10px;padding:10px 0}
-.brand{display:flex;align-items:center;font-weight:800;letter-spacing:.3px}
-.brand__logo{width:32px;height:32px;border:2px solid var(--accent);display:grid;place-items:center;border-radius:8px;margin-left:8px}
-.btn{border:0;border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:800}
-.btn-accent{background:var(--accent);color:#000}
-.btn-ghost{background:transparent;border:1px solid #2a2a2a;color:#fff}
+.header{position:sticky;top:0;z-index:40;background:#0b0c0d;border-bottom:1px solid #222}
+.header__in{display:flex;gap:10px;align-items:center;padding:10px 0}
+.brand{display:flex;align-items:center;font-weight:800}.brand__logo{width:32px;height:32px;border:2px solid var(--accent);display:grid;place-items:center;border-radius:8px;margin-left:8px}
+.btn{border:1px solid #2a2a2a;border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:800;background:#0f0f10;color:#fff}
+.btn-accent{background:var(--accent);color:#000;border:0}
 .badge{display:inline-block;font-size:12px;border:1px solid #2a2a2a;background:#1a1a1a;color:var(--muted);padding:4px 8px;border-radius:8px}
 .input{width:100%;background:#0e0e0f;border:1px solid #2a2a2a;color:#fff;border-radius:12px;padding:10px}
-.hero{padding:22px 0;border-bottom:1px solid #202124;background:linear-gradient(180deg,#131416,rgba(19,20,22,0))}
-.hero h1{margin:.2em 0;font-size:26px}
-.grid{display:grid;gap:14px}
-.grid--products{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));padding:18px 0}
-.card{background:var(--card);border:1px solid #222;border-radius:14px;overflow:hidden}
-.card img{width:100%;height:150px;object-fit:cover;background:#111}
-.card .pad{padding:10px}
-.price{font-weight:800}
+.grid{display:grid;gap:14px}.grid--products{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));padding:18px 0}
+.card{background:var(--card);border:1px solid #222;border-radius:14px;overflow:hidden}.card img{width:100%;height:150px;object-fit:cover;background:#111}.card .pad{padding:10px}.price{font-weight:800}
+.hero{position:relative;min-height:280px;display:grid;place-items:center;border-bottom:1px solid #202124}
+.hero::before{content:"";position:absolute;inset:0;background:
+linear-gradient( to bottom, rgba(15,15,16,.5), rgba(15,15,16,.8)),
+url('https://images.unsplash.com/photo-1517341725612-5f06f483f2f9?q=80&w=1400&auto=format&fit=crop') center/cover no-repeat;}
+.hero > .inner{position:relative;text-align:center;padding:40px 14px}
+.hero h1{margin:.2em 0 0;font-size:28px}
+.hero p{color:#ddd;margin:6px 0 14px}
 .footer{border-top:1px solid #202124;color:var(--muted);padding:16px 0;margin-top:24px;text-align:center}
-.row{display:flex;gap:10px;align-items:center}
-.flex-1{flex:1}
-.hide{display:none}
-.topbar{background:#000;border-bottom:1px solid #222}
-.topbar__in{display:flex;gap:12px;justify-content:center;padding:6px 8px;font-weight:700}
-.navbtns{display:flex;gap:6px;flex-wrap:wrap}
-
-/* كارت السلة/المودال */
+.row{display:flex;gap:10px;align-items:center}.flex-1{flex:1}
 .sheet{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end}
 .sheet__inner{background:#0d0e0f;border-top-left-radius:16px;border-top-right-radius:16px;border:1px solid #222;padding:14px 12px;width:100%;max-height:80vh;overflow:auto}
-.cart-list{display:grid;gap:10px}
-.cart-item{display:flex;gap:10px;align-items:center;justify-content:space-between;background:#151617;border:1px solid #222;padding:10px;border-radius:12px}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.kpi{background:#151617;border:1px solid #222;border-radius:12px;padding:12px;text-align:center}
-@media(max-width:700px){.kpis{grid-template-columns:repeat(2,1fr)}}
-
-/* القائمة المنسدلة للأقسام */
-.dropdown{position:relative}
-.dropdown-panel{position:absolute;inset-inline-end:0;top:100%;margin-top:.5rem;width:220px;background:#101112;border:1px solid #222;border-radius:12px;box-shadow:0 16px 40px rgba(0,0,0,.25);overflow:hidden;z-index:60}
-.dropdown-panel a{display:block;padding:10px 12px;border-bottom:1px solid #1f2022}
-.dropdown-panel a:hover{background:#16181a}
-
-/* تيكر جانبي */
-#sideTicker{position:fixed;right:12px;top:50%;transform:translateY(-50%);z-index:40;border:1px solid #222;background:#0d0e0f;border-radius:18px;overflow:hidden}
-#sideTicker .marquee{white-space:nowrap;display:inline-block;padding:8px 16px;animation:tickerBounce 12s linear infinite alternate}
-@keyframes tickerBounce{0%{transform:translateX(0)}100%{transform:translateX(-55%)}}
-@media(max-width:640px){#sideTicker{bottom:120px;top:auto;transform:none;right:12px}}
+.cart-list{display:grid;gap:10px}.cart-item{display:flex;gap:10px;align-items:center;justify-content:space-between;background:#151617;border:1px solid #222;padding:10px;border-radius:12px}
+#sideTicker{position:fixed;right:12px;top:50%;transform:translateY(-50%);z-index:30;border:1px solid #222;background:#0d0e0f;border-radius:18px;overflow:hidden}
+#sideTicker .marquee{white-space:nowrap;display:inline-block;padding:8px 16px;animation:ticker 12s linear infinite alternate}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-55%)}}
+@media(max-width:640px){#sideTicker{bottom:110px;top:auto;transform:none}}
 </style>
 </head>
 <body>
-
-<div class="topbar"><div class="container topbar__in">🚚 دفع عند الاستلام • 🔁 استبدال 14 يوم • 🕘 دعم 9ص–10م</div></div>
-
-<header class="header">
+<div class="header">
   <div class="container header__in">
     <div class="brand"><span class="brand__logo">Z</span> ZADORA</div>
     <div class="flex-1"></div>
+    <button class="btn" onclick="document.getElementById('wholesale').scrollIntoView({behavior:'smooth'})">طلب جملة</button>
+    <button class="btn" onclick="openCart()">السلة <span data-cart-count>0</span></button>
+  </div>
+</div>
 
-    <div class="navbtns">
-      <div class="dropdown">
-        <button id="catsBtn" class="btn btn-ghost">الأقسام ▾</button>
-        <div id="catsMenu" class="dropdown-panel hide">
-          <a href="#" data-cat="all">الكل</a>
-          <a href="#" data-cat="Kitchen">مطبخ</a>
-          <a href="#" data-cat="Home">منزل</a>
-          <a href="#" data-cat="Gifts">هدايا</a>
-        </div>
-      </div>
-
-      <button class="btn btn-ghost" onclick="show('home')">الرئيسية</button>
-      <button class="btn btn-ghost" onclick="show('products')">المنتجات</button>
-      <button class="btn btn-ghost" id="openCartBtn">السلة <span data-cart-count>0</span></button>
-      <button class="btn btn-ghost" id="openAdminBtn">لوحة التحكم</button>
+<section class="hero">
+  <div class="inner">
+    <div class="badge">تجارة الجملة</div>
+    <h1>منتجات منزلية وهدايا بجودة ممتازة</h1>
+    <p>شحن لجميع المحافظات • دفع عند الاستلام • دعم 9ص–10م</p>
+    <div class="row" style="justify-content:center">
+      <button class="btn btn-accent" onclick="document.getElementById('homeGrid').scrollIntoView({behavior:'smooth'})">تسوق الآن</button>
+      <button class="btn" onclick="openCart()">عرض السلة</button>
     </div>
   </div>
-
-  <div class="container" style="padding:8px 0 12px">
-    <form id="searchForm" class="row">
-      <input id="search" class="input" placeholder="ابحث عن منتج…" />
-      <button class="btn btn-accent" type="submit">بحث</button>
-    </form>
-  </div>
-</header>
+</section>
 
 <main class="container">
-  <section id="home" class="hero">
-    <h1>منتجات منزلية وهدايا بجودة ممتازة</h1>
-    <p style="color:var(--muted)">اختيارات مُنتقاة لمطبخك ومنزلك — اشترِ الآن واستلم على باب البيت</p>
-    <div class="row" style="justify-content:center;margin-top:10px">
-      <button class="btn btn-accent" onclick="show('products')">تسوق الآن</button>
-      <button class="btn btn-ghost" onclick="openCart()">عرض السلة</button>
-    </div>
-  </section>
-
   <section style="padding:16px 0">
-    <div class="kpis">
-      <div class="kpi"><div class="badge">الشحن</div><div style="font-weight:800;margin-top:6px">جميع المحافظات</div></div>
-      <div class="kpi"><div class="badge">الدفع</div><div style="font-weight:800;margin-top:6px">عند الاستلام</div></div>
-      <div class="kpi"><div class="badge">الدعم</div><div style="font-weight:800;margin-top:6px">9ص–10م</div></div>
-      <div class="kpi"><div class="badge">استبدال</div><div style="font-weight:800;margin-top:6px">14 يوم</div></div>
-    </div>
+    <h2 style="margin:10px 0">الأكثر طلبًا</h2>
+    <div id="homeGrid" class="grid grid--products"></div>
   </section>
 
-  <section id="products" class="hide">
-    <div class="row" style="justify-content:space-between;align-items:center">
-      <h2 style="margin:10px 0">المنتجات</h2>
-      <span class="badge" id="activeCatLabel">الكل</span>
+  <section id="wholesale" style="padding:10px 0 24px">
+    <h2 style="margin:10px 0">طلب جملة سريع</h2>
+    <div class="grid" style="grid-template-columns:1fr">
+      <input id="wName" class="input" placeholder="الاسم" />
+      <input id="wPhone" class="input" placeholder="رقم الموبايل" />
+      <input id="wCity" class="input" placeholder="المحافظة / المنطقة" />
+      <textarea id="wNote" class="input" placeholder="أصناف مهتم بها / الكمية المتوقعة"></textarea>
+      <button class="btn btn-accent" onclick="whatsappWholesale()">إرسال الطلب على واتساب</button>
     </div>
-    <div id="productsGrid" class="grid grid--products"></div>
+    <div class="badge" style="margin-top:8px">هنرجعلك تأكيد خلال ساعات العمل</div>
   </section>
 </main>
 
 <!-- شيت السلة -->
 <div id="cartSheet" class="sheet" role="dialog" aria-modal="true">
   <div class="sheet__inner">
-    <div class="row" style="justify-content:space-between">
-      <h3 style="margin:0">السلة</h3>
-      <button class="btn btn-ghost" onclick="closeCart()">إغلاق ✕</button>
-    </div>
+    <div class="row" style="justify-content:space-between"><h3 style="margin:0">السلة</h3><button class="btn" onclick="closeCart()">إغلاق ✕</button></div>
     <div id="cartList" class="cart-list" style="margin-top:10px"></div>
     <div class="row" style="justify-content:space-between;margin-top:12px">
       <div class="price">الإجمالي: <span id="cartTotal">EGP 0</span></div>
-      <button class="btn btn-accent" onclick="scrollToCheckout()">إتمام الطلب</button>
+      <button class="btn btn-accent" onclick="document.getElementById('checkout').scrollIntoView({behavior:'smooth'})">إتمام الطلب</button>
     </div>
     <div id="checkout" style="margin-top:14px">
       <h4 style="margin:6px 0">بيانات التوصيل</h4>
@@ -150,70 +101,44 @@ a{color:inherit;text-decoration:none}
   </div>
 </div>
 
-<!-- لوحة تحكم خفيفة -->
-<div id="adminSheet" class="sheet" role="dialog" aria-modal="true">
-  <div class="sheet__inner">
-    <div class="row" style="justify-content:space-between">
-      <h3 style="margin:0">لوحة التحكم (تجريبية محلية)</h3>
-      <button class="btn btn-ghost" onclick="closeAdmin()">إغلاق ✕</button>
-    </div>
-    <form onsubmit="event.preventDefault(); adminAddProduct(this);" class="grid" style="margin-top:12px">
-      <input name="name" class="input" placeholder="اسم المنتج" required />
-      <input name="price" class="input" placeholder="السعر (EGP)" type="number" min="0" step="1" required />
-      <input name="img" class="input" placeholder="رابط صورة (اختياري؛ إذا فرّغت يستخدم صورة افتراضية)" />
-      <input name="cat" class="input" placeholder="القسم (Kitchen / Home / Gifts …)" />
-      <button class="btn btn-accent" type="submit">إضافة المنتج</button>
-    </form>
-    <div class="badge" style="margin-top:10px">البيانات تتخزن محليًا في المتصفح (LocalStorage) لأغراض التجربة.</div>
-  </div>
-</div>
-
 <!-- تيكر جانبي -->
-<div id="sideTicker">
-  <div class="marquee">خصم افتتاح — استشارة مجانية — شحن لجميع المحافظات — خصم افتتاح — استشارة مجانية — شحن لجميع المحافظات — </div>
-</div>
+<div id="sideTicker"><div class="marquee">خصم افتتاح — استشارة مجانية — شحن لجميع المحافظات — خصم افتتاح — استشارة مجانية — شحن لجميع المحافظات — </div></div>
 
 <footer class="footer">© 2025 ZADORA • جميع الحقوق محفوظة</footer>
 
 <script>
-/* ====== إعدادات عامة ====== */
-const WHATSAPP_PHONE = '201119508881'; // ← غيّر رقمك هنا (بدون +)
-const STORE_KEY = 'zadora_products_v1';
+/* ===== إعدادات ===== */
+const WHATSAPP_PHONE = '201234567890'; // ← غيّر رقمك (بدون +)
+const STORE_KEY = 'zadora_products_v3'; // عدّلنا v3 عشان يطلع منتجات العينة فورًا
 const CART_KEY  = 'zadora_cart_v1';
-const IMG_FALLBACK = 'data:image/svg+xml;base64,'+btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="520"><rect width="100%" height="100%" fill="#1c1d1f"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#777" font-size="28" font-family="sans-serif">صورة المنتج</text></svg>`);
+const IMG_FALLBACK = 'https://images.unsplash.com/photo-1526328828355-69b01701ca37?q=80&w=1200&auto=format&fit=crop';
 
-/* ====== بيانات ابتدائية ====== */
+/* ===== بيانات ابتدائية ===== */
 function sampleProducts(){
   return [
-    {id:'p1',name:'طقم مجات سيراميك x6', price:420, cat:'Gifts',  img:IMG_FALLBACK},
-    {id:'p2',name:'صينية استانلس 40 سم',  price:350, cat:'Kitchen',img:IMG_FALLBACK},
-    {id:'p3',name:'برطمان زجاج 1 لتر',   price:120, cat:'Home',   img:IMG_FALLBACK},
-    {id:'p4',name:'غلاية بايركس 2 لتر',  price:540, cat:'Kitchen',img:IMG_FALLBACK}
+    {id:'p1',name:'طقم مجات سيراميك x6', price:420, cat:'هدايا', img:'https://images.unsplash.com/photo-1523362628745-0c100150b840?q=80&w=1200&auto=format&fit=crop'},
+    {id:'p2',name:'صينية استانلس 40 سم',  price:350, cat:'مطبخ', img:'https://images.unsplash.com/photo-1596040033229-9a55f4c3b6ac?q=80&w=1200&auto=format&fit=crop'},
+    {id:'p3',name:'برطمان زجاج 1 لتر',   price:120, cat:'منزل', img:'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop'},
+    {id:'p4',name:'غلاية بايركس 2 لتر',  price:540, cat:'مطبخ', img:'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1200&auto=format&fit=crop'}
   ];
 }
 
-/* ====== LocalStorage Helpers ====== */
+/* ===== LocalStorage ===== */
 const getProducts = () => JSON.parse(localStorage.getItem(STORE_KEY) || 'null') || (localStorage.setItem(STORE_KEY, JSON.stringify(sampleProducts())), sampleProducts());
 const setProducts = (arr) => localStorage.setItem(STORE_KEY, JSON.stringify(arr));
 const getCart     = () => JSON.parse(localStorage.getItem(CART_KEY) || '[]');
 const setCart     = (arr) => localStorage.setItem(CART_KEY, JSON.stringify(arr));
 
-/* ====== UI Helpers ====== */
-const $ = (sel)=>document.querySelector(sel);
-const $$= (sel)=>[...document.querySelectorAll(sel)];
-function show(id){ ['home','products'].forEach(s=>$('#'+s).classList.toggle('hide', s!==id)); if(id==='products') renderProducts(); }
+/* ===== Helpers ===== */
+const $ = s=>document.querySelector(s); const $$=s=>[...document.querySelectorAll(s)];
+const money = n => 'EGP '+ Number(n||0).toLocaleString('en-EG');
 function renderCartBadge(){ $$('[data-cart-count]').forEach(el=>el.textContent = getCart().reduce((s,i)=>s+i.qty,0)); }
-function money(n){ return 'EGP '+ Number(n||0).toLocaleString('en-EG'); }
 
-/* ====== رندر المنتجات ====== */
-function renderProducts(filterCat='all', q=''){
-  const wrap = $('#productsGrid');
-  const items = getProducts().filter(p=>{
-    const byCat = filterCat==='all' || p.cat===filterCat;
-    const byQ   = !q || (p.name||'').includes(q);
-    return byCat && byQ;
-  });
-  wrap.innerHTML = items.map(p=>`
+/* ===== المنتجات في الصفحة الرئيسية ===== */
+function renderHomeProducts(){
+  const wrap = document.getElementById('homeGrid');
+  const items = getProducts();
+  wrap.innerHTML = items.map(p => `
     <div class="card">
       <img src="${p.img||IMG_FALLBACK}" alt="${p.name}" onerror="this.src='${IMG_FALLBACK}'">
       <div class="pad">
@@ -228,115 +153,58 @@ function renderProducts(filterCat='all', q=''){
   `).join('');
 }
 
-/* ====== السلة ====== */
-function addToCart(id){
-  const cart = getCart();
-  const idx = cart.findIndex(i=>i.id===id);
-  if(idx>-1) cart[idx].qty+=1; else cart.push({id,qty:1});
-  setCart(cart); renderCartBadge();
-  openCart();
-}
-function qty(id,delta){
-  const cart = getCart();
-  const i = cart.findIndex(x=>x.id===id);
-  if(i>-1){ cart[i].qty+=delta; if(cart[i].qty<1) cart.splice(i,1); setCart(cart); renderCart(); renderCartBadge(); }
-}
+/* ===== السلة ===== */
+function addToCart(id){ const cart=getCart(); const i=cart.findIndex(x=>x.id===id); if(i>-1) cart[i].qty+=1; else cart.push({id,qty:1}); setCart(cart); renderCartBadge(); openCart(); }
+function qty(id,d){ const c=getCart(); const i=c.findIndex(x=>x.id===id); if(i>-1){ c[i].qty+=d; if(c[i].qty<1) c.splice(i,1); setCart(c); renderCart(); renderCartBadge(); } }
 function removeItem(id){ setCart(getCart().filter(x=>x.id!==id)); renderCart(); renderCartBadge(); }
 function renderCart(){
-  const list = $('#cartList'); const totalEl = $('#cartTotal');
+  const list = document.getElementById('cartList'); const totalEl = document.getElementById('cartTotal');
   const products = getProducts(); const cart = getCart();
   if(cart.length===0){ list.innerHTML = '<div class="badge">السلة فارغة</div>'; totalEl.textContent='EGP 0'; return; }
   let total=0;
   list.innerHTML = cart.map(it=>{
-    const p = products.find(x=>x.id===it.id);
-    const sum = (p?.price||0)*it.qty; total+=sum;
+    const p = products.find(x=>x.id===it.id); const sum=(p?.price||0)*it.qty; total+=sum;
     return `
       <div class="cart-item">
         <div class="row">
           <img src="${p?.img||IMG_FALLBACK}" style="width:70px;height:70px;object-fit:cover;border-radius:10px" onerror="this.src='${IMG_FALLBACK}'" />
-          <div>
-            <div style="font-weight:800">${p?.name||'-'}</div>
-            <div class="badge">${money(p?.price||0)} × ${it.qty}</div>
-          </div>
+          <div><div style="font-weight:800">${p?.name||'-'}</div><div class="badge">${money(p?.price||0)} × ${it.qty}</div></div>
         </div>
         <div>
           <div class="price" style="text-align:end">${money(sum)}</div>
           <div class="row" style="justify-content:flex-end;margin-top:6px">
-            <button class="btn btn-ghost" onclick="qty('${it.id}',-1)">−</button>
-            <button class="btn btn-ghost" onclick="qty('${it.id}',1)">+</button>
-            <button class="btn btn-ghost" onclick="removeItem('${it.id}')">حذف</button>
+            <button class="btn" onclick="qty('${it.id}',-1)">−</button>
+            <button class="btn" onclick="qty('${it.id}',1)">+</button>
+            <button class="btn" onclick="removeItem('${it.id}')">حذف</button>
           </div>
         </div>
-      </div>
-    `;
+      </div>`;
   }).join('');
   totalEl.textContent = money(total);
 }
-function openCart(){ $('#cartSheet').style.display='flex'; renderCart(); }
-function closeCart(){ $('#cartSheet').style.display='none'; }
-function scrollToCheckout(){ $('#checkout').scrollIntoView({behavior:'smooth'}); }
+function openCart(){ document.getElementById('cartSheet').style.display='flex'; renderCart(); }
+function closeCart(){ document.getElementById('cartSheet').style.display='none'; }
 
-/* ====== واتساب تشيك آوت ====== */
+/* ===== واتساب ===== */
 function whatsappCheckout(){
-  const products = getProducts(); const cart = getCart();
-  if(cart.length===0){ alert('السلة فارغة'); return; }
-  let lines = ['طلب جديد من ZADORA:'];
-  let total = 0;
-  cart.forEach(it=>{
-    const p = products.find(x=>x.id===it.id);
-    const s = (p?.price||0)*it.qty; total+=s;
-    lines.push(`- ${p?.name} × ${it.qty} = ${s} EGP`);
-  });
+  const products=getProducts(); const cart=getCart(); if(cart.length===0){ alert('السلة فارغة'); return; }
+  let lines=['طلب جديد من ZADORA:']; let total=0;
+  cart.forEach(it=>{ const p=products.find(x=>x.id===it.id); const s=(p?.price||0)*it.qty; total+=s; lines.push(`- ${p?.name} × ${it.qty} = ${s} EGP`); });
   lines.push(`الإجمالي = ${total} EGP`);
-  const name = $('#custName').value||''; const addr=$('#custAddr').value||''; const note=$('#custNote').value||'';
+  const name=document.getElementById('custName').value||''; const addr=document.getElementById('custAddr').value||''; const note=document.getElementById('custNote').value||'';
   if(name) lines.push('الاسم: '+name); if(addr) lines.push('العنوان: '+addr); if(note) lines.push('ملاحظات: '+note);
-  const msg = encodeURIComponent(lines.join('\n'));
-  window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${msg}`,'_blank');
+  window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(lines.join('\n'))}`,'_blank');
+}
+function whatsappWholesale(){
+  const name=document.getElementById('wName').value||''; const phone=document.getElementById('wPhone').value||''; const city=document.getElementById('wCity').value||''; const note=document.getElementById('wNote').value||'';
+  const lines=[ 'طلب جملة جديد:', `الاسم: ${name}`, `موبايل: ${phone}`, `المحافظة/المنطقة: ${city}`, `تفاصيل: ${note}` ];
+  window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(lines.join('\n'))}`,'_blank');
 }
 
-/* ====== لوحة التحكم (محلي) ====== */
-function adminAddProduct(form){
-  const fd = new FormData(form);
-  const p = {
-    id:'p'+Math.random().toString(36).slice(2,7),
-    name:fd.get('name'), price:parseFloat(fd.get('price')||'0'),
-    img:fd.get('img')||IMG_FALLBACK, cat:fd.get('cat')||'General'
-  };
-  const list = getProducts(); list.push(p); setProducts(list);
-  alert('تمت إضافة المنتج! افتح تبويب المنتجات لمشاهدته'); form.reset(); show('products');
-}
-function openAdmin(){ $('#adminSheet').style.display='flex'; }
-function closeAdmin(){ $('#adminSheet').style.display='none'; }
-
-/* ===== الأقسام + البحث ===== */
-let activeCat='all';
-$('#catsBtn').addEventListener('click',()=>$('#catsMenu').classList.toggle('hide'));
-$('#catsMenu').addEventListener('click',e=>{
-  if(e.target.matches('[data-cat]')){
-    e.preventDefault(); activeCat = e.target.dataset.cat;
-    $('#activeCatLabel').textContent = activeCat==='all' ? 'الكل' : activeCat;
-    renderProducts(activeCat, $('#search').value.trim());
-    $('#catsMenu').classList.add('hide');
-    show('products');
-  }
-});
-$('#searchForm').addEventListener('submit',e=>{
-  e.preventDefault();
-  renderProducts(activeCat, $('#search').value.trim());
-  show('products');
-});
-
-/* ===== أحداث عامة ===== */
-$('#openCartBtn').addEventListener('click',openCart);
-$('#openAdminBtn').addEventListener('click',openAdmin);
-$('#cartSheet').addEventListener('click',e=>{ if(e.target.id==='cartSheet') closeCart(); });
-$('#adminSheet').addEventListener('click',e=>{ if(e.target.id==='adminSheet') closeAdmin(); });
-
-/* ===== تهيئة ===== */
-document.addEventListener('DOMContentLoaded',()=>{
-  show('home'); renderCartBadge(); // بتحميل الصفحة
-  // أول تحميل: أنشئ البيانات لو مش موجودة
-  if(!localStorage.getItem(STORE_KEY)) setProducts(sampleProducts());
+/* ===== Init ===== */
+document.addEventListener('DOMContentLoaded',()=>{ 
+  if(!localStorage.getItem(STORE_KEY)) setProducts(sampleProducts()); 
+  renderHomeProducts(); renderCartBadge();
 });
 </script>
 </body>

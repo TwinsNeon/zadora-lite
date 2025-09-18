@@ -54,8 +54,18 @@ a{color:inherit;text-decoration:none}
   <div class="container header__in">
     <div class="brand"><span class="brand__logo">Z</span> ZADORA</div>
     <div class="flex-1"></div>
+    <button class="btn" onclick="openWishlist()">🩶</button>
     <button class="btn" onclick="document.getElementById('wholesale').scrollIntoView({behavior:'smooth'})">طلب جملة</button>
     <button class="btn" onclick="openCart()">السلة <span data-cart-count>0</span></button>
+    <div id="wishSheet" class="sheet" role="dialog" aria-modal="true">
+  <div class="sheet__inner">
+    <div class="row" style="justify-content:space-between">
+      <h3 style="margin:0">قائمة الرغبات</h3>
+      <button class="btn" onclick="closeWishlist()">✕</button>
+    </div>
+    <div id="wishList" class="cart-list" style="margin-top:10px"></div>
+  </div>
+</div>
   </div>
 </header>
 
@@ -138,7 +148,10 @@ a{color:inherit;text-decoration:none}
 <div id="sideTicker"><div class="marquee">حد أدنى 6 قطع/صنف — خصم 2% لعملاء الجملة — Free Random Box لعملاء نص الجملة — عمولة 2% فقط للتجار على ZADORA — </div></div>
 
 <footer class="footer">© 2025 ZADORA • جميع الحقوق محفوظة</footer>
-
+<div class="row" style="gap:6px">
+  <button class="btn btn-accent" onclick="addToCart('${p.id}')">أضف للسلة</button>
+  <button class="btn" onclick="toggleWish('${p.id}')">❤️</button>
+</div>
 <script>
 /* ===== إعدادات ===== */
 const WHATSAPP_PHONE = '201119508881'; // ← غيّر رقمك (بدون +)
@@ -178,7 +191,10 @@ function renderHomeProducts(){
         <h3 style="margin:.4em 0">${p.name}</h3>
         <div class="row" style="justify-content:space-between;align-items:center">
           <div class="price">${money(p.price)}</div>
-          <button class="btn btn-accent" onclick="addToCart('${p.id}')">أضف للسلة</button>
+        <div class="row" style="gap:6px">
+  <button class="btn btn-accent" onclick="addToCart('${p.id}')">أضف للسلة</button>
+  <button class="btn" onclick="toggleWish('${p.id}')">❤️</button>
+</div>
         </div>
         <div class="badge" style="margin-top:6px">الحد الأدنى لهذا الصنف: ${MIN_QTY_PER_ITEM} قطع</div>
       </div>

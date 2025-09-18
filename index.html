@@ -1,607 +1,343 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ZADORA Lite — Cloud Config</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ZADORA Lite — متجر بسيط يعمل من الموبايل</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f0f10; --card:#17181a; --muted:#9aa0a6; --text:#f5f5f5; --red:#d91111;
+  --accent:#C19A6B; --accent-700:#A67C52; --accent-50:#F4ECE3;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:"Cairo",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+a{color:inherit;text-decoration:none}
+.container{max-width:1100px;margin:0 auto;padding:0 14px}
+.header{position:sticky;top:0;z-index:50;background:#0b0c0d;border-bottom:1px solid #222}
+.header__in{display:flex;align-items:center;gap:10px;padding:10px 0}
+.brand{display:flex;align-items:center;font-weight:800;letter-spacing:.3px}
+.brand__logo{width:32px;height:32px;border:2px solid var(--accent);display:grid;place-items:center;border-radius:8px;margin-left:8px}
+.btn{border:0;border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:800}
+.btn-accent{background:var(--accent);color:#000}
+.btn-ghost{background:transparent;border:1px solid #2a2a2a;color:#fff}
+.badge{display:inline-block;font-size:12px;border:1px solid #2a2a2a;background:#1a1a1a;color:var(--muted);padding:4px 8px;border-radius:8px}
+.input{width:100%;background:#0e0e0f;border:1px solid #2a2a2a;color:#fff;border-radius:12px;padding:10px}
+.hero{padding:22px 0;border-bottom:1px solid #202124;background:linear-gradient(180deg,#131416,rgba(19,20,22,0))}
+.hero h1{margin:.2em 0;font-size:26px}
+.grid{display:grid;gap:14px}
+.grid--products{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));padding:18px 0}
+.card{background:var(--card);border:1px solid #222;border-radius:14px;overflow:hidden}
+.card img{width:100%;height:150px;object-fit:cover;background:#111}
+.card .pad{padding:10px}
+.price{font-weight:800}
+.footer{border-top:1px solid #202124;color:var(--muted);padding:16px 0;margin-top:24px;text-align:center}
+.row{display:flex;gap:10px;align-items:center}
+.flex-1{flex:1}
+.hide{display:none}
+.topbar{background:#000;border-bottom:1px solid #222}
+.topbar__in{display:flex;gap:12px;justify-content:center;padding:6px 8px;font-weight:700}
+.navbtns{display:flex;gap:6px;flex-wrap:wrap}
 
-  <style>
-    /* الشريط يتحرك كذا مرّة ورا بعض بدون ما الكارت نفسه يهتز */
-    :root{
-      --accent:#C19A6B;      /* جملي */
-      --accent-700:#A67C52;  /* أغمق */
-      --accent-50:#F4ECE3;   /* فاتح */
-    }
-    body{ background:#fafafa; color:#111827; }
-    .container{ max-width:1120px; margin:0 auto; }
-    .glass{ backdrop-filter: blur(6px); background: rgba(255,255,255,.85); }
-    .modal-bg{ background: rgba(0,0,0,.45); }
-    .accent-bg{ background-color:var(--accent) !important; color:#fff !important; }
-    .accent-bg:hover{ background-color:var(--accent-700) !important; }
-    .accent-border{ border-color:var(--accent) !important; }
-    .accent-text{ color:var(--accent) !important; }
-    .accent-50{ background-color:var(--accent-50) !important; }
-    .dropdown{ position:relative; }
-    .dropdown-panel{ position:absolute; inset-inline-start:0; top:100%; margin-top:.5rem;
-      width:16rem; background:#fff; border:1px solid #e5e7eb; border-radius:1rem;
-      box-shadow:0 20px 50px rgba(0,0,0,.08); overflow:hidden; z-index:60;
-    }
+/* كارت السلة/المودال */
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end}
+.sheet__inner{background:#0d0e0f;border-top-left-radius:16px;border-top-right-radius:16px;border:1px solid #222;padding:14px 12px;width:100%;max-height:80vh;overflow:auto}
+.cart-list{display:grid;gap:10px}
+.cart-item{display:flex;gap:10px;align-items:center;justify-content:space-between;background:#151617;border:1px solid #222;padding:10px;border-radius:12px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.kpi{background:#151617;border:1px solid #222;border-radius:12px;padding:12px;text-align:center}
+@media(max-width:700px){.kpis{grid-template-columns:repeat(2,1fr)}}
 
-    /* ===== الشريط الجانبي المتحرّك ===== */
-    #sideTicker .marquee{
-      white-space:nowrap; display:inline-block; padding-inline:16px;
-      animation: tickerBounce 12s linear infinite alternate; will-change:transform;
-    }
-    @keyframes tickerBounce{
-      0%{ transform:translateX(0); }
-      100%{ transform:translateX(-55%); }
-    }
+/* القائمة المنسدلة للأقسام */
+.dropdown{position:relative}
+.dropdown-panel{position:absolute;inset-inline-end:0;top:100%;margin-top:.5rem;width:220px;background:#101112;border:1px solid #222;border-radius:12px;box-shadow:0 16px 40px rgba(0,0,0,.25);overflow:hidden;z-index:60}
+.dropdown-panel a{display:block;padding:10px 12px;border-bottom:1px solid #1f2022}
+.dropdown-panel a:hover{background:#16181a}
 
-    /* Burst للحروف فقط: يدي نغزات متتالية للنص بدون تحريك الكارت */
-    #sideTicker .marquee.bursting{ animation: tickerBurstText .7s ease-in-out 5; }
-    @keyframes tickerBurstText{
-      0%   { transform: translateX(0); }
-      35%  { transform: translateX(-14px); }
-      70%  { transform: translateX(0); }
-      100% { transform: translateX(-6px); }
-    }
-
-    /* على الموبايل: نزّله فوق زر الشات */
-    @media (max-width:640px){
-      #sideTicker{ bottom:120px !important; top:auto !important; transform:none !important; right:.75rem !important; }
-    }
-
-    /* احترام تفضيل تقليل الحركة */
-    @media (prefers-reduced-motion: reduce){
-      #sideTicker .marquee, #sideTicker .marquee.bursting { animation: none !important; }
-    }
-  </style>
+/* تيكر جانبي */
+#sideTicker{position:fixed;right:12px;top:50%;transform:translateY(-50%);z-index:40;border:1px solid #222;background:#0d0e0f;border-radius:18px;overflow:hidden}
+#sideTicker .marquee{white-space:nowrap;display:inline-block;padding:8px 16px;animation:tickerBounce 12s linear infinite alternate}
+@keyframes tickerBounce{0%{transform:translateX(0)}100%{transform:translateX(-55%)}}
+@media(max-width:640px){#sideTicker{bottom:120px;top:auto;transform:none;right:12px}}
+</style>
 </head>
+<body>
 
-<body class="min-h-screen">
-  <!-- الهيدر -->
-  <header class="sticky top-0 z-40 glass border-b">
-    <div class="container px-4 py-3 flex items-center gap-3">
-      <div class="font-extrabold text-xl text-black" id="brandName">ZADORA</div>
+<div class="topbar"><div class="container topbar__in">🚚 دفع عند الاستلام • 🔁 استبدال 14 يوم • 🕘 دعم 9ص–10م</div></div>
 
-      <!-- زر الأقسام (أيقونة ٣ شرطات) -->
-      <button id="catsToggle" class="inline-flex items-center justify-center w-10 h-10 rounded-xl border hover:bg-gray-50 accent-text"
-              aria-label="الأقسام" title="الأقسام">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
+<header class="header">
+  <div class="container header__in">
+    <div class="brand"><span class="brand__logo">Z</span> ZADORA</div>
+    <div class="flex-1"></div>
 
-      <div class="flex-1"></div>
-
-      <!-- بحث (ديسكتوب) -->
-      <div class="hidden md:block w-[420px]">
-        <form id="searchForm" class="relative">
-          <input id="search" placeholder="إبحث عن منتج..." class="w-full rounded-xl border px-3 py-2 pr-10" />
-          <button id="searchBtn" type="submit" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">🔍</button>
-        </form>
-      </div>
-
-      <!-- السلة -->
-      <button id="openCart" class="relative rounded-xl border px-3 py-2 hover:bg-gray-50">
-        🛒
-        <span id="cartCount" class="absolute -top-2 -left-2 min-w-[22px] h-[22px] text-xs rounded-full accent-bg px-1 flex items-center justify-center hidden">0</span>
-      </button>
-
-      <!-- الحساب -->
+    <div class="navbtns">
       <div class="dropdown">
-        <button id="accountBtn" class="rounded-xl border px-3 py-2 hover:bg-gray-50">👤</button>
-        <div id="accountMenu" class="dropdown-panel hidden text-sm">
-          <div class="px-3 py-2 bg-neutral-50 border-b">
-            <div id="accountHello">مرحبًا، ضيف</div>
-          </div>
-          <button id="menuLogin" class="w-full text-right px-3 py-2 hover:bg-gray-50">تسجيل الدخول</button>
-          <button id="menuInvoices" class="w-full text-right px-3 py-2 hover:bg-gray-50 hidden">فواتيري</button>
-          <button id="menuLogout" class="w-full text-right px-3 py-2 hover:bg-gray-50 hidden">تسجيل الخروج</button>
+        <button id="catsBtn" class="btn btn-ghost">الأقسام ▾</button>
+        <div id="catsMenu" class="dropdown-panel hide">
+          <a href="#" data-cat="all">الكل</a>
+          <a href="#" data-cat="Kitchen">مطبخ</a>
+          <a href="#" data-cat="Home">منزل</a>
+          <a href="#" data-cat="Gifts">هدايا</a>
         </div>
       </div>
 
-      <!-- لوحة التحكم -->
-      <button id="openAdmin" class="rounded-xl border px-3 py-2 hover:bg-gray-50">⚙️ لوحة التحكم</button>
+      <button class="btn btn-ghost" onclick="show('home')">الرئيسية</button>
+      <button class="btn btn-ghost" onclick="show('products')">المنتجات</button>
+      <button class="btn btn-ghost" id="openCartBtn">السلة <span data-cart-count>0</span></button>
+      <button class="btn btn-ghost" id="openAdminBtn">لوحة التحكم</button>
     </div>
+  </div>
 
-    <!-- بحث (موبايل) -->
-    <div class="md:hidden px-4 pb-3">
-      <form id="searchForm2" class="relative">
-        <input id="search2" placeholder="إبحث عن منتج..." class="w-full rounded-xl border px-3 py-2 pr-10" />
-        <button id="searchBtn2" type="submit" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">🔍</button>
-      </form>
-    </div>
-  </header>
+  <div class="container" style="padding:8px 0 12px">
+    <form id="searchForm" class="row">
+      <input id="search" class="input" placeholder="ابحث عن منتج…" />
+      <button class="btn btn-accent" type="submit">بحث</button>
+    </form>
+  </div>
+</header>
 
-  <!-- هيرو -->
-  <section class="container px-4 mt-4" id="heroSection"></section>
-  <!-- مميزات -->
-  <section class="container px-4 mt-6" id="benefitsSection"></section>
-  <!-- أقسام -->
-  <section class="container px-4 mt-8" id="categoriesSection"></section>
-  <!-- منتجات -->
-  <section class="container px-4 mt-8" id="productsSection"></section>
-
-  <!-- نشرة بريدية -->
-  <section class="container px-4 mt-10">
-    <div class="rounded-2xl bg-neutral-900 text-white overflow-hidden">
-      <div class="grid md:grid-cols-2">
-        <div class="p-8 md:p-12">
-          <h3 class="text-2xl md:text-3xl font-extrabold">قائمة التجار البريدية</h3>
-          <p class="mt-2 text-white/80">خصومات خاصة بالجملة + عروض صناديق جاهزة أسبوعيًا.</p>
-          <div class="mt-5 flex items-center gap-2">
-            <input class="flex-1 rounded-xl px-3 py-2 text-neutral-900" placeholder="اكتب بريدك الإلكتروني" dir="rtl"/>
-            <button class="rounded-xl accent-bg px-4 py-2 font-semibold">اشترك</button>
-          </div>
-        </div>
-        <div class="relative min-h-[220px]">
-          <img id="newsletterImg" src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1600&auto=format&fit=crop" alt="newsletter" class="absolute inset-0 w-full h-full object-cover opacity-70"/>
-        </div>
-      </div>
+<main class="container">
+  <section id="home" class="hero">
+    <h1>منتجات منزلية وهدايا بجودة ممتازة</h1>
+    <p style="color:var(--muted)">اختيارات مُنتقاة لمطبخك ومنزلك — اشترِ الآن واستلم على باب البيت</p>
+    <div class="row" style="justify-content:center;margin-top:10px">
+      <button class="btn btn-accent" onclick="show('products')">تسوق الآن</button>
+      <button class="btn btn-ghost" onclick="openCart()">عرض السلة</button>
     </div>
   </section>
 
-  <!-- فوتر -->
-  <footer class="mt-10 border-t">
-    <div class="container px-4 py-8 grid md:grid-cols-4 gap-8 text-right">
-      <div>
-        <div class="font-bold text-lg"><span class="accent-text">✦</span> <span id="brandNameFooter" class="text-black">ZADORA</span></div>
-        <p class="mt-3 text-sm text-gray-600" id="footerAbout">منصة جملة للأدوات المنزلية: حد أدنى 12 قطعة، شحن سريع، وضمان استبدال.</p>
-      </div>
-      <div>
-        <h4 class="font-semibold mb-2">خدمة العملاء</h4>
-        <ul class="space-y-1 text-sm text-gray-600">
-          <li><a class="hover:underline">سياسة الاسترجاع</a></li>
-          <li><a class="hover:underline">الشحن والتسليم</a></li>
-          <li><a class="hover:underline">طرق الدفع</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 class="font-semibold mb-2">الشركة</h4>
-        <ul class="space-y-1 text-sm text-gray-600">
-          <li><a class="hover:underline">من نحن</a></li>
-          <li><a class="hover:underline">انضم كتاجر/مورد</a></li>
-          <li><a class="hover:underline">تواصل معنا</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 class="font-semibold mb-2">تابعنا</h4>
-        <ul class="space-y-1 text-sm text-gray-600">
-          <li><a id="linkFacebook"  class="hover:underline">Facebook</a></li>
-          <li><a id="linkInstagram" class="hover:underline">Instagram</a></li>
-          <li><a id="linkTikTok"    class="hover:underline">TikTok</a></li>
-          <li><a id="linkTelegram"  class="hover:underline">Telegram</a></li>
-        </ul>
-      </div>
+  <section style="padding:16px 0">
+    <div class="kpis">
+      <div class="kpi"><div class="badge">الشحن</div><div style="font-weight:800;margin-top:6px">جميع المحافظات</div></div>
+      <div class="kpi"><div class="badge">الدفع</div><div style="font-weight:800;margin-top:6px">عند الاستلام</div></div>
+      <div class="kpi"><div class="badge">الدعم</div><div style="font-weight:800;margin-top:6px">9ص–10م</div></div>
+      <div class="kpi"><div class="badge">استبدال</div><div style="font-weight:800;margin-top:6px">14 يوم</div></div>
     </div>
-    <div class="py-4 text-center text-xs text-gray-500">© <span id="year"></span> <span id="brandNameCopy" class="text-black">ZADORA</span>. All rights reserved.</div>
-  </footer>
+  </section>
 
-  <!-- لوحة التحكم (مختصرة) -->
-  <div id="adminModal" class="fixed inset-0 hidden z-50 modal-bg">
-    <div class="absolute inset-0" id="adminCloseBg"></div>
-    <div class="absolute right-0 top-0 bottom-0 w-full md:w-[760px] bg-white rounded-none md:rounded-l-3xl shadow-2xl overflow-y-auto">
-      <div class="sticky top-0 glass border-b p-4 flex items-center justify-between">
-        <div class="font-bold">لوحة التحكم</div>
-        <div class="flex items-center gap-2">
-          <button id="exportJson" class="rounded-xl border px-3 py-2 text-sm hover:bg-gray-50">تصدير</button>
-          <button id="resetAll" class="rounded-xl border px-3 py-2 text-sm hover:bg-gray-50">إرجاع الافتراضي</button>
-          <button id="closeAdmin" class="rounded-xl accent-bg px-4 py-2 text-sm">إغلاق</button>
-        </div>
+  <section id="products" class="hide">
+    <div class="row" style="justify-content:space-between;align-items:center">
+      <h2 style="margin:10px 0">المنتجات</h2>
+      <span class="badge" id="activeCatLabel">الكل</span>
+    </div>
+    <div id="productsGrid" class="grid grid--products"></div>
+  </section>
+</main>
+
+<!-- شيت السلة -->
+<div id="cartSheet" class="sheet" role="dialog" aria-modal="true">
+  <div class="sheet__inner">
+    <div class="row" style="justify-content:space-between">
+      <h3 style="margin:0">السلة</h3>
+      <button class="btn btn-ghost" onclick="closeCart()">إغلاق ✕</button>
+    </div>
+    <div id="cartList" class="cart-list" style="margin-top:10px"></div>
+    <div class="row" style="justify-content:space-between;margin-top:12px">
+      <div class="price">الإجمالي: <span id="cartTotal">EGP 0</span></div>
+      <button class="btn btn-accent" onclick="scrollToCheckout()">إتمام الطلب</button>
+    </div>
+    <div id="checkout" style="margin-top:14px">
+      <h4 style="margin:6px 0">بيانات التوصيل</h4>
+      <div class="grid">
+        <input id="custName" class="input" placeholder="الاسم الثلاثي" />
+        <input id="custAddr" class="input" placeholder="العنوان بالتفصيل + المنطقة/المحافظة" />
+        <textarea id="custNote" class="input" placeholder="ملاحظات الطلب (اختياري)"></textarea>
       </div>
-
-      <div class="p-4" dir="rtl">
-        <div class="grid md:grid-cols-2 gap-4">
-          <div class="space-y-2">
-            <label class="text-sm font-medium">اسم البراند</label>
-            <input id="brandInput" class="w-full rounded-xl border px-3 py-2" placeholder="ZADORA"/>
-            <label class="text-sm font-medium">عنوان الهيرو</label>
-            <input id="heroTitleInput" class="w-full rounded-xl border px-3 py-2"/>
-            <label class="text-sm font-medium">وصف الهيرو</label>
-            <textarea id="heroSubInput" class="w-full rounded-xl border px-3 py-2 min-h-[112px]"></textarea>
-            <div class="text-sm font-medium mt-4">صورة الهيرو</div>
-            <input id="heroImgInput" class="w-full rounded-xl border px-3 py-2" placeholder="رابط صورة أو ارفع من جهازك بالنسخة الكاملة"/>
-            <div class="text-sm font-medium mt-4">صورة ZADORA Box</div>
-            <input id="boxImgInputTxt" class="w-full rounded-xl border px-3 py-2" placeholder="رابط صورة"/>
-          </div>
-
-          <div class="space-y-2">
-            <div class="text-sm font-medium">وصف الفوتر</div>
-            <textarea id="footerInput" class="w-full rounded-xl border px-3 py-2 min-h-[90px]"
-              placeholder="النص التعريفي الذي يظهر في الفوتر"></textarea>
-            <div class="text-sm font-medium mt-2">روابط السوشيال</div>
-            <input id="linkFBInput" class="w-full rounded-xl border px-3 py-2" placeholder="https://facebook.com/yourpage" />
-            <input id="linkIGInput" class="w-full rounded-xl border px-3 py-2" placeholder="https://instagram.com/yourpage" />
-            <input id="linkTTInput" class="w-full rounded-xl border px-3 py-2" placeholder="https://tiktok.com/@yourpage" />
-            <input id="linkTGInput" class="w-full rounded-xl border px-3 py-2" placeholder="https://t.me/yourchannel" />
-          </div>
-        </div>
-        <div class="mt-4">
-          <button id="saveAdmin" class="rounded-xl accent-bg px-4 py-2 font-semibold">حفظ في السحابة</button>
-        </div>
-      </div>
+      <button class="btn btn-accent" style="margin-top:10px" onclick="whatsappCheckout()">إرسال الطلب على واتساب</button>
+      <div class="badge" style="margin-top:8px">سيتم التأكيد على واتساب قبل الشحن</div>
     </div>
   </div>
+</div>
 
-  <!-- درج الأقسام (Sidebar) -->
-  <div id="catsDrawer" class="fixed inset-0 hidden z-50 modal-bg">
-    <div class="absolute inset-0" id="catsCloseBg"></div>
-    <aside class="absolute right-0 top-0 bottom-0 w-full sm:w-[420px] bg-white md:rounded-l-3xl shadow-2xl overflow-y-auto">
-      <div class="sticky top-0 glass border-b p-4 flex items-center justify-between">
-        <div class="font-bold">الأقسام</div>
-        <button id="catsClose" class="rounded-xl accent-bg px-4 py-2 text-sm">إغلاق</button>
-      </div>
-      <div class="p-4">
-        <input id="catsFilter" class="w-full rounded-xl border px-3 py-2" placeholder="ابحث داخل الأقسام..."/>
-        <div id="catsDrawerList" class="mt-3 grid grid-cols-1 gap-2"></div>
-      </div>
-    </aside>
-  </div>
-
-  <!-- ويدجت الشات -->
-  <div id="chatRoot" class="fixed bottom-4 right-4 z-50">
-    <button id="chatToggle" class="rounded-full shadow-lg accent-bg w-14 h-14 flex items-center justify-center text-2xl">💬</button>
-    <div id="chatPanel" class="hidden mt-3 w-[320px] sm:w-[360px] rounded-2xl shadow-2xl border bg-white overflow-hidden">
-      <div class="flex items-center justify-between px-4 py-3 bg-neutral-900 text-white">
-        <div class="font-semibold">دعم <span id="brandInChat">ZADORA</span></div>
-        <button id="chatClose" title="إغلاق">✕</button>
-      </div>
-      <div id="chatBody" class="h-[320px] overflow-y-auto px-3 py-3 space-y-2 bg-neutral-50"></div>
-      <div class="px-3 pb-3">
-        <div class="flex flex-wrap gap-2 text-xs mb-2">
-          <button class="px-2 py-1 rounded-full border bg-white quick">الشحن</button>
-          <button class="px-2 py-1 rounded-full border bg-white quick">الاسترجاع</button>
-          <button class="px-2 py-1 rounded-full border bg-white quick">الحد الأدنى</button>
-          <button class="px-2 py-1 rounded-full border bg-white quick">طرق الدفع</button>
-        </div>
-        <div class="flex items-center gap-2">
-          <input id="chatInput" class="flex-1 rounded-xl border px-3 py-2" placeholder="اكتب سؤالك..." />
-          <button id="chatSend" class="rounded-xl accent-bg px-4 py-2">إرسال</button>
-        </div>
-        <a id="waBtn" class="block text-center text-sm mt-2 rounded-xl border py-2 hover:bg-gray-50" target="_blank" rel="noopener">تواصل واتساب الآن</a>
-      </div>
+<!-- لوحة تحكم خفيفة -->
+<div id="adminSheet" class="sheet" role="dialog" aria-modal="true">
+  <div class="sheet__inner">
+    <div class="row" style="justify-content:space-between">
+      <h3 style="margin:0">لوحة التحكم (تجريبية محلية)</h3>
+      <button class="btn btn-ghost" onclick="closeAdmin()">إغلاق ✕</button>
     </div>
+    <form onsubmit="event.preventDefault(); adminAddProduct(this);" class="grid" style="margin-top:12px">
+      <input name="name" class="input" placeholder="اسم المنتج" required />
+      <input name="price" class="input" placeholder="السعر (EGP)" type="number" min="0" step="1" required />
+      <input name="img" class="input" placeholder="رابط صورة (اختياري؛ إذا فرّغت يستخدم صورة افتراضية)" />
+      <input name="cat" class="input" placeholder="القسم (Kitchen / Home / Gifts …)" />
+      <button class="btn btn-accent" type="submit">إضافة المنتج</button>
+    </form>
+    <div class="badge" style="margin-top:10px">البيانات تتخزن محليًا في المتصفح (LocalStorage) لأغراض التجربة.</div>
   </div>
+</div>
 
-  <!-- سلة المشتريات -->
-  <div id="cartModal" class="fixed inset-0 hidden z-50 modal-bg">
-    <div id="cartCloseBg" class="absolute inset-0"></div>
-    <div class="absolute right-0 top-0 bottom-0 w-full md:w-[760px] bg-white rounded-none md:rounded-l-3xl shadow-2xl overflow-y-auto">
-      <div class="sticky top-0 glass border-b p-4 flex items-center justify-between">
-        <div class="font-bold">سلة المشتريات</div>
-        <div class="flex items-center gap-2">
-          <button id="cartClear" class="rounded-xl border px-3 py-2 text-sm hover:bg-gray-50">تفريغ السلة</button>
-          <button id="closeCart" class="rounded-xl accent-bg px-4 py-2 text-sm">إغلاق</button>
-        </div>
-      </div>
-      <div class="p-4 grid md:grid-cols-2 gap-4">
-        <div><div id="cartItems" class="space-y-3"></div></div>
-        <div class="space-y-3">
-          <div class="rounded-2xl border bg-white p-4">
-            <div class="font-semibold mb-2">البيانات</div>
-            <div class="space-y-2">
-              <input id="cusName"  class="w-full rounded-xl border px-3 py-2" placeholder="الاسم"/>
-              <input id="cusPhone" class="w-full rounded-xl border px-3 py-2" placeholder="رقم الهاتف"/>
-              <input id="cusCity"  class="w-full rounded-xl border px-3 py-2" placeholder="المحافظة/المدينة"/>
-              <select id="cusTier" class="w-full rounded-xl border px-3 py-2">
-                <option value="wh">جملة الجملة</option>
-                <option value="half">نص جملة</option>
-                <option value="retail">قطاعي</option>
-              </select>
-              <div id="tierMsg" class="text-sm accent-text"></div>
-            </div>
-          </div>
-          <div class="rounded-2xl border bg-white p-4">
-            <div class="flex items-center justify-between">
-              <div>الإجمالي الفرعي</div>
-              <div id="cartSubtotal" class="font-bold">0 ج.م</div>
-            </div>
-            <div class="flex items-center justify-between text-sm text-gray-600 mt-1">
-              <div>الشحن</div>
-              <div id="cartShipping">يُحسب حسب المحافظة</div>
-            </div>
-            <div id="retailDiscountRow" class="hidden flex items-center justify-between text-sm mt-1">
-              <div>خصم قطاعي 10%</div>
-              <div id="retailDiscountVal">-0 ج.م</div>
-            </div>
-            <hr class="my-2">
-            <div class="flex items-center justify-between text-lg">
-              <div class="font-bold">الإجمالي</div>
-              <div id="cartTotal" class="font-extrabold accent-text">0 ج.م</div>
-            </div>
-            <p class="text-xs text-gray-500 mt-2">* الكميات تتحرك بمضاعفات الحد الأدنى لكل صنف.</p>
-            <div class="mt-3 grid grid-cols-1 gap-2">
-              <button id="cartCheckoutWA" class="rounded-xl accent-bg px-4 py-2 font-semibold">إكمال الطلب على واتساب</button>
-              <button id="cartCheckoutEmail" class="rounded-xl border px-4 py-2 hover:bg-gray-50">طلب عبر البريد</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+<!-- تيكر جانبي -->
+<div id="sideTicker">
+  <div class="marquee">خصم افتتاح — استشارة مجانية — شحن لجميع المحافظات — خصم افتتاح — استشارة مجانية — شحن لجميع المحافظات — </div>
+</div>
 
-  <!-- الشريط الجانبي المتحرّك -->
-  <div id="sideTicker" class="fixed right-4 top-1/2 -translate-y-1/2 z-40">
-    <div class="rounded-2xl border bg-white/90 backdrop-blur p-3 w-[280px] shadow-xl">
-      <div class="flex items-center justify-between mb-2">
-        <div class="text-sm font-bold accent-text">عرض التجار</div>
-        <button id="sideTickerClose" class="text-xs px-2 py-1 rounded-lg border hover:bg-gray-50">إخفاء</button>
-      </div>
-      <div class="overflow-hidden">
-        <div class="marquee text-sm font-semibold">
-          اطلب 10 كراتين واستلم منتجك باسمك — تصميم بوكس مجاني — صور جاهزة للنشر — توصيل سريع لكل المحافظات
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- مودالات أخرى (الدخول والفواتير) محذوفة اختصاراً -->
+<footer class="footer">© 2025 ZADORA • جميع الحقوق محفوظة</footer>
 
 <script>
-/* =====================[ إعدادات عامة + دعم ]===================== */
-const WHATSAPP_PHONE = '201119508881';
-const SUPPORT_EMAIL  = 'sales@example.com';
-const waBtn = document.getElementById('waBtn'); if (waBtn) waBtn.href = 'https://wa.me/' + WHATSAPP_PHONE;
-const GOOGLE_CLIENT_ID = '';
+/* ====== إعدادات عامة ====== */
+const WHATSAPP_PHONE = '201119508881'; // ← غيّر رقمك هنا (بدون +)
+const STORE_KEY = 'zadora_products_v1';
+const CART_KEY  = 'zadora_cart_v1';
+const IMG_FALLBACK = 'data:image/svg+xml;base64,'+btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="520"><rect width="100%" height="100%" fill="#1c1d1f"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#777" font-size="28" font-family="sans-serif">صورة المنتج</text></svg>`);
 
-/* =====================[ Admin PIN ]===================== */
-const ADMIN_PIN = '1234';
-let isAdmin = sessionStorage.getItem('zl_admin') === '1';
-
-/* =====================[ مفاتيح التخزين ]===================== */
-const LS_KEYS = {
-  brand:'zl_brand', hero:'zl_hero', cats:'zl_cats', prods:'zl_prods',
-  cart:'zl_cart', customer:'zl_customer', social:'zl_social', footer:'zl_footer',
-  user:'zl_user', invoices:'zl_invoices', chat:'zl_chat_history'
-};
-
-/* =====================[ قيم افتراضية ]===================== */
-const DEFAULT_BRAND = 'ZADORA';
-const DEFAULT_HERO = {
-  title:'جُملة راقية بلمسة ZADORA',
-  subtitle:'اطلب بالكرتونة أو حد أدنى 12 قطعة — أسعار واضحة، خامات مضمونة، وصور جاهزة لزيادة مبيعاتك فورًا.',
-  image:'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1600&auto=format&fit=crop',
-  boxImage:'https://images.unsplash.com/photo-1549778399-f94fd24d4697?q=80&w=1600&auto=format&fit=crop'
-};
-const DEFAULT_CATS = [
-  { name:'مطبخ', image:'https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?q=80&w=1200&auto=format&fit=crop' },
-  { name:'تخزين وتنظيم', image:'https://images.unsplash.com/photo-1582582429416-2f3a27730854?q=80&w=1200&auto=format&fit=crop' },
-  { name:'مشروبات ومجات', image:'https://images.unsplash.com/photo-1511920170033-f8396924c348?q=80&w=1200&auto=format&fit=crop' },
-  { name:'ديكور', image:'https://images.unsplash.com/photo-1501045661006-fcebe0257c3f?q=80&w=1200&auto=format&fit=crop' },
-  { name:'منسوجات', image:'https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?q=80&w=1200&auto=format&fit=crop' },
-  { name:'بلاستيك واستالس', image:'https://images.unsplash.com/photo-1542444592-1e6c9f952a25?q=80&w=1200&auto=format&fit=crop' },
-];
-const DEFAULT_PRODS = [
-  { id:1, title:'طقم تلاجة بيركس – 3 قطع', price:420, oldPrice:480, rating:4.7, reviews:126, image:'https://images.unsplash.com/photo-1601050690290-27f9864c06c0?q=80&w=1200&auto=format&fit=crop', badge:'الأكثر طلبًا', minQty:12, category:'مطبخ' },
-  { id:2, title:'لانش بوكس حراري', price:165, oldPrice:199, rating:4.6, reviews:98, image:'https://images.unsplash.com/photo-1517673132405-a56a62b18caf?q=80&w=1200&auto=format&fit=crop', badge:'عرض خاص', minQty:12, category:'تخزين وتنظيم' },
-  { id:3, title:'مج سيراميك مطفي', price:85, oldPrice:110, rating:4.4, reviews:210, image:'https://images.unsplash.com/photo-1523365280197-f1783db9fe62?q=80&w=1200&auto=format&fit=crop', badge:'جديد', minQty:12, category:'مشروبات ومجات' },
-  { id:4, title:'علب تخزين محكمة – 6 قطع', price:350, oldPrice:399, rating:4.8, reviews:73, image:'https://images.unsplash.com/photo-1592840496694-26d035b08cc6?q=80&w=1200&auto=format&fit=crop', badge:'الأفضل قيمة', minQty:12, category:'تخزين وتنظيم' },
-];
-
-/* =====================[ Helpers ]===================== */
-function lsGet(k, fb){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; }catch{ return fb; } }
-function lsSet(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} }
-const fmt = n => `${Number(n||0).toLocaleString('ar-EG')} ج.م`;
-function normalize(s){
-  return String(s||'').toLowerCase()
-    .replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه')
-    .replace(/[^\p{L}\p{N}\s]/gu,'').trim();
-}
-
-/* =====================[ حالة التطبيق ]===================== */
-let brand = lsGet(LS_KEYS.brand, DEFAULT_BRAND);
-let hero = lsGet(LS_KEYS.hero, DEFAULT_HERO);
-let categories = lsGet(LS_KEYS.cats, DEFAULT_CATS);
-let products = lsGet(LS_KEYS.prods, DEFAULT_PRODS);
-let cart = lsGet(LS_KEYS.cart, []);
-let customer = lsGet(LS_KEYS.customer, {name:'', phone:'', city:'', tier:'wh'});
-let social = lsGet('zl_social', {facebook:'', instagram:'', tiktok:'', telegram:''});
-let footerText = lsGet(LS_KEYS.footer, 'منصة جملة للأدوات المنزلية: حد أدنى 12 قطعة، شحن سريع، وضمان استبدال.');
-let user = lsGet(LS_KEYS.user, null);
-let invoices = lsGet(LS_KEYS.invoices, []);
-
-/* ===== توافق نسخ قديمة: لو boxImage مش موجودة أضفها تلقائيًا ===== */
-try {
-  if (!hero || typeof hero !== 'object') hero = DEFAULT_HERO;
-  if (!hero.image) hero.image = DEFAULT_HERO.image;
-  if (!hero.boxImage) hero.boxImage = DEFAULT_HERO.boxImage;
-  lsSet(LS_KEYS.hero, hero);
-} catch(e) {}
-
-/* =====================[ Cloud Config ]===================== */
-const CLOUD_URL = 'zl_config.json';
-async function loadCloud(){
-  try{
-    const res = await fetch(CLOUD_URL + '?t=' + Date.now(), {cache:'no-store'});
-    if(!res.ok) return;
-    const data = await res.json();
-    if(data.brand) brand = data.brand;
-    if(data.hero)  hero = {...hero, ...data.hero};
-    if(Array.isArray(data.categories)) categories = data.categories;
-    if(Array.isArray(data.products))   products   = data.products;
-    if(data.social) social = {...social, ...data.social};
-    if(typeof data.footer === 'string') footerText = data.footer;
-    // احفظ في LocalStorage برضه
-    lsSet(LS_KEYS.brand, brand);
-    lsSet(LS_KEYS.hero, hero);
-    lsSet(LS_KEYS.cats, categories);
-    lsSet(LS_KEYS.prods, products);
-    lsSet('zl_social', social);
-    lsSet(LS_KEYS.footer, footerText);
-  }catch(e){ console.warn('cloud config error', e); }
-}
-
-/* =====================[ Renderers (مختصرة) ]===================== */
-function renderHero(){
-  const el=document.getElementById('heroSection');
-  el.innerHTML=`
-  <div class="grid md:grid-cols-3 gap-4">
-    <div class="md:col-span-2 relative overflow-hidden rounded-2xl bg-neutral-900 text-white min-h-[220px]">
-      <img src="${hero.image}" class="absolute inset-0 w-full h-full object-cover opacity-70">
-      <div class="relative p-8 md:p-12">
-        <h2 class="text-2xl md:text-4xl font-extrabold leading-tight">${hero.title}</h2>
-        <p class="mt-2 md:mt-4 text-sm md:text-base text-white/90">${hero.subtitle}</p>
-        <button class="mt-5 inline-flex items-center gap-1 rounded-xl bg-white text-neutral-900 px-4 py-2 text-sm font-semibold hover:bg-white/90">تسوق الآن</button>
-      </div>
-    </div>
-    <div class="relative overflow-hidden rounded-2xl accent-bg min-h-[220px]">
-      <img src="${hero.boxImage}" class="absolute inset-0 w-full h-full object-cover opacity-40">
-      <div class="relative p-8">
-        <h3 class="text-xl md:text-2xl font-extrabold">ZADORA Box</h3>
-        <p class="mt-2 text-sm text-white/90">باكدچ متنوعة جاهزة للعرض في المحل</p>
-        <button class="mt-4 inline-flex items-center gap-1 rounded-xl bg-white text-neutral-900 px-4 py-2 text-sm font-semibold hover:bg-white/90">شوف البوكس</button>
-      </div>
-    </div>
-  </div>`;
-}
-function renderBenefits(){
-  const data=[
-    { title:'شحن سريع', desc:'توصيل لكل المحافظات خلال 24-72 ساعة' },
-    { title:'ضمان واستبدال', desc:'استبدال القطع المكسورة خلال 7 أيام' },
-    { title:'جملة بالكرتونة', desc:'حد أدنى 12 قطعة فقط' },
+/* ====== بيانات ابتدائية ====== */
+function sampleProducts(){
+  return [
+    {id:'p1',name:'طقم مجات سيراميك x6', price:420, cat:'Gifts',  img:IMG_FALLBACK},
+    {id:'p2',name:'صينية استانلس 40 سم',  price:350, cat:'Kitchen',img:IMG_FALLBACK},
+    {id:'p3',name:'برطمان زجاج 1 لتر',   price:120, cat:'Home',   img:IMG_FALLBACK},
+    {id:'p4',name:'غلاية بايركس 2 لتر',  price:540, cat:'Kitchen',img:IMG_FALLBACK}
   ];
-  const el=document.getElementById('benefitsSection');
-  el.innerHTML = `<div class="grid sm:grid-cols-3 gap-3">
-    ${data.map(b=>`<div class="flex items-center gap-4 rounded-2xl border p-4 bg-white">
-      <div class="rounded-2xl p-3 accent-50">✦</div>
-      <div class="text-right">
-        <div class="font-semibold">${b.title}</div>
-        <div class="text-sm text-gray-600">${b.desc}</div>
+}
+
+/* ====== LocalStorage Helpers ====== */
+const getProducts = () => JSON.parse(localStorage.getItem(STORE_KEY) || 'null') || (localStorage.setItem(STORE_KEY, JSON.stringify(sampleProducts())), sampleProducts());
+const setProducts = (arr) => localStorage.setItem(STORE_KEY, JSON.stringify(arr));
+const getCart     = () => JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+const setCart     = (arr) => localStorage.setItem(CART_KEY, JSON.stringify(arr));
+
+/* ====== UI Helpers ====== */
+const $ = (sel)=>document.querySelector(sel);
+const $$= (sel)=>[...document.querySelectorAll(sel)];
+function show(id){ ['home','products'].forEach(s=>$('#'+s).classList.toggle('hide', s!==id)); if(id==='products') renderProducts(); }
+function renderCartBadge(){ $$('[data-cart-count]').forEach(el=>el.textContent = getCart().reduce((s,i)=>s+i.qty,0)); }
+function money(n){ return 'EGP '+ Number(n||0).toLocaleString('en-EG'); }
+
+/* ====== رندر المنتجات ====== */
+function renderProducts(filterCat='all', q=''){
+  const wrap = $('#productsGrid');
+  const items = getProducts().filter(p=>{
+    const byCat = filterCat==='all' || p.cat===filterCat;
+    const byQ   = !q || (p.name||'').includes(q);
+    return byCat && byQ;
+  });
+  wrap.innerHTML = items.map(p=>`
+    <div class="card">
+      <img src="${p.img||IMG_FALLBACK}" alt="${p.name}" onerror="this.src='${IMG_FALLBACK}'">
+      <div class="pad">
+        <div class="badge">${p.cat||'عام'}</div>
+        <h3 style="margin:.4em 0">${p.name}</h3>
+        <div class="row" style="justify-content:space-between;align-items:center">
+          <div class="price">${money(p.price)}</div>
+          <button class="btn btn-accent" onclick="addToCart('${p.id}')">أضف للسلة</button>
+        </div>
       </div>
-    </div>`).join('')}
-  </div>`;
-}
-function productCard(p){
-  const effMin = Number(p.minQty)||12;
-  return `<div class="group rounded-2xl border bg-white overflow-hidden hover:shadow-md transition-shadow">
-    <div class="relative">
-      <img src="${p.image}" class="w-full h-56 object-cover"/>
-      ${p.badge ? `<span class="absolute top-3 right-3 accent-bg text-xs px-2 py-1 rounded-full">${p.badge}</span>` : ''}
-      <button class="absolute bottom-3 left-3 bg-white/90 backdrop-blur text-sm rounded-xl px-3 py-1 hover:bg-white">حد أدنى: ${effMin}</button>
     </div>
-    <div class="p-3" dir="rtl">
-      <h4 class="font-semibold min-h-[44px]">${p.title}</h4>
-      <div class="flex items-baseline gap-2 mt-2">
-        <span class="text-lg font-extrabold">${fmt(p.price)}</span>
-        <span class="text-sm line-through text-gray-400">${fmt(p.oldPrice)}</span>
+  `).join('');
+}
+
+/* ====== السلة ====== */
+function addToCart(id){
+  const cart = getCart();
+  const idx = cart.findIndex(i=>i.id===id);
+  if(idx>-1) cart[idx].qty+=1; else cart.push({id,qty:1});
+  setCart(cart); renderCartBadge();
+  openCart();
+}
+function qty(id,delta){
+  const cart = getCart();
+  const i = cart.findIndex(x=>x.id===id);
+  if(i>-1){ cart[i].qty+=delta; if(cart[i].qty<1) cart.splice(i,1); setCart(cart); renderCart(); renderCartBadge(); }
+}
+function removeItem(id){ setCart(getCart().filter(x=>x.id!==id)); renderCart(); renderCartBadge(); }
+function renderCart(){
+  const list = $('#cartList'); const totalEl = $('#cartTotal');
+  const products = getProducts(); const cart = getCart();
+  if(cart.length===0){ list.innerHTML = '<div class="badge">السلة فارغة</div>'; totalEl.textContent='EGP 0'; return; }
+  let total=0;
+  list.innerHTML = cart.map(it=>{
+    const p = products.find(x=>x.id===it.id);
+    const sum = (p?.price||0)*it.qty; total+=sum;
+    return `
+      <div class="cart-item">
+        <div class="row">
+          <img src="${p?.img||IMG_FALLBACK}" style="width:70px;height:70px;object-fit:cover;border-radius:10px" onerror="this.src='${IMG_FALLBACK}'" />
+          <div>
+            <div style="font-weight:800">${p?.name||'-'}</div>
+            <div class="badge">${money(p?.price||0)} × ${it.qty}</div>
+          </div>
+        </div>
+        <div>
+          <div class="price" style="text-align:end">${money(sum)}</div>
+          <div class="row" style="justify-content:flex-end;margin-top:6px">
+            <button class="btn btn-ghost" onclick="qty('${it.id}',-1)">−</button>
+            <button class="btn btn-ghost" onclick="qty('${it.id}',1)">+</button>
+            <button class="btn btn-ghost" onclick="removeItem('${it.id}')">حذف</button>
+          </div>
+        </div>
       </div>
-      <div class="mt-3 flex items-center gap-2">
-        <button class="flex-1 rounded-xl accent-bg py-2 font-semibold">أضف للسلة</button>
-        <button class="rounded-xl border px-3 py-2 hover:bg-gray-50" title="إضافة للمفضلة">♡</button>
-      </div>
-    </div>
-  </div>`;
+    `;
+  }).join('');
+  totalEl.textContent = money(total);
 }
-function renderCategories(){
-  const el=document.getElementById('categoriesSection');
-  el.innerHTML=`
-    <div class="flex items-center justify-between mb-3">
-      <h3 class="text-lg md:text-xl font-bold">تسوق بالأقسام</h3>
-    </div>
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-      ${categories.map(cat=>`
-        <div class="group relative block overflow-hidden rounded-2xl border bg-white">
-          <img src="${cat.image}" alt="${cat.name}" class="h-28 w-full object-cover transition-transform duration-300 group-hover:scale-105" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-          <div class="absolute bottom-2 right-2 text-white text-sm font-semibold">${cat.name}</div>
-        </div>`).join('')}
-    </div>`;
+function openCart(){ $('#cartSheet').style.display='flex'; renderCart(); }
+function closeCart(){ $('#cartSheet').style.display='none'; }
+function scrollToCheckout(){ $('#checkout').scrollIntoView({behavior:'smooth'}); }
+
+/* ====== واتساب تشيك آوت ====== */
+function whatsappCheckout(){
+  const products = getProducts(); const cart = getCart();
+  if(cart.length===0){ alert('السلة فارغة'); return; }
+  let lines = ['طلب جديد من ZADORA:'];
+  let total = 0;
+  cart.forEach(it=>{
+    const p = products.find(x=>x.id===it.id);
+    const s = (p?.price||0)*it.qty; total+=s;
+    lines.push(`- ${p?.name} × ${it.qty} = ${s} EGP`);
+  });
+  lines.push(`الإجمالي = ${total} EGP`);
+  const name = $('#custName').value||''; const addr=$('#custAddr').value||''; const note=$('#custNote').value||'';
+  if(name) lines.push('الاسم: '+name); if(addr) lines.push('العنوان: '+addr); if(note) lines.push('ملاحظات: '+note);
+  const msg = encodeURIComponent(lines.join('\n'));
+  window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${msg}`,'_blank');
 }
-function renderProducts(){
-  const el=document.getElementById('productsSection');
-  el.innerHTML=`
-    <div class="flex items-center justify-between mb-3">
-      <h3 class="text-lg md:text-xl font-bold">الأكثر مبيعًا</h3>
-    </div>
-    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-      ${products.map(productCard).join('')}
-    </div>`;
-}
-function renderFooter(){
-  const about=document.getElementById('footerAbout'); if(about) about.textContent=footerText||'';
-  const setLink=(id,url)=>{
-    const a=document.getElementById(id); if(!a) return;
-    const val=(url||'').trim();
-    if(val){ const href=/^https?:\/\//i.test(val)?val:('https://'+val); a.href=href; a.target='_blank'; a.rel='noopener';
-      a.classList.remove('text-gray-400','pointer-events-none'); }
-    else{ a.removeAttribute('href'); a.removeAttribute('target'); a.removeAttribute('rel');
-      a.classList.add('text-gray-400','pointer-events-none'); }
+
+/* ====== لوحة التحكم (محلي) ====== */
+function adminAddProduct(form){
+  const fd = new FormData(form);
+  const p = {
+    id:'p'+Math.random().toString(36).slice(2,7),
+    name:fd.get('name'), price:parseFloat(fd.get('price')||'0'),
+    img:fd.get('img')||IMG_FALLBACK, cat:fd.get('cat')||'General'
   };
-  setLink('linkFacebook',social.facebook);
-  setLink('linkInstagram',social.instagram);
-  setLink('linkTikTok',social.tiktok);
-  setLink('linkTelegram',social.telegram);
+  const list = getProducts(); list.push(p); setProducts(list);
+  alert('تمت إضافة المنتج! افتح تبويب المنتجات لمشاهدته'); form.reset(); show('products');
 }
-function refreshAll(){
-  document.getElementById('brandName').textContent=brand;
-  document.getElementById('brandNameFooter').textContent=brand;
-  document.getElementById('brandNameCopy').textContent=brand;
-  document.getElementById('year').textContent=new Date().getFullYear();
-  document.getElementById('brandInChat').textContent=brand;
-  renderHero(); renderBenefits(); renderCategories(); renderProducts(); renderFooter();
-}
+function openAdmin(){ $('#adminSheet').style.display='flex'; }
+function closeAdmin(){ $('#adminSheet').style.display='none'; }
 
-/* ===== الشريط الجانبي: زر الإخفاء ===== */
-const tickerClose=document.getElementById('sideTickerClose');
-if(tickerClose) tickerClose.onclick=()=> document.getElementById('sideTicker').classList.add('hidden');
-
-/* ===== Burst للنص فقط عند التحميل ===== */
-(function(){
-  const mq = document.querySelector('#sideTicker .marquee');
-  if(!mq) return;
-  const runBurstText = () => {
-    mq.classList.remove('bursting'); void mq.offsetWidth; mq.classList.add('bursting');
-  };
-  mq.addEventListener('animationend', (e)=>{ if(e.animationName === 'tickerBurstText'){ mq.classList.remove('bursting'); } });
-  runBurstText();
-})();
-
-/* ===== بدء: حمّل إعدادات السحابة ثم ارسم ===== */
-(async function start(){
-  await loadCloud();         // ← يقرأ zl_config.json من نفس المجلد
-  refreshAll();
-})();
-
-/* فتح لوحة التحكم البسيطة */
-document.getElementById('openAdmin').onclick = () => {
-  if(!isAdmin){
-    const pin = prompt('أدخل رقم PIN الإدارة:');
-    if(pin !== ADMIN_PIN){ alert('PIN غير صحيح'); return; }
-    isAdmin = true; sessionStorage.setItem('zl_admin','1');
+/* ===== الأقسام + البحث ===== */
+let activeCat='all';
+$('#catsBtn').addEventListener('click',()=>$('#catsMenu').classList.toggle('hide'));
+$('#catsMenu').addEventListener('click',e=>{
+  if(e.target.matches('[data-cat]')){
+    e.preventDefault(); activeCat = e.target.dataset.cat;
+    $('#activeCatLabel').textContent = activeCat==='all' ? 'الكل' : activeCat;
+    renderProducts(activeCat, $('#search').value.trim());
+    $('#catsMenu').classList.add('hide');
+    show('products');
   }
-  document.getElementById('adminModal').classList.remove('hidden');
-};
-document.getElementById('closeAdmin').onclick=()=> document.getElementById('adminModal').classList.add('hidden');
+});
+$('#searchForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  renderProducts(activeCat, $('#search').value.trim());
+  show('products');
+});
 
-/* حفظ في السحابة (تنزيل ملف JSON وتبديله في GitHub) */
-document.getElementById('saveAdmin').onclick = () => {
-  hero.image   = document.getElementById('heroImgInput').value || hero.image;
-  hero.boxImage= document.getElementById('boxImgInputTxt').value || hero.boxImage;
-  brand        = document.getElementById('brandInput').value || brand;
-  hero.title   = document.getElementById('heroTitleInput').value || hero.title;
-  hero.subtitle= document.getElementById('heroSubInput').value || hero.subtitle;
-  footerText   = document.getElementById('footerInput').value || footerText;
-  social.facebook = document.getElementById('linkFBInput').value;
-  social.instagram= document.getElementById('linkIGInput').value;
-  social.tiktok   = document.getElementById('linkTTInput').value;
-  social.telegram = document.getElementById('linkTGInput').value;
+/* ===== أحداث عامة ===== */
+$('#openCartBtn').addEventListener('click',openCart);
+$('#openAdminBtn').addEventListener('click',openAdmin);
+$('#cartSheet').addEventListener('click',e=>{ if(e.target.id==='cartSheet') closeCart(); });
+$('#adminSheet').addEventListener('click',e=>{ if(e.target.id==='adminSheet') closeAdmin(); });
 
-  const data = { brand, hero, categories, products, social, footer: footerText };
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a'); a.href=url; a.download='zl_config.json'; a.click();
-  URL.revokeObjectURL(url);
-  alert('تم تنزيل zl_config.json — ارفعه مكان الملف الحالي في GitHub.');
-};
-
-document.getElementById('exportJson').onclick = () => {
-  const data={ brand, hero, categories, products, social, footer:footerText };
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='zl_config.json'; a.click(); URL.revokeObjectURL(url);
-};
-document.getElementById('resetAll').onclick=()=>{ if(confirm('إرجاع الافتراضي؟')){ brand=DEFAULT_BRAND; hero=DEFAULT_HERO; categories=DEFAULT_CATS.slice(); products=DEFAULT_PRODS.slice(); footerText='منصة جملة للأدوات المنزلية: حد أدنى 12 قطعة، شحن سريع، وضمان استبدال.'; refreshAll(); } };
+/* ===== تهيئة ===== */
+document.addEventListener('DOMContentLoaded',()=>{
+  show('home'); renderCartBadge(); // بتحميل الصفحة
+  // أول تحميل: أنشئ البيانات لو مش موجودة
+  if(!localStorage.getItem(STORE_KEY)) setProducts(sampleProducts());
+});
 </script>
 </body>
 </html>

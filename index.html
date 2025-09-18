@@ -7,6 +7,16 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
+/* ---- SVG Icons (outline style) ---- */
+.ico{width:22px;height:22px;display:inline-block;vertical-align:middle}
+.ico svg{width:100%;height:100%}
+.stroke-accent{stroke:var(--accent);}
+.no-fill{fill:transparent;}
+/* قلب الرغبات */
+.heart svg path{stroke:var(--accent);fill:transparent;stroke-width:2}
+.heart.active svg path{fill:var(--accent);stroke:var(--accent)}
+/* زر أيقونة فقط */
+.btn-icon{border:1px solid #2a2a2a;border-radius:12px;padding:8px 10px;background:#0f0f10;color:#fff;display:inline-grid;place-items:center}
 :root{--bg:#0f0f10;--card:#17181a;--muted:#9aa0a6;--text:#f5f5f5;--accent:#C19A6B;--accent-700:#A67C52}
 *{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:"Cairo",system-ui}
 .container{max-width:1100px;margin:0 auto;padding:0 14px}
@@ -79,7 +89,13 @@ a{color:inherit;text-decoration:none}
     <div class="brand"><span class="brand__logo">Z</span> ZADORA</div>
     <div class="flex-1"></div>
 
-    <button class="btn" onclick="openWishlist()">❤️</button>
+ <button class="btn-icon" onclick="openWishlist()" aria-label="قائمة الرغبات">
+  <span class="ico">
+    <svg viewBox="0 0 24 24" class="stroke-accent" fill="none">
+      <path d="M12.1 20s-7.1-4.3-9.1-8.2C1.9 9 3.7 6 6.9 6c1.8 0 3.1.9 3.9 2 0 0 1.5-2 4.3-2 3.2 0 5 3 3.9 5.8C16.9 15.7 12.1 20 12.1 20z" stroke-width="2" fill="transparent"/>
+    </svg>
+  </span>
+</button>
     <button class="btn" onclick="openLogin()">حسابي/تسجيل</button>
     <button class="btn" onclick="document.getElementById('wholesale').scrollIntoView({behavior:'smooth'})">طلب جملة</button>
     <button class="btn" onclick="openCart()">السلة <span data-cart-count>0</span></button>
@@ -88,7 +104,18 @@ a{color:inherit;text-decoration:none}
 
 <section class="hero">
   <div class="inner">
-    <div class="pill"><i>🚚</i> الشحن متاح لجميع محافظات مصر</div>
+  <div class="pill">
+  <span class="ico">
+    <!-- Truck outline icon -->
+    <svg viewBox="0 0 24 24" fill="none" class="stroke-accent">
+      <path d="M3 6h11v8H3V6zM14 8h4l3 3v3h-7V8z" class="no-fill" stroke-width="2"/>
+      <circle cx="7" cy="17" r="2" class="no-fill" stroke-width="2"/>
+      <circle cx="17" cy="17" r="2" class="no-fill" stroke-width="2"/>
+      <path d="M3 17h2m9 0h3m3-3h3" stroke-width="2"/>
+    </svg>
+  </span>
+  <span>الشحن متاح لجميع محافظات مصر</span>
+</div>
     <h1>منتجات منزلية وهدايا بجودة ممتازة</h1>
     <p>أقل كمية للطلب: <b>6 قطع/صنف</b></p>
     <div class="row" style="justify-content:center">
@@ -284,7 +311,11 @@ function renderHomeProducts(){
   const wish = getWish();
   wrap.innerHTML = getProducts().map(p=>`
     <div class="card">
-      <div class="heart ${wish.includes(p.id)?'active':''}" onclick="toggleWish('${p.id}', this)">❤</div>
+    <div class="heart ${wish.includes(p.id)?'active':''}" onclick="toggleWish('${p.id}', this)">
+  <svg viewBox="0 0 24 24">
+    <path d="M12.1 20s-7.1-4.3-9.1-8.2C1.9 9 3.7 6 6.9 6c1.8 0 3.1.9 3.9 2 0 0 1.5-2 4.3-2 3.2 0 5 3 3.9 5.8C16.9 15.7 12.1 20 12.1 20z"/>
+  </svg>
+</div>
       <img src="${p.img||IMG_FALLBACK}" alt="${p.name}" onerror="this.src='${IMG_FALLBACK}'">
       <div class="pad">
         <div class="badge">${p.cat||'عام'}</div>

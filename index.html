@@ -6,75 +6,79 @@
 <title>ZADORA — Wholesale</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-  /* قلب الرغبات – أبيض outline + نبض */
-.heart { position:absolute; top:8px; left:8px; background:rgba(0,0,0,.45); border:1px solid #333;
-  border-radius:50%; width:38px; height:38px; display:grid; place-items:center; cursor:pointer }
-.heart svg path{ stroke:#fff; fill:transparent; stroke-width:2; transition:transform .2s }
-.heart.active svg path{ stroke:#fff; fill:transparent }  /* من غير تعبئة */
-.heart.pulse svg{ animation:beat .6s ease-in-out 1; transform-origin:center }
-@keyframes beat{ 0%{transform:scale(1)} 35%{transform:scale(1.2)} 100%{transform:scale(1)} }
+
 <style>
-/* ---- SVG Icons (outline style) ---- */
-.ico{width:22px;height:22px;display:inline-block;vertical-align:middle}
-.ico svg{width:100%;height:100%}
-.stroke-accent{stroke:var(--accent);}
-.no-fill{fill:transparent;}
-/* قلب الرغبات */
-.heart svg path{stroke:var(--accent);fill:transparent;stroke-width:2}
-.heart.active svg path{fill:var(--accent);stroke:var(--accent)}
-/* زر أيقونة فقط */
-.btn-icon{border:1px solid #2a2a2a;border-radius:12px;padding:8px 10px;background:#0f0f10;color:#fff;display:inline-grid;place-items:center}
-:root{--bg:#0f0f10;--card:#17181a;--muted:#9aa0a6;--text:#f5f5f5;--accent:#C19A6B;--accent-700:#A67C52}
-*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:"Cairo",system-ui}
+:root{
+  --bg:#0f0f10; --card:#17181a; --muted:#9aa0a6; --text:#f5f5f5;
+  --accent:#C19A6B; --accent-700:#A67C52; /* بني/جملي */
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:"Cairo",system-ui}
 .container{max-width:1100px;margin:0 auto;padding:0 14px}
 a{color:inherit;text-decoration:none}
-.header{position:sticky;top:0;z-index:60;background:#0b0c0d;border-bottom:1px solid #222}
-.header__in{display:flex;gap:10px;align-items:center;padding:10px 0}
-.brand{display:flex;align-items:center;font-weight:800}.brand__logo{width:32px;height:32px;border:2px solid var(--accent);display:grid;place-items:center;border-radius:8px;margin-left:8px}
-.btn{border:1px solid #2a2a2a;border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:800;background:#0f0f10;color:#fff}
-.btn-accent{background:var(--accent);color:#000;border:0}
+.row{display:flex;gap:10px;align-items:center}.flex-1{flex:1}
 .badge{display:inline-block;font-size:12px;border:1px solid #2a2a2a;background:#1a1a1a;color:var(--muted);padding:4px 8px;border-radius:8px}
 .input{width:100%;background:#0e0e0f;border:1px solid #2a2a2a;color:#fff;border-radius:12px;padding:10px}
-.grid{display:grid;gap:14px}.grid--products{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));padding:18px 0}
-.card{background:var(--card);border:1px solid #222;border-radius:14px;overflow:hidden;position:relative}
-.card img{width:100%;height:150px;object-fit:cover;background:#111}
-.card .pad{padding:10px}
-.heart{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.45);border:1px solid #333;border-radius:50%;width:38px;height:38px;display:grid;place-items:center;cursor:pointer}
-.price{font-weight:800}
-.footer{border-top:1px solid #202124;color:var(--muted);padding:16px 0;margin-top:24px;text-align:center}
-.row{display:flex;gap:10px;align-items:center}.flex-1{flex:1}
+.btn{border:1px solid #2a2a2a;border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:800;background:#0f0f10;color:#fff}
+.btn-accent{background:var(--accent);color:#000;border:0}
+.btn-icon{border:1px solid #2a2a2a;border-radius:12px;padding:8px 10px;background:#0f0f10;color:#fff;display:inline-grid;place-items:center}
+
+/* Header */
+.header{position:sticky;top:0;z-index:60;background:#0b0c0d;border-bottom:1px solid #222}
+.header__in{display:flex;gap:10px;align-items:center;padding:10px 0}
+.brand{display:flex;align-items:center;font-weight:800}
+.brand__logo{width:32px;height:32px;border:2px solid var(--accent);display:grid;place-items:center;border-radius:8px;margin-left:8px}
 
 /* Hero */
 .hero{position:relative;min-height:280px;display:grid;place-items:center;border-bottom:1px solid #202124}
 .hero::before{content:"";position:absolute;inset:0;background:
- linear-gradient( to bottom, rgba(15,15,16,.45), rgba(15,15,16,.8)),
- url('https://images.unsplash.com/photo-1517341725612-5f06f483f2f9?q=80&w=1400&auto=format&fit=crop') center/cover no-repeat;}
+  linear-gradient(to bottom, rgba(15,15,16,.45), rgba(15,15,16,.8)),
+  url('https://images.unsplash.com/photo-1517341725612-5f06f483f2f9?q=80&w=1400&auto=format&fit=crop') center/cover no-repeat;}
 .hero>.inner{position:relative;text-align:center;padding:32px 14px}
 .hero h1{margin:.2em 0 0;font-size:28px}
 .hero p{color:#ddd;margin:6px 0 14px}
+.pill{display:inline-flex;gap:8px;align-items:center;border:1px solid #2a2a2a;background:#111;border-radius:999px;padding:6px 12px;color:#e5e7eb}
+.ico{width:22px;height:22px;display:inline-block;vertical-align:middle}
+.ico svg{width:100%;height:100%}
+.stroke-accent{stroke:var(--accent);} .no-fill{fill:transparent;}
 
-/* Sliders */
+/* Products */
+.grid{display:grid;gap:14px}
+.grid--products{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));padding:18px 0}
+.card{background:var(--card);border:1px solid #222;border-radius:14px;overflow:hidden;position:relative}
+.card img{width:100%;height:150px;object-fit:cover;background:#111}
+.card .pad{padding:10px}
+.price{font-weight:800}
+
+/* Heart (Wishlist) — أبيض + نبضة */
+.heart{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.45);border:1px solid #333;border-radius:50%;width:38px;height:38px;display:grid;place-items:center;cursor:pointer}
+.heart svg path{stroke:#fff;fill:transparent;stroke-width:2;transition:transform .2s}
+.heart.active svg path{stroke:#fff;fill:transparent} /* بدون تعبئة */
+.heart.pulse svg{animation:beat .6s ease-in-out 1;transform-origin:center}
+@keyframes beat{0%{transform:scale(1)}35%{transform:scale(1.2)}100%{transform:scale(1)}}
+
+/* Slider */
 .slider{position:relative;overflow:hidden;border:1px solid #222;border-radius:14px}
 .slides{display:flex;transition:transform .5s}
 .slide{min-width:100%;height:190px;background:#111;display:grid;place-items:center}
-.slide img, .slide video{width:100%;height:100%;object-fit:cover}
+.slide img,.slide video{width:100%;height:100%;object-fit:cover}
 .snav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.45);border:1px solid #333;border-radius:50%;width:38px;height:38px;display:grid;place-items:center;cursor:pointer}
 .snav.r{right:8px}.snav.l{left:8px}
 
-/* small ads rail */
+/* Ads rail */
 .rail{position:fixed;bottom:86px;right:10px;z-index:40;background:#0d0e0f;border:1px solid #222;border-radius:14px;overflow:hidden;width:240px}
 .rail .rail-head{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:1px solid #222}
 .rail .rail-track{display:flex;overflow:auto;scroll-snap-type:x mandatory}
 .rail .cell{scroll-snap-align:center;min-width:240px;height:360px;border-inline-end:1px solid #1f2022}
 .rail .cell img,.rail .cell video{width:100%;height:100%;object-fit:cover}
 
-/* sheets */
+/* Sheets */
 .sheet{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end;z-index:70}
 .sheet__inner{background:#0d0e0f;border-top-left-radius:16px;border-top-right-radius:16px;border:1px solid #222;padding:14px 12px;width:100%;max-height:85vh;overflow:auto}
 .cart-list{display:grid;gap:10px}
 .cart-item{display:flex;gap:10px;align-items:center;justify-content:space-between;background:#151617;border:1px solid #222;padding:10px;border-radius:12px}
 
-/* chatbot */
+/* Chatbot */
 .chatfab{position:fixed;right:12px;bottom:16px;background:var(--accent);color:#000;border-radius:50%;width:54px;height:54px;display:grid;place-items:center;font-weight:800;border:0;z-index:80}
 .chat{position:fixed;right:12px;bottom:84px;width:320px;max-width:95vw;background:#0d0e0f;border:1px solid #222;border-radius:14px;display:none;z-index:80}
 .chat header{padding:8px 10px;border-bottom:1px solid #222;display:flex;justify-content:space-between;align-items:center}
@@ -82,10 +86,11 @@ a{color:inherit;text-decoration:none}
 .msg{background:#16181a;border:1px solid #222;border-radius:12px;padding:8px 10px;margin:6px 0}
 .msg.me{background:#101113}
 .qa{display:grid;gap:8px}
+.chat footer.composer{display:flex;gap:8px;padding:8px;border-top:1px solid #222}
+.chat footer.composer .input{flex:1}
 
-/* shipping pill */
-.pill{display:inline-flex;gap:8px;align-items:center;border:1px solid #2a2a2a;background:#111;border-radius:999px;padding:6px 12px;color:#e5e7eb}
-.pill i{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#000;font-weight:800}
+/* Footer */
+.footer{border-top:1px solid #202124;color:var(--muted);padding:16px 0;margin-top:24px;text-align:center}
 </style>
 </head>
 <body>
@@ -95,13 +100,15 @@ a{color:inherit;text-decoration:none}
     <div class="brand"><span class="brand__logo">Z</span> ZADORA</div>
     <div class="flex-1"></div>
 
- <button class="btn-icon" onclick="openWishlist()" aria-label="قائمة الرغبات">
-  <span class="ico">
-    <svg viewBox="0 0 24 24" class="stroke-accent" fill="none">
-      <path d="M12.1 20s-7.1-4.3-9.1-8.2C1.9 9 3.7 6 6.9 6c1.8 0 3.1.9 3.9 2 0 0 1.5-2 4.3-2 3.2 0 5 3 3.9 5.8C16.9 15.7 12.1 20 12.1 20z" stroke-width="2" fill="transparent"/>
-    </svg>
-  </span>
-</button>
+    <!-- wishlist -->
+    <button class="btn-icon" onclick="openWishlist()" aria-label="قائمة الرغبات">
+      <span class="ico">
+        <svg viewBox="0 0 24 24" class="stroke-accent" fill="none">
+          <path d="M12.1 20s-7.1-4.3-9.1-8.2C1.9 9 3.7 6 6.9 6c1.8 0 3.1.9 3.9 2 0 0 1.5-2 4.3-2 3.2 0 5 3 3.9 5.8C16.9 15.7 12.1 20 12.1 20z" stroke-width="2"/>
+        </svg>
+      </span>
+    </button>
+
     <button class="btn" onclick="openLogin()">حسابي/تسجيل</button>
     <button class="btn" onclick="document.getElementById('wholesale').scrollIntoView({behavior:'smooth'})">طلب جملة</button>
     <button class="btn" onclick="openCart()">السلة <span data-cart-count>0</span></button>
@@ -110,18 +117,19 @@ a{color:inherit;text-decoration:none}
 
 <section class="hero">
   <div class="inner">
-  <div class="pill">
-  <span class="ico">
-    <!-- Truck outline icon -->
-    <svg viewBox="0 0 24 24" fill="none" class="stroke-accent">
-      <path d="M3 6h11v8H3V6zM14 8h4l3 3v3h-7V8z" class="no-fill" stroke-width="2"/>
-      <circle cx="7" cy="17" r="2" class="no-fill" stroke-width="2"/>
-      <circle cx="17" cy="17" r="2" class="no-fill" stroke-width="2"/>
-      <path d="M3 17h2m9 0h3m3-3h3" stroke-width="2"/>
-    </svg>
-  </span>
-  <span>الشحن متاح لجميع محافظات مصر</span>
-</div>
+    <div class="pill">
+      <span class="ico">
+        <!-- Truck outline -->
+        <svg viewBox="0 0 24 24" fill="none" class="stroke-accent">
+          <path d="M3 6h11v8H3V6zM14 8h4l3 3v3h-7V8z" class="no-fill" stroke-width="2"/>
+          <circle cx="7" cy="17" r="2" class="no-fill" stroke-width="2"/>
+          <circle cx="17" cy="17" r="2" class="no-fill" stroke-width="2"/>
+          <path d="M3 17h2m9 0h3m3-3h3" stroke-width="2"/>
+        </svg>
+      </span>
+      <span>الشحن متاح لجميع محافظات مصر</span>
+    </div>
+
     <h1>منتجات منزلية وهدايا بجودة ممتازة</h1>
     <p>أقل كمية للطلب: <b>6 قطع/صنف</b></p>
     <div class="row" style="justify-content:center">
@@ -167,9 +175,13 @@ a{color:inherit;text-decoration:none}
       <input id="wEmail" class="input" placeholder="البريد الإلكتروني (اختياري)" />
       <input id="wSite"  class="input" placeholder="الموقع الإلكتروني (اختياري)" />
 
-      <label class="row" style="gap:8px"><input type="checkbox" id="beSeller" /> أرغب في التسجيل كتاجر على ZADORA SITE (عمولة 2% فقط — والدعاية علينا)</label>
+      <label class="row" style="gap:8px">
+        <input type="checkbox" id="beSeller" />
+        أرغب في التسجيل كتاجر على ZADORA SITE (عمولة 2% فقط — والدعاية علينا)
+      </label>
 
       <button class="btn btn-accent" onclick="whatsappWholesale()">إرسال بيانات الجملة على واتساب</button>
+      <div class="badge">⚠️ بيانات تسجيل العملاء محفوظة <b>محليًا وللتجربة فقط</b> — لا يوجد خادم.</div>
     </div>
   </section>
 </main>
@@ -216,7 +228,7 @@ a{color:inherit;text-decoration:none}
       <input id="userPhone" class="input" placeholder="رقم الموبايل" />
       <input id="userEmail" class="input" placeholder="الإيميل (اختياري)" />
       <button class="btn btn-accent" onclick="doLogin()">حفظ الدخول</button>
-      <div class="badge">محفوظ محليًا لأغراض التجربة فقط</div>
+      <div class="badge">⚠️ هذا التسجيل محفوظ <b>محليًا وللتجربة فقط</b> — ليس حسابًا حقيقيًا.</div>
     </div>
   </div>
 </div>
@@ -226,14 +238,19 @@ a{color:inherit;text-decoration:none}
 <div class="chat" id="chatBox">
   <header><strong>ZADORA • FAQ</strong><button class="btn" style="padding:4px 8px" onclick="toggleChat()">✕</button></header>
   <div class="body">
-    <div class="msg">أهلا بيك! إختار سؤال:</div>
+    <div class="msg">أهلا بيك! اسألني سؤال أو استخدم الأزرار السريعة:</div>
     <div class="qa">
       <button class="btn" onclick="chatQ(1)">1) الحد الأدنى للطلب؟</button>
-      <button class="btn" onclick="chatQ(2)">2) مكانكم وإعتماداتكم؟</button>
+      <button class="btn" onclick="chatQ(2)">2) مكانكم واعتماداتكم؟</button>
       <button class="btn" onclick="chatQ(3)">3) الشراء أونلاين والدفع؟</button>
     </div>
     <div id="chatStream"></div>
   </div>
+  <footer class="composer">
+    <input id="chatInput" class="input" placeholder="اكتب رسالتك هنا..." onkeydown="if(event.key==='Enter') sendChat()">
+    <button class="btn btn-accent" onclick="sendChat()">إرسال</button>
+    <button class="btn" onclick="sendToWhatsApp()">واتساب</button>
+  </footer>
 </div>
 
 <!-- ريل جانبي للإعلانات/فيديو -->
@@ -246,10 +263,10 @@ a{color:inherit;text-decoration:none}
 
 <script>
 /* ===== إعدادات عامة ===== */
-const WHATSAPP_PHONE = '201234567890'; // ← غيّر رقمك
-const STORE_KEY = 'zadora_products_v6';
+const WHATSAPP_PHONE = '201234567890'; // ← غيّر رقمك (من غير +)
+const STORE_KEY = 'zadora_products_v7';
 const CART_KEY  = 'zadora_cart_v3';
-const WISH_KEY  = 'zadora_wishlist_v2';
+const WISH_KEY  = 'zadora_wishlist_v3';
 const USER_KEY  = 'zadora_user_v1';
 const MIN_QTY_PER_ITEM = 6;
 const WHOLESALE_DISCOUNT = 0.02;
@@ -277,21 +294,12 @@ const getWish     = () => JSON.parse(localStorage.getItem(WISH_KEY) || '[]');
 const setWish     = (arr) => localStorage.setItem(WISH_KEY, JSON.stringify(arr));
 const getUser     = () => JSON.parse(localStorage.getItem(USER_KEY) || 'null');
 
-/* ===== Hero slider data ===== */
+/* ===== Hero slider ===== */
 const heroSlides = [
   'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1400&auto=format&fit=crop',
   'https://images.unsplash.com/photo-1526328828355-69b01701ca37?q=80&w=1400&auto=format&fit=crop',
   'https://images.unsplash.com/photo-1517341725612-5f06f483f2f9?q=80&w=1400&auto=format&fit=crop'
 ];
-
-/* ===== Ads rail data (images/videos) ===== */
-const railItems = [
-  {type:'img', src:'https://images.unsplash.com/photo-1555529771-35a38f6a1e6e?q=80&w=1200&auto=format&fit=crop'},
-  {type:'video', src:'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4'},
-  {type:'img', src:'https://images.unsplash.com/photo-1505575972945-2803d6f3714e?q=80&w=1200&auto=format&fit=crop'}
-];
-
-/* ===== رندر سلايدر الهيرو ===== */
 function renderHero(){
   const slides = $('#heroSlider .slides');
   slides.innerHTML = heroSlides.map(u=>`<div class="slide"><img src="${u}" alt=""></div>`).join('');
@@ -302,7 +310,12 @@ function renderHero(){
 function slideNext(id){ const el=$('#'+id); let i=+el.dataset.idx||0; i=(i+1)%heroSlides.length; el.dataset.idx=i; el.querySelector('.slides').style.transform=`translateX(-${i*100}%)`; }
 function slidePrev(id){ const el=$('#'+id); let i=+el.dataset.idx||0; i=(i-1+heroSlides.length)%heroSlides.length; el.dataset.idx=i; el.querySelector('.slides').style.transform=`translateX(-${i*100}%)`; }
 
-/* ===== رندر ريل الإعلانات ===== */
+/* ===== Ads rail ===== */
+const railItems = [
+  {type:'img', src:'https://images.unsplash.com/photo-1555529771-35a38f6a1e6e?q=80&w=1200&auto=format&fit=crop'},
+  {type:'video', src:'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4'},
+  {type:'img', src:'https://images.unsplash.com/photo-1505575972945-2803d6f3714e?q=80&w=1200&auto=format&fit=crop'}
+];
 function renderRail(){
   const rail = $('#railTrack');
   rail.innerHTML = railItems.map(it=>{
@@ -311,19 +324,15 @@ function renderRail(){
   }).join('');
 }
 
-/* ===== المنتجات في الصفحة الرئيسية ===== */
+/* ===== Products on home ===== */
 function renderHomeProducts(){
   const wrap = document.getElementById('homeGrid');
   const wish = getWish();
   wrap.innerHTML = getProducts().map(p=>`
     <div class="card">
-    <div <div class="heart ${wish.includes(p.id)?'active':''}" onclick="toggleWish('${p.id}', this)">
-  <svg viewBox="0 0 24 24"><path d="M12.1 20s-7.1-4.3-9.1-8.2C1.9 9 3.7 6 6.9 6c1.8 0 3.1.9 3.9 2 0 0 1.5-2 4.3-2 3.2 0 5 3 3.9 5.8C16.9 15.7 12.1 20 12.1 20z"/></svg>
-</div>
-  <svg viewBox="0 0 24 24">
-    <path d="M12.1 20s-7.1-4.3-9.1-8.2C1.9 9 3.7 6 6.9 6c1.8 0 3.1.9 3.9 2 0 0 1.5-2 4.3-2 3.2 0 5 3 3.9 5.8C16.9 15.7 12.1 20 12.1 20z"/>
-  </svg>
-</div>
+      <div class="heart ${wish.includes(p.id)?'active':''}" onclick="toggleWish('${p.id}', this)">
+        <svg viewBox="0 0 24 24"><path d="M12.1 20s-7.1-4.3-9.1-8.2C1.9 9 3.7 6 6.9 6c1.8 0 3.1.9 3.9 2 0 0 1.5-2 4.3-2 3.2 0 5 3 3.9 5.8C16.9 15.7 12.1 20 12.1 20z"/></svg>
+      </div>
       <img src="${p.img||IMG_FALLBACK}" alt="${p.name}" onerror="this.src='${IMG_FALLBACK}'">
       <div class="pad">
         <div class="badge">${p.cat||'عام'}</div>
@@ -341,9 +350,14 @@ function renderHomeProducts(){
 /* ===== Wishlist ===== */
 function toggleWish(id,btn){
   let w = getWish();
-  if(w.includes(id)) w = w.filter(x=>x!==id); else w.push(id);
+  const turnOn = !w.includes(id);
+  if(turnOn) w.push(id); else w = w.filter(x=>x!==id);
   setWish(w);
-  if(btn) btn.classList.toggle('active');
+  if(btn){
+    btn.classList.toggle('active', turnOn);
+    btn.classList.add('pulse');
+    setTimeout(()=>btn.classList.remove('pulse'), 500);
+  }
 }
 function renderWishlist(){
   const wrap = document.getElementById('wishList');
@@ -364,7 +378,7 @@ function renderWishlist(){
 function openWishlist(){ $('#wishSheet').style.display='flex'; renderWishlist(); }
 function closeWishlist(){ $('#wishSheet').style.display='none'; }
 
-/* ===== السلة + الحد الأدنى ===== */
+/* ===== Cart + min qty ===== */
 function addToCart(id){
   const cart = getCart();
   const i = cart.findIndex(x=>x.id===id);
@@ -404,7 +418,7 @@ function renderCart(){
   }).join('');
 }
 
-/* ===== خصم الجملة ===== */
+/* ===== Totals / Discount ===== */
 function updateTotals(){
   const cart = getCart(); const products=getProducts();
   let sub = 0; cart.forEach(it=>{ const p=products.find(x=>x.id===it.id); sub += (p?.price||0)*it.qty; });
@@ -417,14 +431,14 @@ function updateTotals(){
   const typeMsg = $('#typeMsg');
   if(typeMsg){
     typeMsg.textContent = custType==='wholesale'
-    ? 'عميل جملة: مبروك! خصم 2% تم تطبيقه تلقائيًا.'
-    : 'عميل نص جملة: مبروك! Free Random Box from ZADORA.';
+      ? 'عميل جملة: مبروك! خصم 2% تم تطبيقه تلقائيًا.'
+      : 'عميل نص جملة: مبروك! Free Random Box from ZADORA.';
   }
 }
 function openCart(){ $('#cartSheet').style.display='flex'; renderCart(); updateTotals(); }
 function closeCart(){ $('#cartSheet').style.display='none'; }
 
-/* ===== واتساب ===== */
+/* ===== WhatsApp ===== */
 function whatsappCheckout(){
   const products=getProducts(); const cart=getCart(); if(cart.length===0){ alert('السلة فارغة'); return; }
   for(const it of cart){ if(it.qty < MIN_QTY_PER_ITEM){ alert('الحد الأدنى لكل صنف 6 قطع'); return; } }
@@ -470,7 +484,7 @@ function whatsappWholesale(){
   window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${msg}`,'_blank');
 }
 
-/* ===== تسجيل بسيط ===== */
+/* ===== Login (local demo) ===== */
 function openLogin(){ $('#loginSheet').style.display='flex'; const u=getUser(); if(u){ $('#userName').value=u.name||''; $('#userPhone').value=u.phone||''; $('#userEmail').value=u.email||''; } }
 function closeLogin(){ $('#loginSheet').style.display='none'; }
 function doLogin(){
@@ -480,13 +494,42 @@ function doLogin(){
   alert('تم الحفظ ✅'); closeLogin();
 }
 
-/* ===== شات بوت ===== */
+/* ===== Chatbot with input ===== */
+let chatHistory = [];
 function toggleChat(){ const c=$('#chatBox'); c.style.display = (c.style.display==='block'?'none':'block'); }
+function addMsg(text, me=false){
+  const s = document.getElementById('chatStream');
+  const d = document.createElement('div');
+  d.className = 'msg' + (me ? ' me' : '');
+  d.textContent = text;
+  s.appendChild(d);
+  s.scrollTop = s.scrollHeight;
+  chatHistory.push({me, text});
+}
+function sendChat(){
+  const inp = document.getElementById('chatInput');
+  const v = (inp.value||'').trim(); if(!v) return;
+  addMsg(v, true);
+  const t = v.replace(/[^\p{L}\p{N}\s]/gu,'').toLowerCase();
+  if(t.includes('حد')||t.includes('قطعه')||t.includes('قطعة')||t.includes('minimum')){
+    addMsg('الحد الأدنى 12 قطعة/صنف، والحد الأدنى لقيمة الفاتورة 7000 جنيه.');
+  }else if(t.includes('مكان')||t.includes('فين')||t.includes('عنوان')){
+    addMsg('نحن وكيل وموزع لعلامات عالمية. قريبًا: أكبر مول ZADORA HUB في الشرق الأوسط.');
+  }else if(t.includes('دفع')||t.includes('استلام')||t.includes('اونلاين')||t.includes('اون لاين')){
+    addMsg('الشراء أونلاين متاح، والدفع عند الاستلام بزيادة 6% على إجمالي الفاتورة.');
+  }else{
+    addMsg('تمام! هنراجع رسالتك ونرد خلال ساعات العمل — تقدر تبعتها مباشرة لواتساب من الزر بالأسفل 👇');
+  }
+  inp.value='';
+}
 function chatQ(i){
-  const s = $('#chatStream'); const add=(t,me=false)=>{ const d=document.createElement('div'); d.className='msg'+(me?' me':''); d.textContent=t; s.appendChild(d); s.scrollTop=s.scrollHeight; }
-  if(i===1){ add('ما الحد الأدنى للطلب؟',true); add('الحد الأدنى 12 قطعة/صنف، وقيمة الفاتورة لا تقل عن 7000 جنيه.'); }
-  if(i===2){ add('مكانكم واعتماداتكم؟',true); add('نحن وكيل وموزع لعلامات عالمية. قريبًا: أكبر مول ZADORA HUB في الشرق الأوسط.'); }
-  if(i===3){ add('هل الشراء أونلاين والدفع عند الاستلام متاح؟',true); add('متاح الشراء أونلاين. الدفع عند الاستلام متاح بزيادة 6% على إجمالي الفاتورة.'); }
+  if(i===1){ addMsg('ما الحد الأدنى للطلب؟', true); addMsg('الحد الأدنى 12 قطعة/صنف وقيمة الفاتورة ≥ 7000 جنيه.'); }
+  if(i===2){ addMsg('مكانكم واعتماداتكم؟', true); addMsg('نحن وكيل وموزع لعلامات عالمية. قريبًا ZADORA HUB أكبر مول في الشرق الأوسط.'); }
+  if(i===3){ addMsg('هل الشراء أونلاين والدفع عند الاستلام متاح؟', true); addMsg('متاح الشراء أونلاين، والدفع عند الاستلام بزيادة 6% على إجمالي الفاتورة.'); }
+}
+function sendToWhatsApp(){
+  const text = chatHistory.map(m => (m.me ? 'عميل: ' : 'ZADORA: ') + m.text).join('\n') || 'مرحبا، أحتاج مساعدة';
+  window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`, '_blank');
 }
 
 /* ===== Init ===== */

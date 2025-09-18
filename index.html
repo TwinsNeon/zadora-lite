@@ -11,7 +11,7 @@
 *{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:"Cairo",system-ui}
 .container{max-width:1100px;margin:0 auto;padding:0 14px}
 a{color:inherit;text-decoration:none}
-.header{position:sticky;top:0;z-index:40;background:#0b0c0d;border-bottom:1px solid #222}
+.header{position:sticky;top:0;z-index:60;background:#0b0c0d;border-bottom:1px solid #222}
 .header__in{display:flex;gap:10px;align-items:center;padding:10px 0}
 .brand{display:flex;align-items:center;font-weight:800}.brand__logo{width:32px;height:32px;border:2px solid var(--accent);display:grid;place-items:center;border-radius:8px;margin-left:8px}
 .btn{border:1px solid #2a2a2a;border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:800;background:#0f0f10;color:#fff}
@@ -19,67 +19,93 @@ a{color:inherit;text-decoration:none}
 .badge{display:inline-block;font-size:12px;border:1px solid #2a2a2a;background:#1a1a1a;color:var(--muted);padding:4px 8px;border-radius:8px}
 .input{width:100%;background:#0e0e0f;border:1px solid #2a2a2a;color:#fff;border-radius:12px;padding:10px}
 .grid{display:grid;gap:14px}.grid--products{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));padding:18px 0}
-.card{background:var(--card);border:1px solid #222;border-radius:14px;overflow:hidden}
+.card{background:var(--card);border:1px solid #222;border-radius:14px;overflow:hidden;position:relative}
 .card img{width:100%;height:150px;object-fit:cover;background:#111}
 .card .pad{padding:10px}
+.heart{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.45);border:1px solid #333;border-radius:50%;width:38px;height:38px;display:grid;place-items:center;cursor:pointer}
+.heart.active{background:#b91c1c}
 .price{font-weight:800}
 .footer{border-top:1px solid #202124;color:var(--muted);padding:16px 0;margin-top:24px;text-align:center}
-.row{display:flex;gap:10px;align-items:center}
-.flex-1{flex:1}
+.row{display:flex;gap:10px;align-items:center}.flex-1{flex:1}
 
 /* Hero */
 .hero{position:relative;min-height:280px;display:grid;place-items:center;border-bottom:1px solid #202124}
 .hero::before{content:"";position:absolute;inset:0;background:
- linear-gradient( to bottom, rgba(15,15,16,.5), rgba(15,15,16,.8)),
+ linear-gradient( to bottom, rgba(15,15,16,.45), rgba(15,15,16,.8)),
  url('https://images.unsplash.com/photo-1517341725612-5f06f483f2f9?q=80&w=1400&auto=format&fit=crop') center/cover no-repeat;}
-.hero>.inner{position:relative;text-align:center;padding:40px 14px}
+.hero>.inner{position:relative;text-align:center;padding:32px 14px}
 .hero h1{margin:.2em 0 0;font-size:28px}
 .hero p{color:#ddd;margin:6px 0 14px}
 
-/* Cart sheet */
-.sheet{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end}
+/* Sliders */
+.slider{position:relative;overflow:hidden;border:1px solid #222;border-radius:14px}
+.slides{display:flex;transition:transform .5s}
+.slide{min-width:100%;height:190px;background:#111;display:grid;place-items:center}
+.slide img, .slide video{width:100%;height:100%;object-fit:cover}
+.snav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.45);border:1px solid #333;border-radius:50%;width:38px;height:38px;display:grid;place-items:center;cursor:pointer}
+.snav.r{right:8px}.snav.l{left:8px}
+
+/* small ads rail */
+.rail{position:fixed;bottom:86px;right:10px;z-index:40;background:#0d0e0f;border:1px solid #222;border-radius:14px;overflow:hidden;width:240px}
+.rail .rail-head{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:1px solid #222}
+.rail .rail-track{display:flex;overflow:auto;scroll-snap-type:x mandatory}
+.rail .cell{scroll-snap-align:center;min-width:240px;height:360px;border-inline-end:1px solid #1f2022}
+.rail .cell img,.rail .cell video{width:100%;height:100%;object-fit:cover}
+
+/* sheets */
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end;z-index:70}
 .sheet__inner{background:#0d0e0f;border-top-left-radius:16px;border-top-right-radius:16px;border:1px solid #222;padding:14px 12px;width:100%;max-height:85vh;overflow:auto}
 .cart-list{display:grid;gap:10px}
 .cart-item{display:flex;gap:10px;align-items:center;justify-content:space-between;background:#151617;border:1px solid #222;padding:10px;border-radius:12px}
 
-/* Ticker */
-#sideTicker{position:fixed;right:12px;top:50%;transform:translateY(-50%);z-index:30;border:1px solid #222;background:#0d0e0f;border-radius:18px;overflow:hidden}
-#sideTicker .marquee{white-space:nowrap;display:inline-block;padding:8px 16px;animation:ticker 12s linear infinite alternate}
-@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-55%)}}
-@media(max-width:640px){#sideTicker{bottom:110px;top:auto;transform:none}}
+/* chatbot */
+.chatfab{position:fixed;right:12px;bottom:16px;background:var(--accent);color:#000;border-radius:50%;width:54px;height:54px;display:grid;place-items:center;font-weight:800;border:0;z-index:80}
+.chat{position:fixed;right:12px;bottom:84px;width:320px;max-width:95vw;background:#0d0e0f;border:1px solid #222;border-radius:14px;display:none;z-index:80}
+.chat header{padding:8px 10px;border-bottom:1px solid #222;display:flex;justify-content:space-between;align-items:center}
+.chat .body{max-height:50vh;overflow:auto;padding:10px}
+.msg{background:#16181a;border:1px solid #222;border-radius:12px;padding:8px 10px;margin:6px 0}
+.msg.me{background:#101113}
+.qa{display:grid;gap:8px}
+
+/* shipping pill */
+.pill{display:inline-flex;gap:8px;align-items:center;border:1px solid #2a2a2a;background:#111;border-radius:999px;padding:6px 12px;color:#e5e7eb}
+.pill i{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#000;font-weight:800}
 </style>
 </head>
 <body>
+
 <header class="header">
   <div class="container header__in">
     <div class="brand"><span class="brand__logo">Z</span> ZADORA</div>
     <div class="flex-1"></div>
-    <button class="btn" onclick="openWishlist()">🩶</button>
+
+    <button class="btn" onclick="openWishlist()">❤️</button>
+    <button class="btn" onclick="openLogin()">حسابي/تسجيل</button>
     <button class="btn" onclick="document.getElementById('wholesale').scrollIntoView({behavior:'smooth'})">طلب جملة</button>
     <button class="btn" onclick="openCart()">السلة <span data-cart-count>0</span></button>
-    <div id="wishSheet" class="sheet" role="dialog" aria-modal="true">
-  <div class="sheet__inner">
-    <div class="row" style="justify-content:space-between">
-      <h3 style="margin:0">قائمة الرغبات</h3>
-      <button class="btn" onclick="closeWishlist()">✕</button>
-    </div>
-    <div id="wishList" class="cart-list" style="margin-top:10px"></div>
-  </div>
-</div>
   </div>
 </header>
 
 <section class="hero">
   <div class="inner">
-    <div class="badge">تجارة الجملة • شحن كل المحافظات</div>
+    <div class="pill"><i>🚚</i> الشحن متاح لجميع محافظات مصر</div>
     <h1>منتجات منزلية وهدايا بجودة ممتازة</h1>
-  <p>أقل كمية للطلب: <b>6 قطع/صنف</b></p>
+    <p>أقل كمية للطلب: <b>6 قطع/صنف</b></p>
     <div class="row" style="justify-content:center">
       <button class="btn btn-accent" onclick="document.getElementById('homeGrid').scrollIntoView({behavior:'smooth'})">تسوق الآن</button>
       <button class="btn" onclick="openCart()">عرض السلة</button>
     </div>
   </div>
 </section>
+
+<!-- Hero slider -->
+<div class="container" style="margin-top:14px">
+  <div class="slider" id="heroSlider">
+    <div class="slides"></div>
+    <div class="snav l" onclick="slidePrev('heroSlider')">‹</div>
+    <div class="snav r" onclick="slideNext('heroSlider')">›</div>
+  </div>
+</div>
 
 <main class="container">
   <section style="padding:16px 0">
@@ -98,7 +124,6 @@ a{color:inherit;text-decoration:none}
           <option value="half">Half-Wholesale (نص جملة)</option>
         </select>
       </div>
-
       <div id="typeMsg" class="badge">عميل جملة: خصم 2% يطبق تلقائيًا على الإجمالي.</div>
 
       <input id="wName"  class="input" placeholder="الاسم/المؤسسة" />
@@ -109,10 +134,7 @@ a{color:inherit;text-decoration:none}
       <input id="wEmail" class="input" placeholder="البريد الإلكتروني (اختياري)" />
       <input id="wSite"  class="input" placeholder="الموقع الإلكتروني (اختياري)" />
 
-      <label class="row" style="gap:8px">
-        <input type="checkbox" id="beSeller" />
-        أرغب في التسجيل كتاجر على ZADORA SITE (عمولة 2% فقط — وإحنا بنتولى الدعاية كاملة)
-      </label>
+      <label class="row" style="gap:8px"><input type="checkbox" id="beSeller" /> أرغب في التسجيل كتاجر على ZADORA SITE (عمولة 2% فقط — والدعاية علينا)</label>
 
       <button class="btn btn-accent" onclick="whatsappWholesale()">إرسال بيانات الجملة على واتساب</button>
     </div>
@@ -124,13 +146,11 @@ a{color:inherit;text-decoration:none}
   <div class="sheet__inner">
     <div class="row" style="justify-content:space-between"><h3 style="margin:0">السلة</h3><button class="btn" onclick="closeCart()">إغلاق ✕</button></div>
     <div id="cartList" class="cart-list" style="margin-top:10px"></div>
-
     <div id="totalsBox" class="row" style="justify-content:space-between;margin-top:12px;flex-wrap:wrap">
       <div class="price">الإجمالي قبل الخصم: <span id="cartSub">EGP 0</span></div>
       <div class="badge">خصم الجملة 2%: <span id="cartDisc">EGP 0</span></div>
       <div class="price">إجمالي الدفع: <span id="cartTotal">EGP 0</span></div>
     </div>
-
     <div id="checkout" style="margin-top:14px">
       <h4 style="margin:6px 0">بيانات التوصيل السريعة</h4>
       <div class="grid">
@@ -139,24 +159,65 @@ a{color:inherit;text-decoration:none}
         <textarea id="custNote" class="input" placeholder="ملاحظات الطلب (اختياري)"></textarea>
       </div>
       <button class="btn btn-accent" style="margin-top:10px" onclick="whatsappCheckout()">إرسال الطلب على واتساب</button>
-      <div class="badge" style="margin-top:8px">سيتم التأكيد على واتساب قبل الشحن</div>
     </div>
   </div>
 </div>
 
-<!-- تيكر جانبي -->
-<div id="sideTicker"><div class="marquee">حد أدنى 6 قطع/صنف — خصم 2% لعملاء الجملة — Free Random Box لعملاء نص الجملة — عمولة 2% فقط للتجار على ZADORA — </div></div>
+<!-- شيت الرغبات -->
+<div id="wishSheet" class="sheet" role="dialog" aria-modal="true">
+  <div class="sheet__inner">
+    <div class="row" style="justify-content:space-between">
+      <h3 style="margin:0">قائمة الرغبات</h3>
+      <button class="btn" onclick="closeWishlist()">✕</button>
+    </div>
+    <div id="wishList" class="cart-list" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- شيت تسجيل -->
+<div id="loginSheet" class="sheet" role="dialog" aria-modal="true">
+  <div class="sheet__inner">
+    <div class="row" style="justify-content:space-between"><h3 style="margin:0">تسجيل الدخول</h3><button class="btn" onclick="closeLogin()">✕</button></div>
+    <div class="grid" style="margin-top:10px">
+      <input id="userName"  class="input" placeholder="الاسم" />
+      <input id="userPhone" class="input" placeholder="رقم الموبايل" />
+      <input id="userEmail" class="input" placeholder="الإيميل (اختياري)" />
+      <button class="btn btn-accent" onclick="doLogin()">حفظ الدخول</button>
+      <div class="badge">محفوظ محليًا لأغراض التجربة فقط</div>
+    </div>
+  </div>
+</div>
+
+<!-- شات بوت -->
+<button class="chatfab" onclick="toggleChat()">💬</button>
+<div class="chat" id="chatBox">
+  <header><strong>ZADORA • FAQ</strong><button class="btn" style="padding:4px 8px" onclick="toggleChat()">✕</button></header>
+  <div class="body">
+    <div class="msg">أهلا بيك! إختار سؤال:</div>
+    <div class="qa">
+      <button class="btn" onclick="chatQ(1)">1) الحد الأدنى للطلب؟</button>
+      <button class="btn" onclick="chatQ(2)">2) مكانكم وإعتماداتكم؟</button>
+      <button class="btn" onclick="chatQ(3)">3) الشراء أونلاين والدفع؟</button>
+    </div>
+    <div id="chatStream"></div>
+  </div>
+</div>
+
+<!-- ريل جانبي للإعلانات/فيديو -->
+<div class="rail" id="adRail">
+  <div class="rail-head"><div>إعلانات</div><button class="btn" style="padding:4px 8px" onclick="document.getElementById('adRail').style.display='none'">✕</button></div>
+  <div class="rail-track" id="railTrack"></div>
+</div>
 
 <footer class="footer">© 2025 ZADORA • جميع الحقوق محفوظة</footer>
-<div class="row" style="gap:6px">
-  <button class="btn btn-accent" onclick="addToCart('${p.id}')">أضف للسلة</button>
-  <button class="btn" onclick="toggleWish('${p.id}')">❤️</button>
-</div>
+
 <script>
-/* ===== إعدادات ===== */
-const WHATSAPP_PHONE = '201119508881'; // ← غيّر رقمك (بدون +)
-const STORE_KEY = 'zadora_products_v4';
-const CART_KEY  = 'zadora_cart_v2';
+/* ===== إعدادات عامة ===== */
+const WHATSAPP_PHONE = '201234567890'; // ← غيّر رقمك
+const STORE_KEY = 'zadora_products_v6';
+const CART_KEY  = 'zadora_cart_v3';
+const WISH_KEY  = 'zadora_wishlist_v2';
+const USER_KEY  = 'zadora_user_v1';
 const MIN_QTY_PER_ITEM = 6;
 const WHOLESALE_DISCOUNT = 0.02;
 const IMG_FALLBACK = 'https://images.unsplash.com/photo-1523362628745-0c100150b840?q=80&w=1200&auto=format&fit=crop';
@@ -179,22 +240,58 @@ const getProducts = () => JSON.parse(localStorage.getItem(STORE_KEY) || 'null') 
 const setProducts = (arr) => localStorage.setItem(STORE_KEY, JSON.stringify(arr));
 const getCart     = () => JSON.parse(localStorage.getItem(CART_KEY) || '[]');
 const setCart     = (arr) => localStorage.setItem(CART_KEY, JSON.stringify(arr));
+const getWish     = () => JSON.parse(localStorage.getItem(WISH_KEY) || '[]');
+const setWish     = (arr) => localStorage.setItem(WISH_KEY, JSON.stringify(arr));
+const getUser     = () => JSON.parse(localStorage.getItem(USER_KEY) || 'null');
 
-/* ===== منتجات الصفحة الرئيسية ===== */
+/* ===== Hero slider data ===== */
+const heroSlides = [
+  'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1400&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1526328828355-69b01701ca37?q=80&w=1400&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1517341725612-5f06f483f2f9?q=80&w=1400&auto=format&fit=crop'
+];
+
+/* ===== Ads rail data (images/videos) ===== */
+const railItems = [
+  {type:'img', src:'https://images.unsplash.com/photo-1555529771-35a38f6a1e6e?q=80&w=1200&auto=format&fit=crop'},
+  {type:'video', src:'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4'},
+  {type:'img', src:'https://images.unsplash.com/photo-1505575972945-2803d6f3714e?q=80&w=1200&auto=format&fit=crop'}
+];
+
+/* ===== رندر سلايدر الهيرو ===== */
+function renderHero(){
+  const slides = $('#heroSlider .slides');
+  slides.innerHTML = heroSlides.map(u=>`<div class="slide"><img src="${u}" alt=""></div>`).join('');
+  let idx=0;
+  setInterval(()=>{ idx=(idx+1)%heroSlides.length; slides.style.transform=`translateX(-${idx*100}%)`; }, 4500);
+  $('#heroSlider').dataset.idx = 0;
+}
+function slideNext(id){ const el=$('#'+id); let i=+el.dataset.idx||0; i=(i+1)%heroSlides.length; el.dataset.idx=i; el.querySelector('.slides').style.transform=`translateX(-${i*100}%)`; }
+function slidePrev(id){ const el=$('#'+id); let i=+el.dataset.idx||0; i=(i-1+heroSlides.length)%heroSlides.length; el.dataset.idx=i; el.querySelector('.slides').style.transform=`translateX(-${i*100}%)`; }
+
+/* ===== رندر ريل الإعلانات ===== */
+function renderRail(){
+  const rail = $('#railTrack');
+  rail.innerHTML = railItems.map(it=>{
+    if(it.type==='video') return `<div class="cell"><video src="${it.src}" controls muted playsinline></video></div>`;
+    return `<div class="cell"><img src="${it.src}" alt=""></div>`;
+  }).join('');
+}
+
+/* ===== المنتجات في الصفحة الرئيسية ===== */
 function renderHomeProducts(){
   const wrap = document.getElementById('homeGrid');
+  const wish = getWish();
   wrap.innerHTML = getProducts().map(p=>`
     <div class="card">
+      <div class="heart ${wish.includes(p.id)?'active':''}" onclick="toggleWish('${p.id}', this)">❤</div>
       <img src="${p.img||IMG_FALLBACK}" alt="${p.name}" onerror="this.src='${IMG_FALLBACK}'">
       <div class="pad">
         <div class="badge">${p.cat||'عام'}</div>
         <h3 style="margin:.4em 0">${p.name}</h3>
         <div class="row" style="justify-content:space-between;align-items:center">
           <div class="price">${money(p.price)}</div>
-        <div class="row" style="gap:6px">
-  <button class="btn btn-accent" onclick="addToCart('${p.id}')">أضف للسلة</button>
-  <button class="btn" onclick="toggleWish('${p.id}')">❤️</button>
-</div>
+          <button class="btn btn-accent" onclick="addToCart('${p.id}')">أضف للسلة</button>
         </div>
         <div class="badge" style="margin-top:6px">الحد الأدنى لهذا الصنف: ${MIN_QTY_PER_ITEM} قطع</div>
       </div>
@@ -202,103 +299,109 @@ function renderHomeProducts(){
   `).join('');
 }
 
+/* ===== Wishlist ===== */
+function toggleWish(id,btn){
+  let w = getWish();
+  if(w.includes(id)) w = w.filter(x=>x!==id); else w.push(id);
+  setWish(w);
+  if(btn) btn.classList.toggle('active');
+}
+function renderWishlist(){
+  const wrap = document.getElementById('wishList');
+  const products = getProducts(); const w = getWish();
+  if(w.length===0){ wrap.innerHTML='<div class="badge">القائمة فارغة</div>'; return; }
+  wrap.innerHTML = w.map(id=>{
+    const p = products.find(x=>x.id===id);
+    return `<div class="cart-item">
+      <div class="row"><img src="${p.img}" style="width:60px;height:60px;object-fit:cover;border-radius:8px">
+      <div><div style="font-weight:800">${p.name}</div><div class="price">${money(p.price)}</div></div></div>
+      <div class="row">
+        <button class="btn btn-accent" onclick="addToCart('${id}')">إضافة للسلة</button>
+        <button class="btn" onclick="toggleWish('${id}'); renderWishlist(); renderHomeProducts();">إزالة</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function openWishlist(){ $('#wishSheet').style.display='flex'; renderWishlist(); }
+function closeWishlist(){ $('#wishSheet').style.display='none'; }
+
 /* ===== السلة + الحد الأدنى ===== */
 function addToCart(id){
   const cart = getCart();
   const i = cart.findIndex(x=>x.id===id);
-  if(i>-1){
-    cart[i].qty += 1;
-    if(cart[i].qty < MIN_QTY_PER_ITEM) cart[i].qty = MIN_QTY_PER_ITEM;
-  }else{
-    cart.push({id, qty: MIN_QTY_PER_ITEM}); // أول مرة = 6 قطع
-  }
-  setCart(cart); renderCart(); openCart(); updateTotals();
+  if(i>-1){ cart[i].qty += 1; if(cart[i].qty < MIN_QTY_PER_ITEM) cart[i].qty = MIN_QTY_PER_ITEM; }
+  else    { cart.push({id, qty: MIN_QTY_PER_ITEM}); }
+  setCart(cart); renderCart(); openCart(); updateTotals(); renderCartBadge();
 }
 function qty(id,delta){
   const cart = getCart(); const i = cart.findIndex(x=>x.id===id);
   if(i>-1){
     cart[i].qty += delta;
-    if(cart[i].qty < MIN_QTY_PER_ITEM) cart[i].qty = MIN_QTY_PER_ITEM; // لا تقل عن 6
-    setCart(cart); renderCart(); updateTotals();
+    if(cart[i].qty < MIN_QTY_PER_ITEM) cart[i].qty = MIN_QTY_PER_ITEM;
+    setCart(cart); renderCart(); updateTotals(); renderCartBadge();
   }
 }
-function removeItem(id){ setCart(getCart().filter(x=>x.id!==id)); renderCart(); updateTotals(); }
+function removeItem(id){ setCart(getCart().filter(x=>x.id!==id)); renderCart(); updateTotals(); renderCartBadge(); }
+function renderCartBadge(){ $$('[data-cart-count]').forEach(el=>el.textContent = getCart().reduce((s,i)=>s+i.qty,0)); }
 function renderCart(){
-  const list = document.getElementById('cartList');
-  const products = getProducts(); const cart = getCart();
-  if(cart.length===0){ list.innerHTML = '<div class="badge">السلة فارغة</div>'; updateTotals(); return; }
+  const list = document.getElementById('cartList'); const products = getProducts(); const cart = getCart();
+  if(cart.length===0){ list.innerHTML = '<div class="badge">السلة فارغة</div>'; return; }
   list.innerHTML = cart.map(it=>{
-    const p = products.find(x=>x.id===it.id);
-    const sum = (p?.price||0)*it.qty;
-    return `
-      <div class="cart-item">
-        <div class="row">
-          <img src="${p?.img||IMG_FALLBACK}" style="width:70px;height:70px;object-fit:cover;border-radius:10px" onerror="this.src='${IMG_FALLBACK}'" />
-          <div>
-            <div style="font-weight:800">${p?.name||'-'}</div>
-            <div class="badge">${money(p?.price||0)} × ${it.qty} (حد أدنى ${MIN_QTY_PER_ITEM})</div>
-          </div>
+    const p = products.find(x=>x.id===it.id); const sum=(p?.price||0)*it.qty;
+    return `<div class="cart-item">
+      <div class="row">
+        <img src="${p?.img||IMG_FALLBACK}" style="width:70px;height:70px;object-fit:cover;border-radius:10px" onerror="this.src='${IMG_FALLBACK}'" />
+        <div><div style="font-weight:800">${p?.name||'-'}</div><div class="badge">${money(p?.price||0)} × ${it.qty} (حد أدنى ${MIN_QTY_PER_ITEM})</div></div>
+      </div>
+      <div>
+        <div class="price" style="text-align:end">${money(sum)}</div>
+        <div class="row" style="justify-content:flex-end;margin-top:6px">
+          <button class="btn" onclick="qty('${it.id}',-1)">−</button>
+          <button class="btn" onclick="qty('${it.id}',1)">+</button>
+          <button class="btn" onclick="removeItem('${it.id}')">حذف</button>
         </div>
-        <div>
-          <div class="price" style="text-align:end">${money(sum)}</div>
-          <div class="row" style="justify-content:flex-end;margin-top:6px">
-            <button class="btn" onclick="qty('${it.id}',-1)">−</button>
-            <button class="btn" onclick="qty('${it.id}',1)">+</button>
-            <button class="btn" onclick="removeItem('${it.id}')">حذف</button>
-          </div>
-        </div>
-      </div>`;
+      </div>
+    </div>`;
   }).join('');
 }
 
-/* ===== حساب الإجمالي + خصم الجملة ===== */
+/* ===== خصم الجملة ===== */
 function updateTotals(){
   const cart = getCart(); const products=getProducts();
   let sub = 0; cart.forEach(it=>{ const p=products.find(x=>x.id===it.id); sub += (p?.price||0)*it.qty; });
-
   const custType = document.getElementById('custType')?.value || 'wholesale';
   let disc = custType==='wholesale' ? sub*WHOLESALE_DISCOUNT : 0;
   let total = sub - disc;
-
-  document.getElementById('cartSub').textContent  = money(sub);
-  document.getElementById('cartDisc').textContent = money(disc);
-  document.getElementById('cartTotal').textContent= money(total);
-
-  const typeMsg = document.getElementById('typeMsg');
-  if(custType==='wholesale'){
-    typeMsg.textContent = 'عميل جملة: مبروك! خصم 2% تم تطبيقه تلقائيًا.';
-  }else{
-    typeMsg.textContent = 'عميل نص جملة: مبروك! كسبت Free Random Box from ZADORA.';
+  $('#cartSub').textContent  = money(sub);
+  $('#cartDisc').textContent = money(disc);
+  $('#cartTotal').textContent= money(total);
+  const typeMsg = $('#typeMsg');
+  if(typeMsg){
+    typeMsg.textContent = custType==='wholesale'
+    ? 'عميل جملة: مبروك! خصم 2% تم تطبيقه تلقائيًا.'
+    : 'عميل نص جملة: مبروك! Free Random Box from ZADORA.';
   }
 }
+function openCart(){ $('#cartSheet').style.display='flex'; renderCart(); updateTotals(); }
+function closeCart(){ $('#cartSheet').style.display='none'; }
 
-/* ===== فتح/إغلاق السلة ===== */
-function openCart(){ document.getElementById('cartSheet').style.display='flex'; renderCart(); updateTotals(); }
-function closeCart(){ document.getElementById('cartSheet').style.display='none'; }
-
-/* ===== واتساب — إتمام طلب السلة ===== */
+/* ===== واتساب ===== */
 function whatsappCheckout(){
   const products=getProducts(); const cart=getCart(); if(cart.length===0){ alert('السلة فارغة'); return; }
-  // تحقق من الحد الأدنى
   for(const it of cart){ if(it.qty < MIN_QTY_PER_ITEM){ alert('الحد الأدنى لكل صنف 6 قطع'); return; } }
-
   let lines=['طلب جديد من ZADORA:']; let sub=0;
   cart.forEach(it=>{ const p=products.find(x=>x.id===it.id); const s=(p?.price||0)*it.qty; sub+=s; lines.push(`- ${p?.name} × ${it.qty} = ${s} EGP`); });
-  const custType = document.getElementById('custType')?.value || 'wholesale';
+  const custType = $('#custType')?.value || 'wholesale';
   const disc = custType==='wholesale' ? Math.round(sub*WHOLESALE_DISCOUNT) : 0;
   const total = sub - disc;
   lines.push(`الإجمالي قبل الخصم = ${sub} EGP`);
   if(disc>0) lines.push(`خصم 2% (جملة) = -${disc} EGP`);
   lines.push(`إجمالي الدفع = ${total} EGP`);
-
   const name=$('#custName').value||''; const addr=$('#custAddr').value||''; const note=$('#custNote').value||'';
   if(name) lines.push('الاسم: '+name); if(addr) lines.push('العنوان: '+addr); if(note) lines.push('ملاحظات: '+note);
-
   const msg = encodeURIComponent(lines.join('\n'));
   window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${msg}`,'_blank');
 }
-
-/* ===== واتساب — إرسال بيانات الجملة/نص الجملة ===== */
 function whatsappWholesale(){
   const type = $('#custType').value;
   const name = $('#wName').value.trim();
@@ -309,10 +412,7 @@ function whatsappWholesale(){
   const email= $('#wEmail').value.trim();
   const site = $('#wSite').value.trim();
   const beSeller = $('#beSeller').checked;
-
-  // تحقق إجباري
   if(!phone || !page){ alert('من فضلك أدخل أرقام التواصل ولينك صفحتك.'); return; }
-
   const lines = [
     'بيانات عميل (جملة/نص جملة):',
     `النوع: ${type==='wholesale'?'Wholesale (جملة)':'Half-Wholesale (نص جملة)'}`,
@@ -324,26 +424,36 @@ function whatsappWholesale(){
     `إيميل: ${email||'-'}`,
     `موقع: ${site||'-'}`
   ];
-
-  if(type==='wholesale'){
-    lines.push('🎉 مبروك! خصم 2% بيتطبق على إجمالي فواتيرك.');
-  }else{
-    lines.push('🎁 نص جملة: مبروك! Free Random Box from ZADORA.');
-  }
-
-  if(beSeller){
-    lines.push('طلب تسجيل كتاجر على ZADORA SITE ✅ (عمولة 2% على المبيعات، والدعاية علينا).');
-  }
-
+  if(type==='wholesale'){ lines.push('🎉 مبروك! خصم 2% بيتطبق على إجمالي فواتيرك.'); }
+  else{ lines.push('🎁 نص جملة: مبروك! Free Random Box from ZADORA.'); }
+  if(beSeller){ lines.push('طلب تسجيل كتاجر على ZADORA SITE ✅ (عمولة 2% على المبيعات، والدعاية علينا).'); }
   const msg = encodeURIComponent(lines.join('\n'));
   window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${msg}`,'_blank');
 }
 
-/* ===== أحداث ===== */
+/* ===== تسجيل بسيط ===== */
+function openLogin(){ $('#loginSheet').style.display='flex'; const u=getUser(); if(u){ $('#userName').value=u.name||''; $('#userPhone').value=u.phone||''; $('#userEmail').value=u.email||''; } }
+function closeLogin(){ $('#loginSheet').style.display='none'; }
+function doLogin(){
+  const u = {name:$('#userName').value.trim(), phone:$('#userPhone').value.trim(), email:$('#userEmail').value.trim()};
+  if(!u.name || (!u.phone && !u.email)){ alert('أدخل الاسم وموبايل أو إيميل.'); return; }
+  localStorage.setItem(USER_KEY, JSON.stringify(u));
+  alert('تم الحفظ ✅'); closeLogin();
+}
+
+/* ===== شات بوت ===== */
+function toggleChat(){ const c=$('#chatBox'); c.style.display = (c.style.display==='block'?'none':'block'); }
+function chatQ(i){
+  const s = $('#chatStream'); const add=(t,me=false)=>{ const d=document.createElement('div'); d.className='msg'+(me?' me':''); d.textContent=t; s.appendChild(d); s.scrollTop=s.scrollHeight; }
+  if(i===1){ add('ما الحد الأدنى للطلب؟',true); add('الحد الأدنى 12 قطعة/صنف، وقيمة الفاتورة لا تقل عن 7000 جنيه.'); }
+  if(i===2){ add('مكانكم واعتماداتكم؟',true); add('نحن وكيل وموزع لعلامات عالمية. قريبًا: أكبر مول ZADORA HUB في الشرق الأوسط.'); }
+  if(i===3){ add('هل الشراء أونلاين والدفع عند الاستلام متاح؟',true); add('متاح الشراء أونلاين. الدفع عند الاستلام متاح بزيادة 6% على إجمالي الفاتورة.'); }
+}
+
+/* ===== Init ===== */
 document.addEventListener('DOMContentLoaded',()=>{
   if(!localStorage.getItem(STORE_KEY)) setProducts(sampleProducts());
-  renderHomeProducts();
-  updateTotals();
+  renderHero(); renderRail(); renderHomeProducts(); renderCartBadge(); updateTotals();
   $('#custType').addEventListener('change', updateTotals);
 });
 </script>

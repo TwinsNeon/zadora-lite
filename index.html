@@ -6,6 +6,13 @@
 <title>ZADORA — Wholesale</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  /* قلب الرغبات – أبيض outline + نبض */
+.heart { position:absolute; top:8px; left:8px; background:rgba(0,0,0,.45); border:1px solid #333;
+  border-radius:50%; width:38px; height:38px; display:grid; place-items:center; cursor:pointer }
+.heart svg path{ stroke:#fff; fill:transparent; stroke-width:2; transition:transform .2s }
+.heart.active svg path{ stroke:#fff; fill:transparent }  /* من غير تعبئة */
+.heart.pulse svg{ animation:beat .6s ease-in-out 1; transform-origin:center }
+@keyframes beat{ 0%{transform:scale(1)} 35%{transform:scale(1.2)} 100%{transform:scale(1)} }
 <style>
 /* ---- SVG Icons (outline style) ---- */
 .ico{width:22px;height:22px;display:inline-block;vertical-align:middle}
@@ -33,7 +40,6 @@ a{color:inherit;text-decoration:none}
 .card img{width:100%;height:150px;object-fit:cover;background:#111}
 .card .pad{padding:10px}
 .heart{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.45);border:1px solid #333;border-radius:50%;width:38px;height:38px;display:grid;place-items:center;cursor:pointer}
-.heart.active{background:#b91c1c}
 .price{font-weight:800}
 .footer{border-top:1px solid #202124;color:var(--muted);padding:16px 0;margin-top:24px;text-align:center}
 .row{display:flex;gap:10px;align-items:center}.flex-1{flex:1}
@@ -311,7 +317,9 @@ function renderHomeProducts(){
   const wish = getWish();
   wrap.innerHTML = getProducts().map(p=>`
     <div class="card">
-    <div class="heart ${wish.includes(p.id)?'active':''}" onclick="toggleWish('${p.id}', this)">
+    <div <div class="heart ${wish.includes(p.id)?'active':''}" onclick="toggleWish('${p.id}', this)">
+  <svg viewBox="0 0 24 24"><path d="M12.1 20s-7.1-4.3-9.1-8.2C1.9 9 3.7 6 6.9 6c1.8 0 3.1.9 3.9 2 0 0 1.5-2 4.3-2 3.2 0 5 3 3.9 5.8C16.9 15.7 12.1 20 12.1 20z"/></svg>
+</div>
   <svg viewBox="0 0 24 24">
     <path d="M12.1 20s-7.1-4.3-9.1-8.2C1.9 9 3.7 6 6.9 6c1.8 0 3.1.9 3.9 2 0 0 1.5-2 4.3-2 3.2 0 5 3 3.9 5.8C16.9 15.7 12.1 20 12.1 20z"/>
   </svg>
